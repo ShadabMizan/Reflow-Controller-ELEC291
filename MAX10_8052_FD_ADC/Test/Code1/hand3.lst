@@ -1,0 +1,37 @@
+                  2   $LIST
+0000 020010       4            ljmp main
+0003              5            
+0003              6   delay:
+0003 7A5A         7       mov R2, #90
+0005 79FA         8   L3: mov R1, #250
+0007 78FA         9   L2: mov R0, #250
+0009 D8FE        10   L1: djnz R0, L1 ; 3 machine cycles-> 3*30ns*250=22.5us
+000B D9FA        11       djnz R1, L2 ; 22.5us*250=5.625ms
+000D DAF6        12       djnz R2, L3 ; 5.625ms*90=0.506s (approximately)
+000F 22          13       ret
+0010             14   
+0010             15   main:
+0010 75817F      16            mov sp, #0x7f
+0013 75E800      17            mov ledra, #0
+0016 759500      18            mov ledrb, #0
+0019 75C1FF      19            mov P4MOD, #0xff
+001C             20   forever:         
+001C 758FFF      21            mov hex5, #0xff
+001F 758EE1      22            mov hex4, #0xe1
+0022 759486      23            mov hex3, #0x86
+0025 759392      24            mov hex2, #0x92
+0028 7592C1      25            mov hex1, #0xc1
+002B 759192      26            mov hex0, #0x92
+002E 75C055      27            mov P4, #0x55
+0031 120003      28            lcall delay
+0034 758FFF      29            mov hex5, #0xff
+0037 758EFF      30            mov hex4, #0xff
+003A 7594FF      31            mov hex3, #0xff
+003D 7593FF      32            mov hex2, #0xff
+0040 7592FF      33            mov hex1, #0xff
+0043 7591FF      34            mov hex0, #0xff
+0046 75C0AA      35            mov P4, #0xaa
+0049 120003      36            lcall delay
+004C             37   
+004C 80CE        38       sjmp forever
+004E             39   end

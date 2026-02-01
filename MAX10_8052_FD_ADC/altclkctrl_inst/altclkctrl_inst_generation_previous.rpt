@@ -1,0 +1,35 @@
+Info: Starting: Create block symbol file (.bsf)
+Info: qsys-generate C:\Source\MAX10_8052\altclkctrl_inst.qsys --block-symbol-file --output-directory=C:\Source\MAX10_8052\altclkctrl_inst --family="MAX 10" --part=10M50DAF484C7G
+Progress: Loading MAX10_8052/altclkctrl_inst.qsys
+Progress: Reading input file
+Progress: Adding altclkctrl_0 [altclkctrl 16.1]
+Progress: Parameterizing module altclkctrl_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+: altclkctrl_inst.altclkctrl_0: Targeting device family: MAX 10.
+: altclkctrl_inst.altclkctrl_0: Global clock network allows a clock signal to reach all parts of the chip with the same amount of skew. Input port 'clkselect' can be used to switch between four clock inputs.
+Info: qsys-generate succeeded.
+Info: Finished: Create block symbol file (.bsf)
+Info: 
+Info: Starting: Create HDL design files for synthesis
+Info: qsys-generate C:\Source\MAX10_8052\altclkctrl_inst.qsys --synthesis=VHDL --greybox --output-directory=C:\Source\MAX10_8052\altclkctrl_inst\synthesis --family="MAX 10" --part=10M50DAF484C7G
+Progress: Loading MAX10_8052/altclkctrl_inst.qsys
+Progress: Reading input file
+Progress: Adding altclkctrl_0 [altclkctrl 16.1]
+Progress: Parameterizing module altclkctrl_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+: altclkctrl_inst.altclkctrl_0: Targeting device family: MAX 10.
+: altclkctrl_inst.altclkctrl_0: Global clock network allows a clock signal to reach all parts of the chip with the same amount of skew. Input port 'clkselect' can be used to switch between four clock inputs.
+Info: altclkctrl_inst: Generating altclkctrl_inst "altclkctrl_inst" for QUARTUS_SYNTH
+Info: altclkctrl_0: Generating top-level entity altclkctrl_inst_altclkctrl_0.
+Info: altclkctrl_0: "altclkctrl_inst" instantiated altclkctrl "altclkctrl_0"
+Info: altclkctrl_inst: Done "altclkctrl_inst" with 2 modules, 2 files
+Info: Generating third-party timing and resource estimation model ...
+Info: Done generating third-party timing and resource estimation model.
+Info: qsys-generate succeeded.
+Info: Finished: Create HDL design files for synthesis

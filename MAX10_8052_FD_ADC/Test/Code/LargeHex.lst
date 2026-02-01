@@ -1,0 +1,8121 @@
+0000              1   ;--------------------------------------------------------
+0000              2   ; File Created by C51
+0000              3   ; Version 1.0.0 #1170 (Feb 16 2022) (MSVC)
+0000              4   ; This file was generated Thu Oct 03 21:58:31 2024
+0000              5   ;--------------------------------------------------------
+                  5   $name LargeHex
+                  6   $optc51 --model-small
+0000              8            R_DSEG    segment data
+0000              9            R_CSEG    segment code
+0000             10            R_BSEG    segment bit
+0000             11            R_XSEG    segment xdata
+0000             12            R_PSEG    segment xdata
+0000             13            R_ISEG    segment idata
+0000             14            R_OSEG    segment data overlay
+0000             15            BIT_BANK  segment data overlay
+0000             16            R_HOME    segment code
+0000             17            R_GSINIT  segment code
+0000             18            R_IXSEG   segment xdata
+0000             19            R_CONST   segment code
+0000             20            R_XINIT   segment code
+0000             21            R_DINIT   segment code
+0000             22   
+0000             23   ;--------------------------------------------------------
+0000             24   ; Public variables in this module
+0000             25   ;--------------------------------------------------------
+0000             26            public _filler
+0000             27            public _main
+0000             28            public __c51_external_startup
+0000             29            public _de2_8052_crt0
+0000             30   ;--------------------------------------------------------
+0000             31   ; Special Function Registers
+0000             32   ;--------------------------------------------------------
+0000             33   _P0             DATA 0x80
+0000             34   _SP             DATA 0x81
+0000             35   _DPL            DATA 0x82
+0000             36   _DPH            DATA 0x83
+0000             37   _PCON           DATA 0x87
+0000             38   _TCON           DATA 0x88
+0000             39   _TMOD           DATA 0x89
+0000             40   _TL0            DATA 0x8a
+0000             41   _TL1            DATA 0x8b
+0000             42   _TH0            DATA 0x8c
+0000             43   _TH1            DATA 0x8d
+0000             44   _P1             DATA 0x90
+0000             45   _SCON           DATA 0x98
+0000             46   _SBUF           DATA 0x99
+0000             47   _P2             DATA 0xa0
+0000             48   _IE             DATA 0xa8
+0000             49   _P3             DATA 0xb0
+0000             50   _IP             DATA 0xb8
+0000             51   _PSW            DATA 0xd0
+0000             52   _ACC            DATA 0xe0
+0000             53   _B              DATA 0xf0
+0000             54   _T2CON          DATA 0xc8
+0000             55   _RCAP2L         DATA 0xca
+0000             56   _RCAP2H         DATA 0xcb
+0000             57   _TL2            DATA 0xcc
+0000             58   _TH2            DATA 0xcd
+0000             59   _DPS            DATA 0x86
+0000             60   _DPH1           DATA 0x85
+0000             61   _DPL1           DATA 0x84
+0000             62   _HEX0           DATA 0x91
+0000             63   _HEX1           DATA 0x92
+0000             64   _HEX2           DATA 0x93
+0000             65   _HEX3           DATA 0x94
+0000             66   _HEX4           DATA 0x8e
+0000             67   _HEX5           DATA 0x8f
+0000             68   _LEDRA          DATA 0xe8
+0000             69   _LEDRB          DATA 0x95
+0000             70   _SWA            DATA 0xe8
+0000             71   _SWB            DATA 0x95
+0000             72   _KEY            DATA 0xf8
+0000             73   _P0MOD          DATA 0x9a
+0000             74   _P1MOD          DATA 0x9b
+0000             75   _P2MOD          DATA 0x9c
+0000             76   _P3MOD          DATA 0x9d
+0000             77   _REP_ADD_L      DATA 0xf1
+0000             78   _REP_ADD_H      DATA 0xf2
+0000             79   _REP_VALUE      DATA 0xf3
+0000             80   _DEBUG_CALL_L   DATA 0xfa
+0000             81   _DEBUG_CALL_H   DATA 0xfb
+0000             82   _BPC            DATA 0xfc
+0000             83   _BPS            DATA 0xfd
+0000             84   _BPAL           DATA 0xfe
+0000             85   _BPAH           DATA 0xff
+0000             86   _LBPAL          DATA 0xfa
+0000             87   _LBPAH          DATA 0xfb
+0000             88   _P4             DATA 0xc0
+0000             89   _P4MOD          DATA 0xc1
+0000             90   _XRAMUSEDAS     DATA 0xc3
+0000             91   _UFM_ADD0       DATA 0xe1
+0000             92   _UFM_ADD1       DATA 0xe2
+0000             93   _UFM_ADD2       DATA 0xe3
+0000             94   _UFM_DATA0      DATA 0xe4
+0000             95   _UFM_DATA1      DATA 0xe5
+0000             96   _UFM_DATA2      DATA 0xe6
+0000             97   _UFM_DATA3      DATA 0xe7
+0000             98   _UFM_CONTROL0   DATA 0xe9
+0000             99   _UFM_CONTROL1   DATA 0xea
+0000            100   _UFM_CONTROL2   DATA 0xeb
+0000            101   _UFM_CONTROL3   DATA 0xec
+0000            102   _UFM_DATA_CMD   DATA 0xed
+0000            103   _UFM_DATA_STATUS DATA 0xee
+0000            104   _UFM_CONTROL_CMD DATA 0xef
+0000            105   ;--------------------------------------------------------
+0000            106   ; special function bits
+0000            107   ;--------------------------------------------------------
+0000            108   _P0_0           BIT 0x80
+0000            109   _P0_1           BIT 0x81
+0000            110   _P0_2           BIT 0x82
+0000            111   _P0_3           BIT 0x83
+0000            112   _P0_4           BIT 0x84
+0000            113   _P0_5           BIT 0x85
+0000            114   _P0_6           BIT 0x86
+0000            115   _P0_7           BIT 0x87
+0000            116   _IT0            BIT 0x88
+0000            117   _IE0            BIT 0x89
+0000            118   _IT1            BIT 0x8a
+0000            119   _IE1            BIT 0x8b
+0000            120   _TR0            BIT 0x8c
+0000            121   _TF0            BIT 0x8d
+0000            122   _TR1            BIT 0x8e
+0000            123   _TF1            BIT 0x8f
+0000            124   _P1_0           BIT 0x90
+0000            125   _P1_1           BIT 0x91
+0000            126   _P1_2           BIT 0x92
+0000            127   _P1_3           BIT 0x93
+0000            128   _P1_4           BIT 0x94
+0000            129   _P1_5           BIT 0x95
+0000            130   _P1_6           BIT 0x96
+0000            131   _P1_7           BIT 0x97
+0000            132   _RI             BIT 0x98
+0000            133   _TI             BIT 0x99
+0000            134   _RB8            BIT 0x9a
+0000            135   _TB8            BIT 0x9b
+0000            136   _REN            BIT 0x9c
+0000            137   _SM2            BIT 0x9d
+0000            138   _SM1            BIT 0x9e
+0000            139   _SM0            BIT 0x9f
+0000            140   _P2_0           BIT 0xa0
+0000            141   _P2_1           BIT 0xa1
+0000            142   _P2_2           BIT 0xa2
+0000            143   _P2_3           BIT 0xa3
+0000            144   _P2_4           BIT 0xa4
+0000            145   _P2_5           BIT 0xa5
+0000            146   _P2_6           BIT 0xa6
+0000            147   _P2_7           BIT 0xa7
+0000            148   _EX0            BIT 0xa8
+0000            149   _ET0            BIT 0xa9
+0000            150   _EX1            BIT 0xaa
+0000            151   _ET1            BIT 0xab
+0000            152   _ES             BIT 0xac
+0000            153   _ET2            BIT 0xad
+0000            154   _EA             BIT 0xaf
+0000            155   _P3_0           BIT 0xb0
+0000            156   _P3_1           BIT 0xb1
+0000            157   _P3_2           BIT 0xb2
+0000            158   _P3_3           BIT 0xb3
+0000            159   _P3_4           BIT 0xb4
+0000            160   _P3_5           BIT 0xb5
+0000            161   _P3_6           BIT 0xb6
+0000            162   _P3_7           BIT 0xb7
+0000            163   _RXD            BIT 0xb0
+0000            164   _TXD            BIT 0xb1
+0000            165   _INT0           BIT 0xb2
+0000            166   _INT1           BIT 0xb3
+0000            167   _T0             BIT 0xb4
+0000            168   _T1             BIT 0xb5
+0000            169   _WR             BIT 0xb6
+0000            170   _RD             BIT 0xb7
+0000            171   _PX0            BIT 0xb8
+0000            172   _PT0            BIT 0xb9
+0000            173   _PX1            BIT 0xba
+0000            174   _PT1            BIT 0xbb
+0000            175   _PS             BIT 0xbc
+0000            176   _PT2            BIT 0xbd
+0000            177   _P              BIT 0xd0
+0000            178   _F1             BIT 0xd1
+0000            179   _OV             BIT 0xd2
+0000            180   _RS0            BIT 0xd3
+0000            181   _RS1            BIT 0xd4
+0000            182   _F0             BIT 0xd5
+0000            183   _AC             BIT 0xd6
+0000            184   _CY             BIT 0xd7
+0000            185   _T2CON_0        BIT 0xc8
+0000            186   _T2CON_1        BIT 0xc9
+0000            187   _T2CON_2        BIT 0xca
+0000            188   _T2CON_3        BIT 0xcb
+0000            189   _T2CON_4        BIT 0xcc
+0000            190   _T2CON_5        BIT 0xcd
+0000            191   _T2CON_6        BIT 0xce
+0000            192   _T2CON_7        BIT 0xcf
+0000            193   _CP_RL2         BIT 0xc8
+0000            194   _C_T2           BIT 0xc9
+0000            195   _TR2            BIT 0xca
+0000            196   _EXEN2          BIT 0xcb
+0000            197   _TCLK           BIT 0xcc
+0000            198   _RCLK           BIT 0xcd
+0000            199   _EXF2           BIT 0xce
+0000            200   _TF2            BIT 0xcf
+0000            201   _LEDRA_0        BIT 0xe8
+0000            202   _LEDRA_1        BIT 0xe9
+0000            203   _LEDRA_2        BIT 0xea
+0000            204   _LEDRA_3        BIT 0xeb
+0000            205   _LEDRA_4        BIT 0xec
+0000            206   _LEDRA_5        BIT 0xed
+0000            207   _LEDRA_6        BIT 0xee
+0000            208   _LEDRA_7        BIT 0xef
+0000            209   _SWA_0          BIT 0xe8
+0000            210   _SWA_1          BIT 0xe9
+0000            211   _SWA_2          BIT 0xea
+0000            212   _SWA_3          BIT 0xeb
+0000            213   _SWA_4          BIT 0xec
+0000            214   _SWA_5          BIT 0xed
+0000            215   _SWA_6          BIT 0xee
+0000            216   _SWA_7          BIT 0xef
+0000            217   _KEY_0          BIT 0xf8
+0000            218   _KEY_1          BIT 0xf9
+0000            219   _KEY_2          BIT 0xfa
+0000            220   _KEY_3          BIT 0xfb
+0000            221   _P4_0           BIT 0xc0
+0000            222   _P4_1           BIT 0xc1
+0000            223   _P4_2           BIT 0xc2
+0000            224   _P4_3           BIT 0xc3
+0000            225   _P4_4           BIT 0xc4
+0000            226   _P4_5           BIT 0xc5
+0000            227   _P4_6           BIT 0xc6
+0000            228   _P4_7           BIT 0xc7
+0000            229   ;--------------------------------------------------------
+0000            230   ; overlayable register banks
+0000            231   ;--------------------------------------------------------
+0000            232            rbank0 segment data overlay
+0000            233   ;--------------------------------------------------------
+0000            234   ; internal ram data
+0000            235   ;--------------------------------------------------------
+0000            236            rseg R_DSEG
+0000            237   ;--------------------------------------------------------
+0000            238   ; overlayable items in internal ram 
+0000            239   ;--------------------------------------------------------
+0000            240            rseg R_OSEG
+0000            241   ;--------------------------------------------------------
+0000            242   ; indirectly addressable internal ram data
+0000            243   ;--------------------------------------------------------
+0000            244            rseg R_ISEG
+0000            245   ;--------------------------------------------------------
+0000            246   ; absolute internal ram data
+0000            247   ;--------------------------------------------------------
+0000            248            DSEG
+0000            249   ;--------------------------------------------------------
+0000            250   ; bit data
+0000            251   ;--------------------------------------------------------
+0000            252            rseg R_BSEG
+0000            253   ;--------------------------------------------------------
+0000            254   ; paged external ram data
+0000            255   ;--------------------------------------------------------
+0000            256            rseg R_PSEG
+0000            257   ;--------------------------------------------------------
+0000            258   ; external ram data
+0000            259   ;--------------------------------------------------------
+0000            260            rseg R_XSEG
+0000            261   ;--------------------------------------------------------
+0000            262   ; absolute external ram data
+0000            263   ;--------------------------------------------------------
+0000            264            XSEG
+0000            265   ;--------------------------------------------------------
+0000            266   ; external initialized ram data
+0000            267   ;--------------------------------------------------------
+0000            268            rseg R_IXSEG
+0000            269            rseg R_HOME
+0000            270            rseg R_GSINIT
+0000            271            rseg R_CSEG
+0000            272   ;--------------------------------------------------------
+0000            273   ; Reset entry point and interrupt vectors
+0000            274   ;--------------------------------------------------------
+0000            275            CSEG at 0x0000
+0000 020000     276            ljmp    _crt0
+0003            277   ;--------------------------------------------------------
+0003            278   ; global & static initialisations
+0003            279   ;--------------------------------------------------------
+0000            280            rseg R_HOME
+0000            281            rseg R_GSINIT
+0000            282            rseg R_GSINIT
+0000            283   ;--------------------------------------------------------
+0000            284   ; data variables initialization
+0000            285   ;--------------------------------------------------------
+0000            286            rseg R_DINIT
+0000            287            ; The linker places a 'ret' at the end of segment R_DINIT.
+0000            288   ;--------------------------------------------------------
+0000            289   ; code
+0000            290   ;--------------------------------------------------------
+0000            291            rseg R_CSEG
+0000            292   ;------------------------------------------------------------
+0000            293   ;Allocation info for local variables in function 'de2_8052_crt0'
+0000            294   ;------------------------------------------------------------
+0000            295   ;------------------------------------------------------------
+0000            296   ;        C:/Source/call51/Bin/../include/mcs51/MAX10_8052.h:302: void de2_8052_crt0 (void) _naked
+0000            297   ;        -----------------------------------------
+0000            298   ;         function de2_8052_crt0
+0000            299   ;        -----------------------------------------
+0000            300   _de2_8052_crt0:
+0000            301   ;        naked function: no prologue.
+0000            302   ;        C:/Source/call51/Bin/../include/mcs51/MAX10_8052.h:371: _endasm;
+0000            303            
+0000            304            
+0000            305             rseg R_GSINIT
+0000            306             public _crt0
+0000            307            _crt0:
+0000 7581FF     308             mov sp,#_stack_start-1
+0003 120000     309             lcall __c51_external_startup
+0006 E582       310             mov a,dpl
+0008 6000       311             jz __c51_init_data
+000A 020000     312             ljmp __c51_program_startup
+000D            313            __c51_init_data:
+000D            314            
+000D            315   ; Initialize xdata variables
+000D            316            
+000D 758200     317             mov dpl, #_R_XINIT_start
+0010 758300     318             mov dph, #(_R_XINIT_start>>8)
+0013 758400     319             mov _DPL1, #_R_IXSEG_start
+0016 758500     320             mov _DPH1, #(_R_IXSEG_start>>8)
+0019 7800       321             mov r0, #_R_IXSEG_size
+001B 7900       322             mov r1, #(_R_IXSEG_size>>8)
+001D            323            
+001D            324            XInitLoop?repeat?:
+001D E8         325             mov a, r0
+001E 49         326             orl a, r1
+001F 6000       327             jz XInitLoop?done?
+0021 E4         328             clr a
+0022 758600     329             mov _DPS, #0 ; Using dpl, dph
+0025 93         330             movc a,@a+dptr
+0026 A3         331             inc dptr
+0027 758601     332             mov _DPS, #1 ; Using DPL1, DPH1
+002A F0         333             movx @dptr, a
+002B A3         334             inc dptr
+002C 18         335             dec r0
+002D B8FF38     336             cjne r0, #0xff, XInitLoop?repeat?
+0030 19         337             dec r1
+0031 8000       338             sjmp XInitLoop?repeat?
+0033            339            
+0033            340            XInitLoop?done?:
+0033            341            
+0033            342   ; Clear xdata variables
+0033 758600     343             mov _DPS, #0 ; Make sure we are using dpl, dph
+0036 758200     344             mov dpl, #_R_XSEG_start
+0039 758300     345             mov dph, #(_R_XSEG_start>>8)
+003C 7C00       346             mov r4, #_R_XSEG_size
+003E 7D00       347             mov r5, #(_R_XSEG_size>>8)
+0040            348            
+0040            349            XClearLoop?repeat?:
+0040 EC         350             mov a, r4
+0041 4D         351             orl a, r5
+0042 6000       352             jz XClearLoop?done?
+0044 E4         353             clr a
+0045 F0         354             movx @dptr, a
+0046 A3         355             inc dptr
+0047 1C         356             dec r4
+0048 BCFF48     357             cjne r4, #0xff, XClearLoop?repeat?
+004B 1D         358             dec r5
+004C 8000       359             sjmp XClearLoop?repeat?
+004E            360            
+004E            361            XClearLoop?done?:
+004E 120000     362             lcall _R_DINIT_start ; Initialize data/idata variables
+0051            363            
+0051            364            __c51_program_startup:
+0051 120000     365             lcall _main
+0054            366            
+0054            367            forever?home?:
+0054 8000       368             sjmp forever?home?
+0056            369            
+0056            370             
+0056            371   ;        naked function: no epilogue.
+0056            372   ;------------------------------------------------------------
+0056            373   ;Allocation info for local variables in function '_c51_external_startup'
+0056            374   ;------------------------------------------------------------
+0056            375   ;------------------------------------------------------------
+0056            376   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:417: unsigned char _c51_external_startup(void)
+0056            377   ;        -----------------------------------------
+0056            378   ;         function _c51_external_startup
+0056            379   ;        -----------------------------------------
+0056            380   __c51_external_startup:
+0056            381            using   0
+0056            382   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:419: RCAP2H=HIGH(TIMER_2_RELOAD);
+0056 75CBFF     383            mov     _RCAP2H,#0xFF
+0059            384   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:420: RCAP2L=LOW(TIMER_2_RELOAD);
+0059 75CAF7     385            mov     _RCAP2L,#0xF7
+005C            386   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:421: T2CON=0x34; // #00110100B
+005C 75C834     387            mov     _T2CON,#0x34
+005F            388   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:422: SCON=0x52; // Serial port in mode 1, ren, txrdy, rxempty
+005F 759852     389            mov     _SCON,#0x52
+0062            390   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:424: return 0;
+0062 758200     391            mov     dpl,#0x00
+0065 22         392            ret
+0066            393   ;------------------------------------------------------------
+0066            394   ;Allocation info for local variables in function 'main'
+0066            395   ;------------------------------------------------------------
+0066            396   ;------------------------------------------------------------
+0066            397   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:427: void main (void)
+0066            398   ;        -----------------------------------------
+0066            399   ;         function main
+0066            400   ;        -----------------------------------------
+0066            401   _main:
+0066            402   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:430: LEDRA=0x00;
+0066            403   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:431: LEDRB=0x00;
+0066            404   ;        C:\Source\MAX10_8052\Test\Code\LargeHex.c:433: printf("Very large hex file test.\r\n");
+0066 E4         405            clr     a
+0067 F5E8       406            mov     _LEDRA,a
+0069 F595       407            mov     _LEDRB,a
+006B 7458       408            mov     a,#__str_0
+006D C0E0       409            push    acc
+006F 747F       410            mov     a,#(__str_0 >> 8)
+0071 C0E0       411            push    acc
+0073 7480       412            mov     a,#0x80
+0075 C0E0       413            push    acc
+0077 120000     414            lcall   _printf
+007A 1581       415            dec     sp
+007C 1581       416            dec     sp
+007E 1581       417            dec     sp
+0080 22         418            ret
+0000            419            rseg R_CSEG
+0000            420   
+0000            421            rseg R_XINIT
+0000            422   
+0000            423            rseg R_CONST
+0000            424   _filler:
+0000 30313233   425            db '0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY'
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+003C 5A2C2E3F   426            db 'Z,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGH'
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+0078 494A4B4C   427            db 'IJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopq'
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+00B4 72737475   428            db 'rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345678'
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+00F0 39616263   429            db '9abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$'
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+012C 5E2A2829   430            db '^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQ'
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+0168 52535455   431            db 'RSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyz'
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+01A4 41424344   432            db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefgh'
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+01E0 696A6B6C   433            db 'ijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0'
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+021C 31323334   434            db '123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+0258 2C2E3F7E   435            db ',.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHI'
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+0294 4A4B4C4D   436            db 'JKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqr'
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+02D0 73747576   437            db 'stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789'
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+030C 61626364   438            db 'abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^'
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+0348 2A28295F   439            db '*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQR'
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+0384 53545556   440            db 'STUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzA'
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+03C0 42434445   441            db 'BCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghi'
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+03FC 6A6B6C6D   442            db 'jklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01'
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+0438 32333435   443            db '23456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,'
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+0474 2E3F7E21   444            db '.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJ'
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+04B0 4B4C4D4E   445            db 'KLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrs'
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+04EC 74757677   446            db 'tuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789a'
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+0528 62636465   447            db 'bcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*'
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+0564 28295F2D   448            db '()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRS'
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+05A0 54555657   449            db 'TUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzAB'
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+05DC 43444546   450            db 'CDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghij'
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+0618 6B6C6D6F   451            db 'klmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012'
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+0654 33343536   452            db '3456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.'
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+0690 3F7E2140   453            db '?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJK'
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+06CC 4C4D4E4F   454            db 'LMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrst'
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+0708 75767778   455            db 'uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789ab'
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+0744 63646566   456            db 'cdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*('
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+0780 295F2D2B   457            db ')_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRST'
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+07BC 55565758   458            db 'UVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABC'
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+07F8 44454647   459            db 'DEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijk'
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+0834 6C6D6F70   460            db 'lmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123'
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+0870 34353637   461            db '456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?'
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+08AC 7E214023   462            db '~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKL'
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+08E8 4D4E4F50   463            db 'MNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstu'
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+0924 76777879   464            db 'vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abc'
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+0960 64656667   465            db 'defghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()'
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+099C 5F2D2B3D   466            db '_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU'
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+09D8 56575859   467            db 'VWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCD'
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+0A14 45464748   468            db 'EFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijkl'
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+0A50 6D6F7071   469            db 'mopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234'
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+0A8C 35363738   470            db '56789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~'
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+0AC8 21402324   471            db '!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLM'
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+0B04 4E4F5051   472            db 'NOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuv'
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+0B40 7778797A   473            db 'wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcd'
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+0B7C 65666768   474            db 'efghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_'
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+0BB8 2D2B3D30   475            db '-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV'
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+0BF4 5758595A   476            db 'WXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDE'
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+0C30 46474849   477            db 'FGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklm'
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+0C6C 6F707172   478            db 'opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345'
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+0CA8 36373839   479            db '6789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!'
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+0CE4 4023245E   480            db '@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMN'
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+0D20 4F505152   481            db 'OPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvw'
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+0D5C 78797A41   482            db 'xyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcde'
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+0D98 66676869   483            db 'fghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-'
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+0DD4 2B3D3031   484            db '+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW'
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+0E10 58595A2C   485            db 'XYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEF'
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+0E4C 4748494A   486            db 'GHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmo'
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+0E88 70717273   487            db 'pqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456'
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+0EC4 37383961   488            db '789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@'
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+0F00 23245E2A   489            db '#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNO'
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+0F3C 50515253   490            db 'PQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwx'
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+0F78 797A4142   491            db 'yzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdef'
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+0FB4 6768696A   492            db 'ghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+'
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+0FF0 3D303132   493            db '=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX'
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+102C 595A2C2E   494            db 'YZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFG'
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+1068 48494A4B   495            db 'HIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmop'
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+10A4 71727374   496            db 'qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234567'
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+10E0 38396162   497            db '89abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#'
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+111C 245E2A28   498            db '$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOP'
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+1158 51525354   499            db 'QRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxy'
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+1194 7A414243   500            db 'zABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefg'
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+11D0 68696A6B   501            db 'hijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+='
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+120C 30313233   502            db '0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY'
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+1248 5A2C2E3F   503            db 'Z,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGH'
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+1284 494A4B4C   504            db 'IJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopq'
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+12C0 72737475   505            db 'rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345678'
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+12FC 39616263   506            db '9abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$'
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+1338 5E2A2829   507            db '^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQ'
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+1374 52535455   508            db 'RSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyz'
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+13B0 41424344   509            db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefgh'
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+13EC 696A6B6C   510            db 'ijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0'
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+1428 31323334   511            db '123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+1464 2C2E3F7E   512            db ',.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHI'
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+14A0 4A4B4C4D   513            db 'JKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqr'
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+14DC 73747576   514            db 'stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789'
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+1518 61626364   515            db 'abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^'
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+1554 2A28295F   516            db '*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQR'
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+1590 53545556   517            db 'STUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzA'
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+15CC 42434445   518            db 'BCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghi'
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+1608 6A6B6C6D   519            db 'jklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01'
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+1644 32333435   520            db '23456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,'
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+1680 2E3F7E21   521            db '.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJ'
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+16BC 4B4C4D4E   522            db 'KLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrs'
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+16F8 74757677   523            db 'tuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789a'
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+1734 62636465   524            db 'bcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*'
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+1770 28295F2D   525            db '()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRS'
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+17AC 54555657   526            db 'TUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzAB'
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+17E8 43444546   527            db 'CDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghij'
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+1824 6B6C6D6F   528            db 'klmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012'
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+1860 33343536   529            db '3456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.'
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+189C 3F7E2140   530            db '?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJK'
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+18D8 4C4D4E4F   531            db 'LMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrst'
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+1914 75767778   532            db 'uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789ab'
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+1950 63646566   533            db 'cdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*('
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+198C 295F2D2B   534            db ')_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRST'
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+19C8 55565758   535            db 'UVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABC'
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+1A04 44454647   536            db 'DEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijk'
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+1A40 6C6D6F70   537            db 'lmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123'
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+1A7C 34353637   538            db '456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?'
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+1AB8 7E214023   539            db '~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKL'
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+1AF4 4D4E4F50   540            db 'MNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstu'
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+1B30 76777879   541            db 'vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abc'
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+1B6C 64656667   542            db 'defghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()'
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+1BA8 5F2D2B3D   543            db '_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU'
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+1BE4 56575859   544            db 'VWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCD'
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+1C20 45464748   545            db 'EFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijkl'
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+1C5C 6D6F7071   546            db 'mopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234'
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+1C98 35363738   547            db '56789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~'
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+1CD4 21402324   548            db '!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLM'
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+1D10 4E4F5051   549            db 'NOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuv'
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+1D4C 7778797A   550            db 'wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcd'
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+1D88 65666768   551            db 'efghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_'
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+1DC4 2D2B3D30   552            db '-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV'
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+1E00 5758595A   553            db 'WXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDE'
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+1E3C 46474849   554            db 'FGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklm'
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+1E78 6F707172   555            db 'opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345'
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+1EB4 36373839   556            db '6789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!'
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+1EF0 4023245E   557            db '@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMN'
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+1F2C 4F505152   558            db 'OPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvw'
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+1F68 78797A41   559            db 'xyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcde'
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+1FA4 66676869   560            db 'fghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-'
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+1FE0 2B3D3031   561            db '+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW'
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+201C 58595A2C   562            db 'XYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEF'
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+2058 4748494A   563            db 'GHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmo'
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+2094 70717273   564            db 'pqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456'
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+20D0 37383961   565            db '789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@'
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+210C 23245E2A   566            db '#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNO'
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+2148 50515253   567            db 'PQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwx'
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+2184 797A4142   568            db 'yzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdef'
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+21C0 6768696A   569            db 'ghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+'
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+21FC 3D303132   570            db '=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX'
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+2238 595A2C2E   571            db 'YZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFG'
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+2274 48494A4B   572            db 'HIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmop'
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+22B0 71727374   573            db 'qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234567'
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+22EC 38396162   574            db '89abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#'
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+2328 245E2A28   575            db '$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOP'
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+2364 51525354   576            db 'QRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxy'
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+23A0 7A414243   577            db 'zABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefg'
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+23DC 68696A6B   578            db 'hijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+='
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+2418 30313233   579            db '0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY'
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+2454 5A2C2E3F   580            db 'Z,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGH'
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+2490 494A4B4C   581            db 'IJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopq'
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+24CC 72737475   582            db 'rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345678'
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+2508 39616263   583            db '9abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$'
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+2544 5E2A2829   584            db '^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQ'
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+2580 52535455   585            db 'RSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyz'
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+25BC 41424344   586            db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefgh'
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+25F8 696A6B6C   587            db 'ijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0'
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+2634 31323334   588            db '123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+2670 2C2E3F7E   589            db ',.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHI'
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+26AC 4A4B4C4D   590            db 'JKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqr'
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+26E8 73747576   591            db 'stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789'
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+2724 61626364   592            db 'abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^'
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+2760 2A28295F   593            db '*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQR'
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+279C 53545556   594            db 'STUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzA'
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+27D8 42434445   595            db 'BCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghi'
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+2814 6A6B6C6D   596            db 'jklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01'
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+2850 32333435   597            db '23456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,'
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+288C 2E3F7E21   598            db '.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJ'
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+28C8 4B4C4D4E   599            db 'KLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrs'
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+2904 74757677   600            db 'tuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789a'
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+2940 62636465   601            db 'bcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*'
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+297C 28295F2D   602            db '()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRS'
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+29B8 54555657   603            db 'TUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzAB'
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+29F4 43444546   604            db 'CDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghij'
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+2A30 6B6C6D6F   605            db 'klmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012'
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+2A6C 33343536   606            db '3456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.'
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+2AA8 3F7E2140   607            db '?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJK'
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+2AE4 4C4D4E4F   608            db 'LMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrst'
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+2B20 75767778   609            db 'uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789ab'
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+2B5C 63646566   610            db 'cdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*('
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+2B98 295F2D2B   611            db ')_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRST'
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+2BD4 55565758   612            db 'UVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABC'
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+2C10 44454647   613            db 'DEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijk'
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+2C4C 6C6D6F70   614            db 'lmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123'
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+2C88 34353637   615            db '456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?'
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+2CC4 7E214023   616            db '~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKL'
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+2D00 4D4E4F50   617            db 'MNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstu'
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+2D3C 76777879   618            db 'vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abc'
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+2D78 64656667   619            db 'defghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()'
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+2DB4 5F2D2B3D   620            db '_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU'
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+2DF0 56575859   621            db 'VWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCD'
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+2E2C 45464748   622            db 'EFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijkl'
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+2E68 6D6F7071   623            db 'mopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234'
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+2EA4 35363738   624            db '56789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~'
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+2EE0 21402324   625            db '!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLM'
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+2F1C 4E4F5051   626            db 'NOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuv'
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+2F58 7778797A   627            db 'wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcd'
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+2F94 65666768   628            db 'efghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_'
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+2FD0 2D2B3D30   629            db '-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV'
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+300C 5758595A   630            db 'WXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDE'
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+3048 46474849   631            db 'FGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklm'
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+3084 6F707172   632            db 'opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345'
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+30C0 36373839   633            db '6789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!'
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+30FC 4023245E   634            db '@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMN'
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+3138 4F505152   635            db 'OPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvw'
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+3174 78797A41   636            db 'xyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcde'
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+31B0 66676869   637            db 'fghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-'
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+31EC 2B3D3031   638            db '+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW'
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+3228 58595A2C   639            db 'XYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEF'
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+3264 4748494A   640            db 'GHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmo'
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+32A0 70717273   641            db 'pqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456'
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+32DC 37383961   642            db '789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@'
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+3318 23245E2A   643            db '#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNO'
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+3354 50515253   644            db 'PQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwx'
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+3390 797A4142   645            db 'yzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdef'
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+33CC 6768696A   646            db 'ghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+'
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+3408 3D303132   647            db '=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX'
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+3444 595A2C2E   648            db 'YZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFG'
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+3480 48494A4B   649            db 'HIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmop'
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+34BC 71727374   650            db 'qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234567'
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+34F8 38396162   651            db '89abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#'
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+3534 245E2A28   652            db '$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOP'
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+3570 51525354   653            db 'QRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxy'
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+35AC 7A414243   654            db 'zABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefg'
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+35E8 68696A6B   655            db 'hijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+='
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+3624 30313233   656            db '0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY'
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+3660 5A2C2E3F   657            db 'Z,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGH'
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+369C 494A4B4C   658            db 'IJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopq'
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+36D8 72737475   659            db 'rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345678'
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+3714 39616263   660            db '9abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$'
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+3750 5E2A2829   661            db '^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQ'
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+378C 52535455   662            db 'RSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyz'
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+37C8 41424344   663            db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefgh'
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+3804 696A6B6C   664            db 'ijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0'
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+3840 31323334   665            db '123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+387C 2C2E3F7E   666            db ',.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHI'
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+38B8 4A4B4C4D   667            db 'JKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqr'
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+38F4 73747576   668            db 'stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789'
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+3930 61626364   669            db 'abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^'
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+396C 2A28295F   670            db '*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQR'
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+39A8 53545556   671            db 'STUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzA'
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+39E4 42434445   672            db 'BCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghi'
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+3A20 6A6B6C6D   673            db 'jklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01'
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+3A5C 32333435   674            db '23456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,'
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+3A98 2E3F7E21   675            db '.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJ'
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+3AD4 4B4C4D4E   676            db 'KLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrs'
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+3B10 74757677   677            db 'tuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789a'
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+3B4C 62636465   678            db 'bcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*'
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+3B88 28295F2D   679            db '()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRS'
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+3BC4 54555657   680            db 'TUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzAB'
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+3C00 43444546   681            db 'CDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghij'
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+3C3C 6B6C6D6F   682            db 'klmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012'
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+3C78 33343536   683            db '3456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.'
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+3CB4 3F7E2140   684            db '?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJK'
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+3CF0 4C4D4E4F   685            db 'LMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrst'
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+3D2C 75767778   686            db 'uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789ab'
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+3D68 63646566   687            db 'cdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*('
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+3DA4 295F2D2B   688            db ')_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRST'
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+3DE0 55565758   689            db 'UVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABC'
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+3E1C 44454647   690            db 'DEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijk'
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+3E58 6C6D6F70   691            db 'lmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123'
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+3E94 34353637   692            db '456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?'
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+3ED0 7E214023   693            db '~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKL'
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+3F0C 4D4E4F50   694            db 'MNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstu'
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+3F48 76777879   695            db 'vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abc'
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+3F84 64656667   696            db 'defghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()'
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+3FC0 5F2D2B3D   697            db '_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU'
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+3FFC 56575859   698            db 'VWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCD'
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+4038 45464748   699            db 'EFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijkl'
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+4074 6D6F7071   700            db 'mopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234'
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+40B0 35363738   701            db '56789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~'
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+40EC 21402324   702            db '!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLM'
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+4128 4E4F5051   703            db 'NOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuv'
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+4164 7778797A   704            db 'wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcd'
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+41A0 65666768   705            db 'efghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_'
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+41DC 2D2B3D30   706            db '-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV'
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+4218 5758595A   707            db 'WXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDE'
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+4254 46474849   708            db 'FGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklm'
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+4290 6F707172   709            db 'opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345'
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+42CC 36373839   710            db '6789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!'
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+4308 4023245E   711            db '@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMN'
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+4344 4F505152   712            db 'OPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvw'
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+4380 78797A41   713            db 'xyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcde'
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+43BC 66676869   714            db 'fghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-'
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+43F8 2B3D3031   715            db '+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW'
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+4434 58595A2C   716            db 'XYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEF'
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+4470 4748494A   717            db 'GHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmo'
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+44AC 70717273   718            db 'pqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456'
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+44E8 37383961   719            db '789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@'
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+4524 23245E2A   720            db '#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNO'
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+4560 50515253   721            db 'PQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwx'
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+459C 797A4142   722            db 'yzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdef'
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+45D8 6768696A   723            db 'ghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+'
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+4614 3D303132   724            db '=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX'
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+4650 595A2C2E   725            db 'YZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFG'
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+468C 48494A4B   726            db 'HIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmop'
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+46C8 71727374   727            db 'qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234567'
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+4704 38396162   728            db '89abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#'
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+4740 245E2A28   729            db '$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOP'
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+477C 51525354   730            db 'QRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxy'
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+47B8 7A414243   731            db 'zABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefg'
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+47F4 68696A6B   732            db 'hijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+='
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+4830 30313233   733            db '0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY'
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+486C 5A2C2E3F   734            db 'Z,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGH'
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+48A8 494A4B4C   735            db 'IJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopq'
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+48E4 72737475   736            db 'rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345678'
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+4920 39616263   737            db '9abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$'
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+495C 5E2A2829   738            db '^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQ'
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+4998 52535455   739            db 'RSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyz'
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+49D4 41424344   740            db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefgh'
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+4A10 696A6B6C   741            db 'ijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0'
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+4A4C 31323334   742            db '123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+4A88 2C2E3F7E   743            db ',.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHI'
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+4AC4 4A4B4C4D   744            db 'JKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqr'
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+4B00 73747576   745            db 'stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789'
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+4B3C 61626364   746            db 'abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^'
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+4B78 2A28295F   747            db '*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQR'
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+4BB4 53545556   748            db 'STUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzA'
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+4BF0 42434445   749            db 'BCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghi'
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+4C2C 6A6B6C6D   750            db 'jklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01'
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+4C68 32333435   751            db '23456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,'
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+4CA4 2E3F7E21   752            db '.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJ'
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+4CE0 4B4C4D4E   753            db 'KLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrs'
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+4D1C 74757677   754            db 'tuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789a'
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+4D58 62636465   755            db 'bcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*'
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+4D94 28295F2D   756            db '()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRS'
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+4DD0 54555657   757            db 'TUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzAB'
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+4E0C 43444546   758            db 'CDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghij'
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+4E48 6B6C6D6F   759            db 'klmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012'
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+4E84 33343536   760            db '3456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.'
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+4EC0 3F7E2140   761            db '?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJK'
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+4EFC 4C4D4E4F   762            db 'LMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrst'
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+4F38 75767778   763            db 'uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789ab'
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+4F74 63646566   764            db 'cdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*('
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+4FB0 295F2D2B   765            db ')_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRST'
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+4FEC 55565758   766            db 'UVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABC'
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+5028 44454647   767            db 'DEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijk'
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+5064 6C6D6F70   768            db 'lmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123'
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+50A0 34353637   769            db '456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?'
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+50DC 7E214023   770            db '~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKL'
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+5118 4D4E4F50   771            db 'MNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstu'
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+5154 76777879   772            db 'vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abc'
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+5190 64656667   773            db 'defghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()'
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+51CC 5F2D2B3D   774            db '_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU'
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+5208 56575859   775            db 'VWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCD'
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+5244 45464748   776            db 'EFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijkl'
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+5280 6D6F7071   777            db 'mopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234'
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+52BC 35363738   778            db '56789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~'
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+52F8 21402324   779            db '!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLM'
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+5334 4E4F5051   780            db 'NOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuv'
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+5370 7778797A   781            db 'wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcd'
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+53AC 65666768   782            db 'efghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_'
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+53E8 2D2B3D30   783            db '-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV'
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+5424 5758595A   784            db 'WXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDE'
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+5460 46474849   785            db 'FGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklm'
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+549C 6F707172   786            db 'opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345'
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+54D8 36373839   787            db '6789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!'
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+5514 4023245E   788            db '@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMN'
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+5550 4F505152   789            db 'OPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvw'
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+558C 78797A41   790            db 'xyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcde'
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+55C8 66676869   791            db 'fghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-'
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+5604 2B3D3031   792            db '+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW'
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+5640 58595A2C   793            db 'XYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEF'
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+567C 4748494A   794            db 'GHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmo'
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+56B8 70717273   795            db 'pqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456'
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+56F4 37383961   796            db '789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@'
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+5730 23245E2A   797            db '#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNO'
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+576C 50515253   798            db 'PQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwx'
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+57A8 797A4142   799            db 'yzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdef'
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+57E4 6768696A   800            db 'ghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+'
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+5820 3D303132   801            db '=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX'
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+585C 595A2C2E   802            db 'YZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFG'
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+5898 48494A4B   803            db 'HIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmop'
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+58D4 71727374   804            db 'qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234567'
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+5910 38396162   805            db '89abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#'
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+594C 245E2A28   806            db '$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOP'
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+5988 51525354   807            db 'QRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxy'
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+59C4 7A414243   808            db 'zABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefg'
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+5A00 68696A6B   809            db 'hijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+='
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+5A3C 30313233   810            db '0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY'
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+5A78 5A2C2E3F   811            db 'Z,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGH'
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+5AB4 494A4B4C   812            db 'IJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopq'
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+5AF0 72737475   813            db 'rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345678'
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+5B2C 39616263   814            db '9abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$'
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+5B68 5E2A2829   815            db '^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQ'
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+5BA4 52535455   816            db 'RSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyz'
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+5BE0 41424344   817            db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefgh'
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+5C1C 696A6B6C   818            db 'ijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0'
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+5C58 31323334   819            db '123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+5C94 2C2E3F7E   820            db ',.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHI'
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+5CD0 4A4B4C4D   821            db 'JKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqr'
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+5D0C 73747576   822            db 'stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789'
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+5D48 61626364   823            db 'abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^'
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+5D84 2A28295F   824            db '*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQR'
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+5DC0 53545556   825            db 'STUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzA'
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+5DFC 42434445   826            db 'BCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghi'
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+5E38 6A6B6C6D   827            db 'jklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01'
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+5E74 32333435   828            db '23456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,'
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+5EB0 2E3F7E21   829            db '.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJ'
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+5EEC 4B4C4D4E   830            db 'KLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrs'
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+5F28 74757677   831            db 'tuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789a'
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+5F64 62636465   832            db 'bcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*'
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+5FA0 28295F2D   833            db '()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRS'
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+5FDC 54555657   834            db 'TUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzAB'
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+6018 43444546   835            db 'CDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghij'
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+6054 6B6C6D6F   836            db 'klmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012'
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+6090 33343536   837            db '3456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.'
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+60CC 3F7E2140   838            db '?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJK'
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+6108 4C4D4E4F   839            db 'LMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrst'
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+6144 75767778   840            db 'uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789ab'
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+6180 63646566   841            db 'cdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*('
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+61BC 295F2D2B   842            db ')_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRST'
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+61F8 55565758   843            db 'UVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABC'
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+6234 44454647   844            db 'DEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijk'
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+6270 6C6D6F70   845            db 'lmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123'
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+62AC 34353637   846            db '456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?'
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+62E8 7E214023   847            db '~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKL'
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+6324 4D4E4F50   848            db 'MNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstu'
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+6360 76777879   849            db 'vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abc'
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+639C 64656667   850            db 'defghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()'
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+63D8 5F2D2B3D   851            db '_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU'
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+6414 56575859   852            db 'VWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCD'
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+6450 45464748   853            db 'EFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijkl'
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+648C 6D6F7071   854            db 'mopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234'
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+64C8 35363738   855            db '56789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~'
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+6504 21402324   856            db '!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLM'
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+6540 4E4F5051   857            db 'NOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuv'
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+657C 7778797A   858            db 'wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcd'
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+65B8 65666768   859            db 'efghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_'
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+65F4 2D2B3D30   860            db '-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV'
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+6630 5758595A   861            db 'WXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDE'
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+666C 46474849   862            db 'FGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklm'
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+66A8 6F707172   863            db 'opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345'
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+66E4 36373839   864            db '6789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!'
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+6720 4023245E   865            db '@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMN'
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+675C 4F505152   866            db 'OPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvw'
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+6798 78797A41   867            db 'xyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcde'
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+67D4 66676869   868            db 'fghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-'
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+6810 2B3D3031   869            db '+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW'
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+684C 58595A2C   870            db 'XYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEF'
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+6888 4748494A   871            db 'GHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmo'
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+68C4 70717273   872            db 'pqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456'
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+6900 37383961   873            db '789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@'
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+693C 23245E2A   874            db '#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNO'
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+6978 50515253   875            db 'PQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwx'
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+69B4 797A4142   876            db 'yzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdef'
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+69F0 6768696A   877            db 'ghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+'
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+6A2C 3D303132   878            db '=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX'
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+6A68 595A2C2E   879            db 'YZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFG'
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+6AA4 48494A4B   880            db 'HIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmop'
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+6AE0 71727374   881            db 'qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234567'
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+6B1C 38396162   882            db '89abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#'
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+6B58 245E2A28   883            db '$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOP'
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+6B94 51525354   884            db 'QRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxy'
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+6BD0 7A414243   885            db 'zABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefg'
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+6C0C 68696A6B   886            db 'hijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+='
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+6C48 30313233   887            db '0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY'
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+6C84 5A2C2E3F   888            db 'Z,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGH'
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+6CC0 494A4B4C   889            db 'IJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopq'
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+6CFC 72737475   890            db 'rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012345678'
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+6D38 39616263   891            db '9abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$'
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+6D74 5E2A2829   892            db '^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQ'
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+6DB0 52535455   893            db 'RSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyz'
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+6DEC 41424344   894            db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefgh'
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+6E28 696A6B6C   895            db 'ijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0'
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+6E64 31323334   896            db '123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+6EA0 2C2E3F7E   897            db ',.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHI'
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+6EDC 4A4B4C4D   898            db 'JKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqr'
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+6F18 73747576   899            db 'stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789'
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+6F54 61626364   900            db 'abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^'
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+6F90 2A28295F   901            db '*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQR'
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+6FCC 53545556   902            db 'STUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzA'
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+7008 42434445   903            db 'BCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghi'
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+7044 6A6B6C6D   904            db 'jklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01'
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+7080 32333435   905            db '23456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,'
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+70BC 2E3F7E21   906            db '.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJ'
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+70F8 4B4C4D4E   907            db 'KLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrs'
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+7134 74757677   908            db 'tuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789a'
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+7170 62636465   909            db 'bcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*'
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+71AC 28295F2D   910            db '()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRS'
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+71E8 54555657   911            db 'TUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzAB'
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+7224 43444546   912            db 'CDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghij'
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+7260 6B6C6D6F   913            db 'klmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=012'
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+729C 33343536   914            db '3456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.'
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+72D8 3F7E2140   915            db '?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJK'
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+7314 4C4D4E4F   916            db 'LMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrst'
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+7350 75767778   917            db 'uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789ab'
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+738C 63646566   918            db 'cdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*('
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+73C8 295F2D2B   919            db ')_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRST'
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+7404 55565758   920            db 'UVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABC'
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+7440 44454647   921            db 'DEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijk'
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+     64656667
+     68696A6B
+747C 6C6D6F70   922            db 'lmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123'
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+     5F2D2B3D
+     30313233
+74B8 34353637   923            db '456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?'
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+     56575859
+     5A2C2E3F
+74F4 7E214023   924            db '~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKL'
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+     45464748
+     494A4B4C
+7530 4D4E4F50   925            db 'MNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstu'
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+     6D6F7071
+     72737475
+756C 76777879   926            db 'vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abc'
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+     35363738
+     39616263
+75A8 64656667   927            db 'defghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()'
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+     21402324
+     5E2A2829
+75E4 5F2D2B3D   928            db '_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU'
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+     4E4F5051
+     52535455
+7620 56575859   929            db 'VWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCD'
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+     7778797A
+     41424344
+765C 45464748   930            db 'EFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijkl'
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+     65666768
+     696A6B6C
+7698 6D6F7071   931            db 'mopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=01234'
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+     2D2B3D30
+     31323334
+76D4 35363738   932            db '56789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~'
+     39616263
+     64656667
+     68696A6B
+     6C6D6F70
+     71727374
+     75767778
+     797A4142
+     43444546
+     4748494A
+     4B4C4D4E
+     4F505152
+     53545556
+     5758595A
+     2C2E3F7E
+7710 21402324   933            db '!@#$^*()_-+=0123456789abcdefghijklmopqrstuvwxyzABCDEFGHIJKLM'
+     5E2A2829
+     5F2D2B3D
+     30313233
+     34353637
+     38396162
+     63646566
+     6768696A
+     6B6C6D6F
+     70717273
+     74757677
+     78797A41
+     42434445
+     46474849
+     4A4B4C4D
+774C 4E4F5051   934            db 'NOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcdefghijklmopqrstuv'
+     52535455
+     56575859
+     5A2C2E3F
+     7E214023
+     245E2A28
+     295F2D2B
+     3D303132
+     33343536
+     37383961
+     62636465
+     66676869
+     6A6B6C6D
+     6F707172
+     73747576
+7788 7778797A   935            db 'wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_-+=0123456789abcd'
+     41424344
+     45464748
+     494A4B4C
+     4D4E4F50
+     51525354
+     55565758
+     595A2C2E
+     3F7E2140
+     23245E2A
+     28295F2D
+     2B3D3031
+     32333435
+     36373839
+     61626364
+77C4 65666768   936            db 'efghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.?~!@#$^*()_'
+     696A6B6C
+     6D6F7071
+     72737475
+     76777879
+     7A414243
+     44454647
+     48494A4B
+     4C4D4E4F
+     50515253
+     54555657
+     58595A2C
+     2E3F7E21
+     4023245E
+     2A28295F
+7800 2D2B3D     937            db '-+='
+7803 00         938            db 0x00
+7804            939   __str_0:
+7804 56657279   940            db 'Very large hex file test.'
+     206C6172
+     67652068
+     65782066
+     696C6520
+     74657374
+     2E
+781D 0D         941            db 0x0D
+781E 0A         942            db 0x0A
+781F 00         943            db 0x00
+7820            944   
+0003            945            CSEG
+0003            946   
+0003            947   end

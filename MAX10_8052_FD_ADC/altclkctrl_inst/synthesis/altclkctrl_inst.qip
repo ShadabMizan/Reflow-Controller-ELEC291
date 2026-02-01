@@ -1,0 +1,39 @@
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_TOOL_NAME "Qsys"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_TOOL_VERSION "16.1"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -library "altclkctrl_inst" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../altclkctrl_inst.sopcinfo"]
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name SLD_INFO "QSYS_NAME altclkctrl_inst HAS_SOPCINFO 1 GENERATION_ID 1727667745"
+set_global_assignment -library "altclkctrl_inst" -name MISC_FILE [file join $::quartus(qip_path) "../altclkctrl_inst.cmp"]
+set_global_assignment -library "altclkctrl_inst" -name SLD_FILE [file join $::quartus(qip_path) "altclkctrl_inst.debuginfo"]
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_TARGETED_DEVICE_FAMILY "MAX 10"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_GENERATED_DEVICE_FAMILY "{MAX 10}"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_QSYS_MODE "STANDALONE"
+set_global_assignment -name SYNTHESIS_ONLY_QIP ON
+set_global_assignment -library "altclkctrl_inst" -name MISC_FILE [file join $::quartus(qip_path) "../../altclkctrl_inst.qsys"]
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_NAME "YWx0Y2xrY3RybF9pbnN0"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_DISPLAY_NAME "YWx0Y2xrY3RybF9pbnN0"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_REPORT_HIERARCHY "On"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_VERSION "MS4w"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTcyNzY2Nzc0NQ==::QXV0byBHRU5FUkFUSU9OX0lE"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::TUFYIDEw::QXV0byBERVZJQ0VfRkFNSUxZ"
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0U=::MTBNNTBEQUY0ODRDN0c=::QXV0byBERVZJQ0U="
+set_global_assignment -entity "altclkctrl_inst" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfU1BFRURHUkFERQ==::Nw==::QXV0byBERVZJQ0VfU1BFRURHUkFERQ=="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_NAME "YWx0Y2xrY3RybF9pbnN0X2FsdGNsa2N0cmxfMA=="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_DISPLAY_NAME "QUxUQ0xLQ1RSTA=="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_VERSION "MTYuMQ=="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "REVWSUNFX0ZBTUlMWQ==::TUFYIDEw::RGV2aWNlIEZhbWlseQ=="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "Q0xPQ0tfVFlQRQ==::MQ==::SG93IGRvIHlvdSB3YW50IHRvIHVzZSB0aGUgQUxUQ0xLQ1RSTD8="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "TlVNQkVSX09GX0NMT0NLUw==::MQ==::SG93IG1hbnkgY2xvY2sgaW5wdXRzIHdvdWxkIHlvdSBsaWtlPw=="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "R1VJX1VTRV9FTkE=::dHJ1ZQ==::Q3JlYXRlICdlbmEnIHBvcnQgdG8gZW5hYmxlIG9yIGRpc2FibGUgdGhlIGNsb2NrIG5ldHdvcmsgZHJpdmVuIGJ5IHRoaXMgYnVmZmVyPw=="
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_COMPONENT_PARAMETER "VVNFX0dMSVRDSF9GUkVFX1NXSVRDSF9PVkVSX0lNUExFTUVOVEFUSU9O::ZmFsc2U=::RW5zdXJlIGdsaXRjaC1mcmVlIHN3aXRjaG92ZXIgaW1wbGVtZW50YXRpb24="
+
+set_global_assignment -library "altclkctrl_inst" -name VHDL_FILE [file join $::quartus(qip_path) "altclkctrl_inst.vhd"]
+set_global_assignment -library "altclkctrl_inst" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altclkctrl_inst_altclkctrl_0.v"]
+
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_TOOL_NAME "altclkctrl"
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_TOOL_VERSION "16.1"
+set_global_assignment -entity "altclkctrl_inst_altclkctrl_0" -library "altclkctrl_inst" -name IP_TOOL_ENV "Qsys"

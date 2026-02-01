@@ -1,0 +1,8 @@
+                  2   $LIST
+0000 758EE1       4            mov hex4, #0xe1
+0003 759486       5            mov hex3, #0x86
+0006 759392       6            mov hex2, #0x92
+0009 7592C1       7            mov hex1, #0xc1
+000C 759192       8            mov hex0, #0x92
+000F 80FE         9            sjmp $
+0011             10   en

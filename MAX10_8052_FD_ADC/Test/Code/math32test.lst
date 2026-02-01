@@ -1,0 +1,401 @@
+0000              1   ; math32test.asm:  Examples using math32.asm routines
+0000              2   
+                 -1   $MODMAX10
+0000              1   ;--------------------------------------------------------
+0000              2   ; Special Function Registers
+0000              3   ;--------------------------------------------------------
+0000              4   P0             DATA 0x80
+0000              5   SP             DATA 0x81
+0000              6   DPL            DATA 0x82
+0000              7   DPH            DATA 0x83
+0000              8   PCON           DATA 0x87
+0000              9   TCON           DATA 0x88
+0000             10   TMOD           DATA 0x89
+0000             11   TL0            DATA 0x8a
+0000             12   TL1            DATA 0x8b
+0000             13   TH0            DATA 0x8c
+0000             14   TH1            DATA 0x8d
+0000             15   P1             DATA 0x90
+0000             16   SCON           DATA 0x98
+0000             17   SBUF           DATA 0x99
+0000             18   P2             DATA 0xa0
+0000             19   IE             DATA 0xa8
+0000             20   P3             DATA 0xb0
+0000             21   IP             DATA 0xb8
+0000             22   PSW            DATA 0xd0
+0000             23   ACC            DATA 0xe0
+0000             24   B              DATA 0xf0
+0000             25   T2CON          DATA 0xc8
+0000             26   RCAP2L         DATA 0xca
+0000             27   RCAP2H         DATA 0xcb
+0000             28   TL2            DATA 0xcc
+0000             29   TH2            DATA 0xcd
+0000             30   DPS            DATA 0x86
+0000             31   DPH1           DATA 0x85
+0000             32   DPL1           DATA 0x84
+0000             33   HEX0           DATA 0x91
+0000             34   HEX1           DATA 0x92
+0000             35   HEX2           DATA 0x93
+0000             36   HEX3           DATA 0x94
+0000             37   HEX4           DATA 0x8e
+0000             38   HEX5           DATA 0x8f
+0000             39   LEDRA          DATA 0xe8
+0000             40   LEDRB          DATA 0x95
+0000             41   SWA            DATA 0xe8
+0000             42   SWB            DATA 0x95
+0000             43   KEY            DATA 0xf8
+0000             44   P0MOD          DATA 0x9a
+0000             45   P1MOD          DATA 0x9b
+0000             46   P2MOD          DATA 0x9c
+0000             47   P3MOD          DATA 0x9d
+0000             48   REP_ADD_L      DATA 0xf1
+0000             49   REP_ADD_H      DATA 0xf2
+0000             50   REP_VALUE      DATA 0xf3
+0000             51   DEBUG_CALL_L   DATA 0xfa
+0000             52   DEBUG_CALL_H   DATA 0xfb
+0000             53   BPC            DATA 0xfc
+0000             54   BPS            DATA 0xfd
+0000             55   BPAL           DATA 0xfe
+0000             56   BPAH           DATA 0xff
+0000             57   LBPAL          DATA 0xfa
+0000             58   LBPAH          DATA 0xfb
+0000             59   P4             DATA 0xc0
+0000             60   P4MOD          DATA 0xc1
+0000             61   XRAMUSEDAS     DATA 0xc3
+0000             62   UFM_ADD0       DATA 0xe1
+0000             63   UFM_ADD1       DATA 0xe2
+0000             64   UFM_ADD2       DATA 0xe3
+0000             65   UFM_DATA0      DATA 0xe4
+0000             66   UFM_DATA1      DATA 0xe5
+0000             67   UFM_DATA2      DATA 0xe6
+0000             68   UFM_DATA3      DATA 0xe7
+0000             69   UFM_CONTROL0   DATA 0xe9
+0000             70   UFM_CONTROL1   DATA 0xea
+0000             71   UFM_CONTROL2   DATA 0xeb
+0000             72   UFM_CONTROL3   DATA 0xec
+0000             73   UFM_DATA_CMD   DATA 0xed
+0000             74   UFM_DATA_STATUS DATA 0xee
+0000             75   UFM_CONTROL_CMD DATA 0xef
+0000             76   
+0000             77   ;--------------------------------------------------------
+0000             78   ; special function bits
+0000             79   ;--------------------------------------------------------
+0000             80   P0_0           BIT 0x80
+0000             81   P0_1           BIT 0x81
+0000             82   P0_2           BIT 0x82
+0000             83   P0_3           BIT 0x83
+0000             84   P0_4           BIT 0x84
+0000             85   P0_5           BIT 0x85
+0000             86   P0_6           BIT 0x86
+0000             87   P0_7           BIT 0x87
+0000             88   IT0            BIT 0x88
+0000             89   IE0            BIT 0x89
+0000             90   IT1            BIT 0x8a
+0000             91   IE1            BIT 0x8b
+0000             92   TR0            BIT 0x8c
+0000             93   TF0            BIT 0x8d
+0000             94   TR1            BIT 0x8e
+0000             95   TF1            BIT 0x8f
+0000             96   P1_0           BIT 0x90
+0000             97   P1_1           BIT 0x91
+0000             98   P1_2           BIT 0x92
+0000             99   P1_3           BIT 0x93
+0000            100   P1_4           BIT 0x94
+0000            101   P1_5           BIT 0x95
+0000            102   P1_6           BIT 0x96
+0000            103   P1_7           BIT 0x97
+0000            104   RI             BIT 0x98
+0000            105   TI             BIT 0x99
+0000            106   RB8            BIT 0x9a
+0000            107   TB8            BIT 0x9b
+0000            108   REN            BIT 0x9c
+0000            109   SM2            BIT 0x9d
+0000            110   SM1            BIT 0x9e
+0000            111   SM0            BIT 0x9f
+0000            112   P2_0           BIT 0xa0
+0000            113   P2_1           BIT 0xa1
+0000            114   P2_2           BIT 0xa2
+0000            115   P2_3           BIT 0xa3
+0000            116   P2_4           BIT 0xa4
+0000            117   P2_5           BIT 0xa5
+0000            118   P2_6           BIT 0xa6
+0000            119   P2_7           BIT 0xa7
+0000            120   EX0            BIT 0xa8
+0000            121   ET0            BIT 0xa9
+0000            122   EX1            BIT 0xaa
+0000            123   ET1            BIT 0xab
+0000            124   ES             BIT 0xac
+0000            125   ET2            BIT 0xad
+0000            126   EA             BIT 0xaf
+0000            127   P3_0           BIT 0xb0
+0000            128   P3_1           BIT 0xb1
+0000            129   P3_2           BIT 0xb2
+0000            130   P3_3           BIT 0xb3
+0000            131   P3_4           BIT 0xb4
+0000            132   P3_5           BIT 0xb5
+0000            133   P3_6           BIT 0xb6
+0000            134   P3_7           BIT 0xb7
+0000            135   RXD            BIT 0xb0
+0000            136   TXD            BIT 0xb1
+0000            137   INT0           BIT 0xb2
+0000            138   INT1           BIT 0xb3
+0000            139   T0             BIT 0xb4
+0000            140   T1             BIT 0xb5
+0000            141   WR             BIT 0xb6
+0000            142   RD             BIT 0xb7
+0000            143   PX0            BIT 0xb8
+0000            144   PT0            BIT 0xb9
+0000            145   PX1            BIT 0xba
+0000            146   PT1            BIT 0xbb
+0000            147   PS             BIT 0xbc
+0000            148   PT2            BIT 0xbd
+0000            149   P              BIT 0xd0
+0000            150   F1             BIT 0xd1
+0000            151   OV             BIT 0xd2
+0000            152   RS0            BIT 0xd3
+0000            153   RS1            BIT 0xd4
+0000            154   F0             BIT 0xd5
+0000            155   AC             BIT 0xd6
+0000            156   CY             BIT 0xd7
+0000            157   T2CON_0        BIT 0xc8
+0000            158   T2CON_1        BIT 0xc9
+0000            159   T2CON_2        BIT 0xca
+0000            160   T2CON_3        BIT 0xcb
+0000            161   T2CON_4        BIT 0xcc
+0000            162   T2CON_5        BIT 0xcd
+0000            163   T2CON_6        BIT 0xce
+0000            164   T2CON_7        BIT 0xcf
+0000            165   CP_RL2         BIT 0xc8
+0000            166   C_T2           BIT 0xc9
+0000            167   TR2            BIT 0xca
+0000            168   EXEN2          BIT 0xcb
+0000            169   TCLK           BIT 0xcc
+0000            170   RCLK           BIT 0xcd
+0000            171   EXF2           BIT 0xce
+0000            172   TF2            BIT 0xcf
+0000            173   LEDRA_0        BIT 0xe8
+0000            174   LEDRA_1        BIT 0xe9
+0000            175   LEDRA_2        BIT 0xea
+0000            176   LEDRA_3        BIT 0xeb
+0000            177   LEDRA_4        BIT 0xec
+0000            178   LEDRA_5        BIT 0xed
+0000            179   LEDRA_6        BIT 0xee
+0000            180   LEDRA_7        BIT 0xef
+0000            181   SWA_0          BIT 0xe8
+0000            182   SWA_1          BIT 0xe9
+0000            183   SWA_2          BIT 0xea
+0000            184   SWA_3          BIT 0xeb
+0000            185   SWA_4          BIT 0xec
+0000            186   SWA_5          BIT 0xed
+0000            187   SWA_6          BIT 0xee
+0000            188   SWA_7          BIT 0xef
+0000            189   KEY_0          BIT 0xf8
+0000            190   KEY_1          BIT 0xf9
+0000            191   KEY_2          BIT 0xfa
+0000            192   KEY_3          BIT 0xfb
+0000            193   P4_0           BIT 0xc0
+0000            194   P4_1           BIT 0xc1
+0000            195   P4_2           BIT 0xc2
+0000            196   P4_3           BIT 0xc3
+0000            197   P4_4           BIT 0xc4
+0000            198   P4_5           BIT 0xc5
+0000            199   P4_6           BIT 0xc6
+0000            200   P4_7           BIT 0xc7
+0000              4   org 0000H
+0000 0202DD       5      ljmp MyProgram
+0003              6   
+0030              7   dseg at 30h
+0030              8   
+0030              9   x:               ds      4
+0034             10   y:               ds      4
+0038             11   bcd:     ds      5
+003D             12   
+0000             13   bseg
+0000             14   
+0000             15   mf:              dbit 1
+0001             16   
+                 -1   $include(math32.asm)
+                570   $LIST
+0299             18   
+0299             19   CSEG
+0299             20   
+0299             21   ; Look-up table for 7-seg displays
+0299             22   T_7seg:
+0299 C0F9A4B0    23       DB 0C0H, 0F9H, 0A4H, 0B0H, 099H
+     99
+029E 9282F880    24       DB 092H, 082H, 0F8H, 080H, 090H
+     90
+02A3 8883        25       DB 088H, 083H
+02A5             26   
+02A5             27   ; An unsigned 32-bit number results in a 10-digit BCD number.
+02A5             28   ; Since there are only six 7-segment displays on the DE0-CV
+02A5             29   ; board, wer are limited to just 6-digits BCD numbers.
+02A5             30   Display_BCD:
+02A5             31            
+02A5 900299      32            mov dptr, #T_7seg
+02A8             33   
+02A8 E53A        34            mov a, bcd+2
+02AA C4          35            swap a
+02AB 540F        36            anl a, #0FH
+02AD 93          37            movc a, @a+dptr
+02AE F58F        38            mov HEX5, a
+02B0             39            
+02B0 E53A        40            mov a, bcd+2
+02B2 540F        41            anl a, #0FH
+02B4 93          42            movc a, @a+dptr
+02B5 F58E        43            mov HEX4, a
+02B7             44            
+02B7 E539        45            mov a, bcd+1
+02B9 C4          46            swap a
+02BA 540F        47            anl a, #0FH
+02BC 93          48            movc a, @a+dptr
+02BD F594        49            mov HEX3, a
+02BF             50            
+02BF E539        51            mov a, bcd+1
+02C1 540F        52            anl a, #0FH
+02C3 93          53            movc a, @a+dptr
+02C4 F593        54            mov HEX2, a
+02C6             55   
+02C6 E538        56            mov a, bcd+0
+02C8 C4          57            swap a
+02C9 540F        58            anl a, #0FH
+02CB 93          59            movc a, @a+dptr
+02CC F592        60            mov HEX1, a
+02CE             61            
+02CE E538        62            mov a, bcd+0
+02D0 540F        63            anl a, #0FH
+02D2 93          64            movc a, @a+dptr
+02D3 F591        65            mov HEX0, a
+02D5             66            
+02D5 22          67            ret
+02D6             68   
+02D6             69   wait_for_key1:
+02D6             70   key1_is_one:
+02D6 20F9FD      71            jb KEY.1, key1_is_one ; loop while the button is not pressed
+02D9             72   key1_is_zero:
+02D9 30F9FD      73            jnb KEY.1, key1_is_zero ; loop while the button is pressed
+02DC 22          74            ret
+02DD             75   
+02DD             76   MyProgram:
+02DD 75817F      77            mov sp, #07FH ; Initialize the stack pointer
+02E0             78   
+02E0             79   Forever:
+02E0             80            ; Turn off all LEDs!
+02E0 E4          81            clr a
+02E1 F5E8        82            mov LEDRA, a
+02E3 F595        83            mov LEDRB, a
+02E5             84            
+02E5             85            ; Try multiplying 123 x 4567 = 561741
+02E5 75307B      86            mov x+0, #low(123)
+02E8 753100      87            mov x+1, #high(123)
+02EB 753200      88            mov x+2, #0
+02EE 753300      89            mov x+3, #0
+02F1 7534D7      90            mov y+0, #low(4567)
+02F4 753511      91            mov y+1, #high(4567)
+02F7 753600      92            mov y+2, #0
+02FA 753700      93            mov y+3, #0
+02FD             94            ; mul32 and hex2bcd are in math32.asm
+02FD 12017D      95            lcall mul32
+0300 120003      96            lcall hex2bcd
+0303             97            ; display the result
+0303 1202A5      98            lcall Display_BCD
+0306 D2E8        99            setb LEDRA.0
+0308            100            
+0308            101            ; Now wait for key1 to be pressed and released so we can see the result.
+0308 1202D6     102            lcall wait_for_key1
+030B            103            
+030B            104            ; There are macros defined in math32.asm that can be used to load constants
+030B            105            ; to variables x and y. The same code above may be written as:
+030B 75307B     106            mov x+0, #low (123 % 0x10000) 
+030E 753100     106            mov x+1, #high(123 % 0x10000) 
+0311 753200     106            mov x+2, #low (123 / 0x10000) 
+0314 753300     106            mov x+3, #high(123 / 0x10000) 
+0317 7534D7     107            mov y+0, #low (4567 % 0x10000) 
+031A 753511     107            mov y+1, #high(4567 % 0x10000) 
+031D 753600     107            mov y+2, #low (4567 / 0x10000) 
+0320 753700     107            mov y+3, #high(4567 / 0x10000) 
+0323 12017D     108            lcall mul32
+0326 120003     109            lcall hex2bcd
+0329 1202A5     110            lcall Display_BCD
+032C D2E9       111            setb LEDRA.1
+032E 1202D6     112            lcall wait_for_key1
+0331            113            
+0331            114            ; Try dividing 561741 / 123 = 4567
+0331 75304D     115            mov x+0, #low (561741 % 0x10000) 
+0334 753192     115            mov x+1, #high(561741 % 0x10000) 
+0337 753208     115            mov x+2, #low (561741 / 0x10000) 
+033A 753300     115            mov x+3, #high(561741 / 0x10000) 
+033D 75347B     116            mov y+0, #low (123 % 0x10000) 
+0340 753500     116            mov y+1, #high(123 % 0x10000) 
+0343 753600     116            mov y+2, #low (123 / 0x10000) 
+0346 753700     116            mov y+3, #high(123 / 0x10000) 
+0349 12020A     117            lcall div32 ; This subroutine is in math32.asm
+034C 120003     118            lcall hex2bcd
+034F 1202A5     119            lcall Display_BCD
+0352 D2EA       120            setb LEDRA.2
+0354 1202D6     121            lcall wait_for_key1
+0357            122   
+0357            123            ; Try adding 1234 + 4567 = 5801
+0357 7530D2     124            mov x+0, #low (1234 % 0x10000) 
+035A 753104     124            mov x+1, #high(1234 % 0x10000) 
+035D 753200     124            mov x+2, #low (1234 / 0x10000) 
+0360 753300     124            mov x+3, #high(1234 / 0x10000) 
+0363 7534D7     125            mov y+0, #low (4567 % 0x10000) 
+0366 753511     125            mov y+1, #high(4567 % 0x10000) 
+0369 753600     125            mov y+2, #low (4567 / 0x10000) 
+036C 753700     125            mov y+3, #high(4567 / 0x10000) 
+036F 1200C8     126            lcall add32 ; This subroutine is in math32.asm
+0372 120003     127            lcall hex2bcd
+0375 1202A5     128            lcall Display_BCD
+0378 D2EB       129            setb LEDRA.3
+037A 1202D6     130            lcall wait_for_key1
+037D            131   
+037D            132            ; Try subtracting 4567 - 1234 = 3333
+037D 7530D7     133            mov x+0, #low (4567 % 0x10000) 
+0380 753111     133            mov x+1, #high(4567 % 0x10000) 
+0383 753200     133            mov x+2, #low (4567 / 0x10000) 
+0386 753300     133            mov x+3, #high(4567 / 0x10000) 
+0389 7534D2     134            mov y+0, #low (1234 % 0x10000) 
+038C 753504     134            mov y+1, #high(1234 % 0x10000) 
+038F 753600     134            mov y+2, #low (1234 / 0x10000) 
+0392 753700     134            mov y+3, #high(1234 / 0x10000) 
+0395 1200E9     135            lcall sub32 ; This subroutine is in math32.asm
+0398 120003     136            lcall hex2bcd
+039B 1202A5     137            lcall Display_BCD
+039E D2EC       138            setb LEDRA.4
+03A0 1202D6     139            lcall wait_for_key1
+03A3            140            
+03A3            141            ; Ok, that was easy.  Try computing the area of circle
+03A3            142            ; with a radius of 23.2.  Remember we are working with
+03A3            143            ; usigned 32-bit integers here, so there is the risk
+03A3            144            ; of overflow, in particular when multiplying big numbers.
+03A3            145            ; One trick you may use: approximate pi to 355/113.
+03A3 7530E8     146            mov x+0, #low (232 % 0x10000) 
+03A6 753100     146            mov x+1, #high(232 % 0x10000) 
+03A9 753200     146            mov x+2, #low (232 / 0x10000) 
+03AC 753300     146            mov x+3, #high(232 / 0x10000) 
+03AF 7534E8     147            mov y+0, #low (232 % 0x10000) 
+03B2 753500     147            mov y+1, #high(232 % 0x10000) 
+03B5 753600     147            mov y+2, #low (232 / 0x10000) 
+03B8 753700     147            mov y+3, #high(232 / 0x10000) 
+03BB 12017D     148            lcall mul32 ; Result is stored in x
+03BE            149            ; Now multiply by pi
+03BE 753463     150            mov y+0, #low (355 % 0x10000) 
+03C1 753501     150            mov y+1, #high(355 % 0x10000) 
+03C4 753600     150            mov y+2, #low (355 / 0x10000) 
+03C7 753700     150            mov y+3, #high(355 / 0x10000) 
+03CA 12017D     151            lcall mul32
+03CD 753471     152            mov y+0, #low (113 % 0x10000) 
+03D0 753500     152            mov y+1, #high(113 % 0x10000) 
+03D3 753600     152            mov y+2, #low (113 / 0x10000) 
+03D6 753700     152            mov y+3, #high(113 / 0x10000) 
+03D9 12020A     153            lcall div32
+03DC 120003     154            lcall hex2bcd
+03DF 1202A5     155            lcall Display_BCD ; result should be 1690.93
+03E2 53937F     156            anl HEX2, #0x7f
+03E5 D2ED       157            setb LEDRA.5
+03E7 1202D6     158            lcall wait_for_key1
+03EA            159            
+03EA 0202E0     160            ljmp Forever
+03ED            161            
+03ED            162   END

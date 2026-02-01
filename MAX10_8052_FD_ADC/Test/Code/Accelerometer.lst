@@ -1,0 +1,467 @@
+                 -1   $MODMAX10
+0000              1   ;--------------------------------------------------------
+0000              2   ; Special Function Registers
+0000              3   ;--------------------------------------------------------
+0000              4   P0             DATA 0x80
+0000              5   SP             DATA 0x81
+0000              6   DPL            DATA 0x82
+0000              7   DPH            DATA 0x83
+0000              8   PCON           DATA 0x87
+0000              9   TCON           DATA 0x88
+0000             10   TMOD           DATA 0x89
+0000             11   TL0            DATA 0x8a
+0000             12   TL1            DATA 0x8b
+0000             13   TH0            DATA 0x8c
+0000             14   TH1            DATA 0x8d
+0000             15   P1             DATA 0x90
+0000             16   SCON           DATA 0x98
+0000             17   SBUF           DATA 0x99
+0000             18   P2             DATA 0xa0
+0000             19   IE             DATA 0xa8
+0000             20   P3             DATA 0xb0
+0000             21   IP             DATA 0xb8
+0000             22   PSW            DATA 0xd0
+0000             23   ACC            DATA 0xe0
+0000             24   B              DATA 0xf0
+0000             25   T2CON          DATA 0xc8
+0000             26   RCAP2L         DATA 0xca
+0000             27   RCAP2H         DATA 0xcb
+0000             28   TL2            DATA 0xcc
+0000             29   TH2            DATA 0xcd
+0000             30   DPS            DATA 0x86
+0000             31   DPH1           DATA 0x85
+0000             32   DPL1           DATA 0x84
+0000             33   HEX0           DATA 0x91
+0000             34   HEX1           DATA 0x92
+0000             35   HEX2           DATA 0x93
+0000             36   HEX3           DATA 0x94
+0000             37   HEX4           DATA 0x8e
+0000             38   HEX5           DATA 0x8f
+0000             39   LEDRA          DATA 0xe8
+0000             40   LEDRB          DATA 0x95
+0000             41   SWA            DATA 0xe8
+0000             42   SWB            DATA 0x95
+0000             43   KEY            DATA 0xf8
+0000             44   P0MOD          DATA 0x9a
+0000             45   P1MOD          DATA 0x9b
+0000             46   P2MOD          DATA 0x9c
+0000             47   P3MOD          DATA 0x9d
+0000             48   REP_ADD_L      DATA 0xf1
+0000             49   REP_ADD_H      DATA 0xf2
+0000             50   REP_VALUE      DATA 0xf3
+0000             51   DEBUG_CALL_L   DATA 0xfa
+0000             52   DEBUG_CALL_H   DATA 0xfb
+0000             53   BPC            DATA 0xfc
+0000             54   BPS            DATA 0xfd
+0000             55   BPAL           DATA 0xfe
+0000             56   BPAH           DATA 0xff
+0000             57   LBPAL          DATA 0xfa
+0000             58   LBPAH          DATA 0xfb
+0000             59   P4             DATA 0xc0
+0000             60   P4MOD          DATA 0xc1
+0000             61   XRAMUSEDAS     DATA 0xc3
+0000             62   UFM_ADD0       DATA 0xe1
+0000             63   UFM_ADD1       DATA 0xe2
+0000             64   UFM_ADD2       DATA 0xe3
+0000             65   UFM_DATA0      DATA 0xe4
+0000             66   UFM_DATA1      DATA 0xe5
+0000             67   UFM_DATA2      DATA 0xe6
+0000             68   UFM_DATA3      DATA 0xe7
+0000             69   UFM_CONTROL0   DATA 0xe9
+0000             70   UFM_CONTROL1   DATA 0xea
+0000             71   UFM_CONTROL2   DATA 0xeb
+0000             72   UFM_CONTROL3   DATA 0xec
+0000             73   UFM_DATA_CMD   DATA 0xed
+0000             74   UFM_DATA_STATUS DATA 0xee
+0000             75   UFM_CONTROL_CMD DATA 0xef
+0000             76   ADC_C          DATA 0xa1
+0000             77   ADC_L          DATA 0xa2
+0000             78   ADC_H          DATA 0xa3
+0000             79   
+0000             80   ;--------------------------------------------------------
+0000             81   ; special function bits
+0000             82   ;--------------------------------------------------------
+0000             83   P0_0           BIT 0x80
+0000             84   P0_1           BIT 0x81
+0000             85   P0_2           BIT 0x82
+0000             86   P0_3           BIT 0x83
+0000             87   P0_4           BIT 0x84
+0000             88   P0_5           BIT 0x85
+0000             89   P0_6           BIT 0x86
+0000             90   P0_7           BIT 0x87
+0000             91   IT0            BIT 0x88
+0000             92   IE0            BIT 0x89
+0000             93   IT1            BIT 0x8a
+0000             94   IE1            BIT 0x8b
+0000             95   TR0            BIT 0x8c
+0000             96   TF0            BIT 0x8d
+0000             97   TR1            BIT 0x8e
+0000             98   TF1            BIT 0x8f
+0000             99   P1_0           BIT 0x90
+0000            100   P1_1           BIT 0x91
+0000            101   P1_2           BIT 0x92
+0000            102   P1_3           BIT 0x93
+0000            103   P1_4           BIT 0x94
+0000            104   P1_5           BIT 0x95
+0000            105   P1_6           BIT 0x96
+0000            106   P1_7           BIT 0x97
+0000            107   RI             BIT 0x98
+0000            108   TI             BIT 0x99
+0000            109   RB8            BIT 0x9a
+0000            110   TB8            BIT 0x9b
+0000            111   REN            BIT 0x9c
+0000            112   SM2            BIT 0x9d
+0000            113   SM1            BIT 0x9e
+0000            114   SM0            BIT 0x9f
+0000            115   P2_0           BIT 0xa0
+0000            116   P2_1           BIT 0xa1
+0000            117   P2_2           BIT 0xa2
+0000            118   P2_3           BIT 0xa3
+0000            119   P2_4           BIT 0xa4
+0000            120   P2_5           BIT 0xa5
+0000            121   P2_6           BIT 0xa6
+0000            122   P2_7           BIT 0xa7
+0000            123   EX0            BIT 0xa8
+0000            124   ET0            BIT 0xa9
+0000            125   EX1            BIT 0xaa
+0000            126   ET1            BIT 0xab
+0000            127   ES             BIT 0xac
+0000            128   ET2            BIT 0xad
+0000            129   EA             BIT 0xaf
+0000            130   P3_0           BIT 0xb0
+0000            131   P3_1           BIT 0xb1
+0000            132   P3_2           BIT 0xb2
+0000            133   P3_3           BIT 0xb3
+0000            134   P3_4           BIT 0xb4
+0000            135   P3_5           BIT 0xb5
+0000            136   P3_6           BIT 0xb6
+0000            137   P3_7           BIT 0xb7
+0000            138   RXD            BIT 0xb0
+0000            139   TXD            BIT 0xb1
+0000            140   INT0           BIT 0xb2
+0000            141   INT1           BIT 0xb3
+0000            142   T0             BIT 0xb4
+0000            143   T1             BIT 0xb5
+0000            144   WR             BIT 0xb6
+0000            145   RD             BIT 0xb7
+0000            146   PX0            BIT 0xb8
+0000            147   PT0            BIT 0xb9
+0000            148   PX1            BIT 0xba
+0000            149   PT1            BIT 0xbb
+0000            150   PS             BIT 0xbc
+0000            151   PT2            BIT 0xbd
+0000            152   P              BIT 0xd0
+0000            153   F1             BIT 0xd1
+0000            154   OV             BIT 0xd2
+0000            155   RS0            BIT 0xd3
+0000            156   RS1            BIT 0xd4
+0000            157   F0             BIT 0xd5
+0000            158   AC             BIT 0xd6
+0000            159   CY             BIT 0xd7
+0000            160   T2CON_0        BIT 0xc8
+0000            161   T2CON_1        BIT 0xc9
+0000            162   T2CON_2        BIT 0xca
+0000            163   T2CON_3        BIT 0xcb
+0000            164   T2CON_4        BIT 0xcc
+0000            165   T2CON_5        BIT 0xcd
+0000            166   T2CON_6        BIT 0xce
+0000            167   T2CON_7        BIT 0xcf
+0000            168   CP_RL2         BIT 0xc8
+0000            169   C_T2           BIT 0xc9
+0000            170   TR2            BIT 0xca
+0000            171   EXEN2          BIT 0xcb
+0000            172   TCLK           BIT 0xcc
+0000            173   RCLK           BIT 0xcd
+0000            174   EXF2           BIT 0xce
+0000            175   TF2            BIT 0xcf
+0000            176   LEDRA_0        BIT 0xe8
+0000            177   LEDRA_1        BIT 0xe9
+0000            178   LEDRA_2        BIT 0xea
+0000            179   LEDRA_3        BIT 0xeb
+0000            180   LEDRA_4        BIT 0xec
+0000            181   LEDRA_5        BIT 0xed
+0000            182   LEDRA_6        BIT 0xee
+0000            183   LEDRA_7        BIT 0xef
+0000            184   SWA_0          BIT 0xe8
+0000            185   SWA_1          BIT 0xe9
+0000            186   SWA_2          BIT 0xea
+0000            187   SWA_3          BIT 0xeb
+0000            188   SWA_4          BIT 0xec
+0000            189   SWA_5          BIT 0xed
+0000            190   SWA_6          BIT 0xee
+0000            191   SWA_7          BIT 0xef
+0000            192   KEY_0          BIT 0xf8
+0000            193   KEY_1          BIT 0xf9
+0000            194   KEY_2          BIT 0xfa
+0000            195   KEY_3          BIT 0xfb
+0000            196   P4_0           BIT 0xc0
+0000            197   P4_1           BIT 0xc1
+0000            198   P4_2           BIT 0xc2
+0000            199   P4_3           BIT 0xc3
+0000            200   P4_4           BIT 0xc4
+0000            201   P4_5           BIT 0xc5
+0000            202   P4_6           BIT 0xc6
+0000            203   P4_7           BIT 0xc7
+0000              2   
+0000              3            CSEG at 0
+0000 0200B4       4            ljmp mycode
+0003              5   
+0003              6   ; ADXL345 connections
+0003              7   GSENSOR_SDI BIT 0xfd ; MOSI in SPI mode
+0003              8   GSENSOR_SDO BIT 0xfd ; MISO in SPI mode
+0003              9   GSENSOR_SCLK BIT 0xfe
+0003             10   GSENSOR_CS_n BIT 0xff
+0003             11   GSENSOR_INT1 BIT 0xfe
+0003             12   GSENSOR_INT2 BIT 0xff
+0003             13   
+0003             14   ; Look-up table for 7-seg displays
+0003             15   myLUT:
+0003 C0F9A4B0    16       DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99        ; 0 TO 4
+     99
+0008 9282F880    17       DB 0x92, 0x82, 0xF8, 0x80, 0x90        ; 4 TO 9
+     90
+000D 8883C6A1    18       DB 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E  ; A to F
+     868E
+0013             19   
+0013             20   Wait50ms:
+0013             21   ;33.33MHz, 1 clk per cycle: 0.03us
+0013 781E        22            mov R0, #30
+0015 794A        23   L3: mov R1, #74
+0017 7AFA        24   L2: mov R2, #250
+0019 DAFE        25   L1: djnz R2, L1 ;3*250*0.03us=22.5us
+001B D9FA        26       djnz R1, L2 ;74*22.5us=1.665ms
+001D D8F6        27       djnz R0, L3 ;1.665ms*30=50ms
+001F 22          28       ret
+0020             29       
+0020             30   SPI_ByteRW:
+0020 7E08        31       mov   R6, #8
+0022 7F00        32       mov   R7, #0          ; RX accumulator
+0024             33   
+0024             34   SPI_Loop:
+0024             35       ; --- MOSI valid before falling edge ---
+0024 A2E7        36       mov   C, ACC.7
+0026 92FD        37       mov   GSENSOR_SDI, C
+0028             38   
+0028             39       ; --- Clock low (CPHA=1: shift on falling edge) ---
+0028 C2FE        40       clr   GSENSOR_SCLK
+002A 23          41       rl    A               ; shift TX left
+002B             42   
+002B             43       ; --- Clock high: sample MISO ---
+002B D2FE        44       setb  GSENSOR_SCLK
+002D A2FD        45       mov   C, GSENSOR_SDO
+002F C0E0        46       push  acc
+0031 EF          47       mov   a, R7
+0032 33          48       rlc   a              ; shift RX in
+0033 FF          49       mov   R7, a
+0034 D0E0        50       pop   acc
+0036             51   
+0036 DEEC        52       djnz  R6, SPI_Loop
+0038             53   
+0038 EF          54       mov   a, R7
+0039 22          55       ret
+003A             56   
+003A             57   ADXL345_WriteReg:
+003A D2FE        58       setb  GSENSOR_SCLK ; idle high
+003C C2FF        59       clr   GSENSOR_CS_n
+003E E8          60       mov   A, R0  ; address
+003F 543F        61       anl   A, #3Fh ; write, single-byte
+0041 120020      62       lcall SPI_ByteRW
+0044 E9          63       mov   A, R1 ; data
+0045 120020      64       lcall SPI_ByteRW
+0048 D2FF        65       setb  GSENSOR_CS_n
+004A 22          66       ret
+004B             67   
+004B             68   ADXL345_ReadReg:
+004B D2FE        69       setb  GSENSOR_SCLK ; idle high
+004D C2FF        70       clr   GSENSOR_CS_n
+004F 4480        71       orl   A, #80h ; read bit
+0051 120020      72       lcall SPI_ByteRW
+0054 7400        73       mov   A, #00h ; dummy
+0056 120020      74       lcall SPI_ByteRW ; read data
+0059 D2FF        75       setb  GSENSOR_CS_n
+005B 22          76       ret
+005C             77   
+005C             78   
+005C             79   ADXL345_ReadXYZ_One_Byte:  
+005C 7432        80       mov   A, #0x32
+005E 12004B      81       lcall ADXL345_ReadReg
+0061 F8          82       mov R0, A
+0062             83   
+0062 7433        84       mov   A, #0x33
+0064 12004B      85       lcall ADXL345_ReadReg
+0067 F9          86       mov R1, A
+0068             87   
+0068 7434        88       mov   A, #0x34
+006A 12004B      89       lcall ADXL345_ReadReg
+006D FA          90       mov R2, A
+006E             91   
+006E 7435        92       mov   A, #0x35
+0070 12004B      93       lcall ADXL345_ReadReg
+0073 FB          94       mov R3, A
+0074             95   
+0074 7436        96       mov   A, #0x36
+0076 12004B      97       lcall ADXL345_ReadReg
+0079 FC          98       mov R4, A
+007A             99   
+007A 7437       100       mov   A, #0x37
+007C 12004B     101       lcall ADXL345_ReadReg
+007F FD         102       mov R5, A
+0080            103   
+0080 22         104       ret
+0081            105   
+0081            106   ADXL345_ReadXYZ:
+0081 D2FE       107       setb  GSENSOR_SCLK ; idle high
+0083 C2FF       108       clr   GSENSOR_CS_n
+0085            109   
+0085 74F2       110            mov   A, #0xF2        ; 0x32 | R/W (bit 7:1 = read) | MB = multi-byte read (bit 6:1 = multi-byte read)
+0087 120020     111            lcall SPI_ByteRW
+008A            112            
+008A            113            ; Now read 6 bytes sequentially:
+008A 120020     114            lcall SPI_ByteRW
+008D F8         115            mov R0, a             ; X LSB
+008E            116            
+008E 120020     117            lcall SPI_ByteRW
+0091 F9         118            mov R1, a             ; X MSB
+0092            119            
+0092 120020     120            lcall SPI_ByteRW
+0095 FA         121            mov R2, a             ; Y LSB
+0096            122            
+0096 120020     123            lcall SPI_ByteRW
+0099 FB         124            mov R3, a             ; Y MSB
+009A            125            
+009A 120020     126            lcall SPI_ByteRW
+009D FC         127            mov R4, a             ; Z LSB
+009E            128            
+009E 120020     129            lcall SPI_ByteRW
+00A1 FD         130            mov R5, a             ; Z MSB
+00A2            131            
+00A2 D2FF       132       setb  GSENSOR_CS_n
+00A4 22         133            ret
+00A5            134   
+00A5            135   ADXL345_Configure:
+00A5            136            ; DATA_FORMAT = ±2g, full resolution
+00A5 7831       137            mov R0, #31h
+00A7 7908       138            mov R1, #08h
+00A9 12003A     139            lcall ADXL345_WriteReg
+00AC            140            
+00AC            141            ; POWER_CTL = Measure
+00AC 782D       142            mov R0, #2Dh
+00AE 7908       143            mov R1, #08h
+00B0 12003A     144            lcall ADXL345_WriteReg
+00B3 22         145            ret
+00B4            146   
+00B4            147   mycode:
+00B4 75817F     148            mov SP, #7FH
+00B7 E4         149            clr a
+00B8 F5E8       150            mov LEDRA, a
+00BA F595       151            mov LEDRB, a
+00BC 900003     152            mov dptr, #myLUT
+00BF            153   
+00BF 1200A5     154            lcall ADXL345_Configure
+00C2            155   
+00C2            156   forever:
+00C2 120081     157            lcall ADXL345_ReadXYZ
+00C5            158            
+00C5            159   Display_X:
+00C5            160   
+00C5 20E823     161            jb SWA.0, Display_Y
+00C8 20E920     162            jb SWA.1, Display_Y
+00CB            163   
+00CB E9         164            mov a, R1
+00CC C4         165            swap a
+00CD 540F       166            anl a, #0x0f
+00CF 93         167            movc a, @dptr+a
+00D0 F594       168            mov HEX3, a
+00D2 E9         169            mov a, R1
+00D3 540F       170            anl a, #0x0f
+00D5 93         171            movc a, @dptr+a
+00D6 F593       172            mov HEX2, a
+00D8            173            
+00D8 E8         174            mov a, R0
+00D9 C4         175            swap a
+00DA 540F       176            anl a, #0x0f
+00DC 93         177            movc a, @dptr+a
+00DD F592       178            mov HEX1, a
+00DF E8         179            mov a, R0
+00E0 540F       180            anl a, #0x0f
+00E2 93         181            movc a, @dptr+a
+00E3 F591       182            mov HEX0, a
+00E5 120013     183            lcall Wait50ms
+00E8 0200C2     184            ljmp forever
+00EB            185            
+00EB            186   Display_Y:
+00EB            187   
+00EB 30E823     188            jnb SWA.0, Display_Z
+00EE 20E920     189            jb SWA.1, Display_Z
+00F1            190   
+00F1 EB         191            mov a, R3
+00F2 C4         192            swap a
+00F3 540F       193            anl a, #0x0f
+00F5 93         194            movc a, @dptr+a
+00F6 F594       195            mov HEX3, a
+00F8 EB         196            mov a, R3
+00F9 540F       197            anl a, #0x0f
+00FB 93         198            movc a, @dptr+a
+00FC F593       199            mov HEX2, a
+00FE            200            
+00FE EA         201            mov a, R2
+00FF C4         202            swap a
+0100 540F       203            anl a, #0x0f
+0102 93         204            movc a, @dptr+a
+0103 F592       205            mov HEX1, a
+0105 EA         206            mov a, R2
+0106 540F       207            anl a, #0x0f
+0108 93         208            movc a, @dptr+a
+0109 F591       209            mov HEX0, a
+010B 120013     210            lcall Wait50ms
+010E 0200C2     211            ljmp forever
+0111            212   
+0111            213   Display_Z:
+0111            214   
+0111 20E823     215            jb SWA.0, Display_ID
+0114 30E920     216            jnb SWA.1, Display_ID
+0117            217   
+0117 ED         218            mov a, R5
+0118 C4         219            swap a
+0119 540F       220            anl a, #0x0f
+011B 93         221            movc a, @dptr+a
+011C F594       222            mov HEX3, a
+011E ED         223            mov a, R5
+011F 540F       224            anl a, #0x0f
+0121 93         225            movc a, @dptr+a
+0122 F593       226            mov HEX2, a
+0124            227            
+0124 EC         228            mov a, R4
+0125 C4         229            swap a
+0126 540F       230            anl a, #0x0f
+0128 93         231            movc a, @dptr+a
+0129 F592       232            mov HEX1, a
+012B EC         233            mov a, R4
+012C 540F       234            anl a, #0x0f
+012E 93         235            movc a, @dptr+a
+012F F591       236            mov HEX0, a
+0131 120013     237            lcall Wait50ms
+0134 0200C2     238            ljmp forever
+0137            239   
+0137            240   Display_ID:
+0137            241            ; The result of reading register 0x00 is 0xE5
+0137 7400       242            mov A, #00H
+0139 12004B     243            lcall ADXL345_ReadReg
+013C F8         244            mov R0,A
+013D            245   
+013D 7594FF     246            mov HEX3, #0xFF
+0140 7593FF     247            mov HEX2, #0xFF
+0143            248            
+0143 E8         249            mov a, R0
+0144 C4         250            swap a
+0145 540F       251            anl a, #0x0f
+0147 93         252            movc a, @dptr+a
+0148 F592       253            mov HEX1, a
+014A E8         254            mov a, R0
+014B 540F       255            anl a, #0x0f
+014D 93         256            movc a, @dptr+a
+014E F591       257            mov HEX0, a
+0150 120013     258            lcall Wait50ms
+0153 0200C2     259            ljmp forever
+0156            260   
+0156            261   end

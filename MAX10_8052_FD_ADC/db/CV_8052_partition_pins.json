@@ -1,0 +1,541 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "GNDKEY2",
+					"strict" : false
+				},
+				{
+					"name" : "GNDKEY3",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[2]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[3]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[4]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[5]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[6]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX0_out[7]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[2]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[3]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[4]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[5]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[6]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX1_out[7]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[2]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[3]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[4]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[5]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[6]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX2_out[7]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[2]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[3]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[4]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[5]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[6]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX3_out[7]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[2]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[3]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[4]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[5]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[6]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4_out[7]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[2]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[3]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[4]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[5]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[6]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX5_out[7]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[2]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[3]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[4]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[5]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[6]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_out[7]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR1_out[0]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR1_out[1]",
+					"strict" : false
+				},
+				{
+					"name" : "TXD",
+					"strict" : false
+				},
+				{
+					"name" : "GSENSOR_SCLK",
+					"strict" : false
+				},
+				{
+					"name" : "GSENSOR_SDI",
+					"strict" : false
+				},
+				{
+					"name" : "GSENSOR_CS_n",
+					"strict" : false
+				},
+				{
+					"name" : "P0[0]",
+					"strict" : false
+				},
+				{
+					"name" : "P0[1]",
+					"strict" : false
+				},
+				{
+					"name" : "P0[2]",
+					"strict" : false
+				},
+				{
+					"name" : "P0[3]",
+					"strict" : false
+				},
+				{
+					"name" : "P0[4]",
+					"strict" : false
+				},
+				{
+					"name" : "P0[5]",
+					"strict" : false
+				},
+				{
+					"name" : "P0[6]",
+					"strict" : false
+				},
+				{
+					"name" : "P0[7]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[0]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[1]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[2]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[3]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[4]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[5]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[6]",
+					"strict" : false
+				},
+				{
+					"name" : "P1[7]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[0]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[1]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[2]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[3]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[4]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[5]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[6]",
+					"strict" : false
+				},
+				{
+					"name" : "P2[7]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[0]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[1]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[2]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[3]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[4]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[5]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[6]",
+					"strict" : false
+				},
+				{
+					"name" : "P3[7]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[0]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[1]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[2]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[3]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[4]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[5]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[6]",
+					"strict" : false
+				},
+				{
+					"name" : "P4[7]",
+					"strict" : false
+				},
+				{
+					"name" : "RstIn",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[2]",
+					"strict" : false
+				},
+				{
+					"name" : "KEY[1]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR1_in[1]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[1]",
+					"strict" : false
+				},
+				{
+					"name" : "KEY[0]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR1_in[0]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[0]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[3]",
+					"strict" : false
+				},
+				{
+					"name" : "KEY[2]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[4]",
+					"strict" : false
+				},
+				{
+					"name" : "KEY[3]",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[5]",
+					"strict" : false
+				},
+				{
+					"name" : "GSENSOR_SDO",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[6]",
+					"strict" : false
+				},
+				{
+					"name" : "GSENSOR_INT1",
+					"strict" : false
+				},
+				{
+					"name" : "LEDR0_in[7]",
+					"strict" : false
+				},
+				{
+					"name" : "GSENSOR_INT2",
+					"strict" : false
+				},
+				{
+					"name" : "RXD",
+					"strict" : false
+				},
+				{
+					"name" : "INT0",
+					"strict" : false
+				},
+				{
+					"name" : "INT1",
+					"strict" : false
+				},
+				{
+					"name" : "T2EX",
+					"strict" : false
+				},
+				{
+					"name" : "T2",
+					"strict" : false
+				},
+				{
+					"name" : "T1",
+					"strict" : false
+				},
+				{
+					"name" : "T0",
+					"strict" : false
+				},
+				{
+					"name" : "altera_reserved_tms",
+					"strict" : false
+				},
+				{
+					"name" : "altera_reserved_tck",
+					"strict" : false
+				},
+				{
+					"name" : "altera_reserved_tdi",
+					"strict" : false
+				},
+				{
+					"name" : "altera_reserved_tdo",
+					"strict" : false
+				}
+			]
+		}
+	]
+}

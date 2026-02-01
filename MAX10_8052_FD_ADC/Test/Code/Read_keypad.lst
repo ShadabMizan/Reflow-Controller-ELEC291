@@ -1,0 +1,517 @@
+                 -1   $MODMAX10
+0000              1   ;--------------------------------------------------------
+0000              2   ; Special Function Registers
+0000              3   ;--------------------------------------------------------
+0000              4   P0             DATA 0x80
+0000              5   SP             DATA 0x81
+0000              6   DPL            DATA 0x82
+0000              7   DPH            DATA 0x83
+0000              8   PCON           DATA 0x87
+0000              9   TCON           DATA 0x88
+0000             10   TMOD           DATA 0x89
+0000             11   TL0            DATA 0x8a
+0000             12   TL1            DATA 0x8b
+0000             13   TH0            DATA 0x8c
+0000             14   TH1            DATA 0x8d
+0000             15   P1             DATA 0x90
+0000             16   SCON           DATA 0x98
+0000             17   SBUF           DATA 0x99
+0000             18   P2             DATA 0xa0
+0000             19   IE             DATA 0xa8
+0000             20   P3             DATA 0xb0
+0000             21   IP             DATA 0xb8
+0000             22   PSW            DATA 0xd0
+0000             23   ACC            DATA 0xe0
+0000             24   B              DATA 0xf0
+0000             25   T2CON          DATA 0xc8
+0000             26   RCAP2L         DATA 0xca
+0000             27   RCAP2H         DATA 0xcb
+0000             28   TL2            DATA 0xcc
+0000             29   TH2            DATA 0xcd
+0000             30   DPS            DATA 0x86
+0000             31   DPH1           DATA 0x85
+0000             32   DPL1           DATA 0x84
+0000             33   HEX0           DATA 0x91
+0000             34   HEX1           DATA 0x92
+0000             35   HEX2           DATA 0x93
+0000             36   HEX3           DATA 0x94
+0000             37   HEX4           DATA 0x8e
+0000             38   HEX5           DATA 0x8f
+0000             39   LEDRA          DATA 0xe8
+0000             40   LEDRB          DATA 0x95
+0000             41   SWA            DATA 0xe8
+0000             42   SWB            DATA 0x95
+0000             43   KEY            DATA 0xf8
+0000             44   P0MOD          DATA 0x9a
+0000             45   P1MOD          DATA 0x9b
+0000             46   P2MOD          DATA 0x9c
+0000             47   P3MOD          DATA 0x9d
+0000             48   REP_ADD_L      DATA 0xf1
+0000             49   REP_ADD_H      DATA 0xf2
+0000             50   REP_VALUE      DATA 0xf3
+0000             51   DEBUG_CALL_L   DATA 0xfa
+0000             52   DEBUG_CALL_H   DATA 0xfb
+0000             53   BPC            DATA 0xfc
+0000             54   BPS            DATA 0xfd
+0000             55   BPAL           DATA 0xfe
+0000             56   BPAH           DATA 0xff
+0000             57   LBPAL          DATA 0xfa
+0000             58   LBPAH          DATA 0xfb
+0000             59   P4             DATA 0xc0
+0000             60   P4MOD          DATA 0xc1
+0000             61   XRAMUSEDAS     DATA 0xc3
+0000             62   UFM_ADD0       DATA 0xe1
+0000             63   UFM_ADD1       DATA 0xe2
+0000             64   UFM_ADD2       DATA 0xe3
+0000             65   UFM_DATA0      DATA 0xe4
+0000             66   UFM_DATA1      DATA 0xe5
+0000             67   UFM_DATA2      DATA 0xe6
+0000             68   UFM_DATA3      DATA 0xe7
+0000             69   UFM_CONTROL0   DATA 0xe9
+0000             70   UFM_CONTROL1   DATA 0xea
+0000             71   UFM_CONTROL2   DATA 0xeb
+0000             72   UFM_CONTROL3   DATA 0xec
+0000             73   UFM_DATA_CMD   DATA 0xed
+0000             74   UFM_DATA_STATUS DATA 0xee
+0000             75   UFM_CONTROL_CMD DATA 0xef
+0000             76   
+0000             77   ;--------------------------------------------------------
+0000             78   ; special function bits
+0000             79   ;--------------------------------------------------------
+0000             80   P0_0           BIT 0x80
+0000             81   P0_1           BIT 0x81
+0000             82   P0_2           BIT 0x82
+0000             83   P0_3           BIT 0x83
+0000             84   P0_4           BIT 0x84
+0000             85   P0_5           BIT 0x85
+0000             86   P0_6           BIT 0x86
+0000             87   P0_7           BIT 0x87
+0000             88   IT0            BIT 0x88
+0000             89   IE0            BIT 0x89
+0000             90   IT1            BIT 0x8a
+0000             91   IE1            BIT 0x8b
+0000             92   TR0            BIT 0x8c
+0000             93   TF0            BIT 0x8d
+0000             94   TR1            BIT 0x8e
+0000             95   TF1            BIT 0x8f
+0000             96   P1_0           BIT 0x90
+0000             97   P1_1           BIT 0x91
+0000             98   P1_2           BIT 0x92
+0000             99   P1_3           BIT 0x93
+0000            100   P1_4           BIT 0x94
+0000            101   P1_5           BIT 0x95
+0000            102   P1_6           BIT 0x96
+0000            103   P1_7           BIT 0x97
+0000            104   RI             BIT 0x98
+0000            105   TI             BIT 0x99
+0000            106   RB8            BIT 0x9a
+0000            107   TB8            BIT 0x9b
+0000            108   REN            BIT 0x9c
+0000            109   SM2            BIT 0x9d
+0000            110   SM1            BIT 0x9e
+0000            111   SM0            BIT 0x9f
+0000            112   P2_0           BIT 0xa0
+0000            113   P2_1           BIT 0xa1
+0000            114   P2_2           BIT 0xa2
+0000            115   P2_3           BIT 0xa3
+0000            116   P2_4           BIT 0xa4
+0000            117   P2_5           BIT 0xa5
+0000            118   P2_6           BIT 0xa6
+0000            119   P2_7           BIT 0xa7
+0000            120   EX0            BIT 0xa8
+0000            121   ET0            BIT 0xa9
+0000            122   EX1            BIT 0xaa
+0000            123   ET1            BIT 0xab
+0000            124   ES             BIT 0xac
+0000            125   ET2            BIT 0xad
+0000            126   EA             BIT 0xaf
+0000            127   P3_0           BIT 0xb0
+0000            128   P3_1           BIT 0xb1
+0000            129   P3_2           BIT 0xb2
+0000            130   P3_3           BIT 0xb3
+0000            131   P3_4           BIT 0xb4
+0000            132   P3_5           BIT 0xb5
+0000            133   P3_6           BIT 0xb6
+0000            134   P3_7           BIT 0xb7
+0000            135   RXD            BIT 0xb0
+0000            136   TXD            BIT 0xb1
+0000            137   INT0           BIT 0xb2
+0000            138   INT1           BIT 0xb3
+0000            139   T0             BIT 0xb4
+0000            140   T1             BIT 0xb5
+0000            141   WR             BIT 0xb6
+0000            142   RD             BIT 0xb7
+0000            143   PX0            BIT 0xb8
+0000            144   PT0            BIT 0xb9
+0000            145   PX1            BIT 0xba
+0000            146   PT1            BIT 0xbb
+0000            147   PS             BIT 0xbc
+0000            148   PT2            BIT 0xbd
+0000            149   P              BIT 0xd0
+0000            150   F1             BIT 0xd1
+0000            151   OV             BIT 0xd2
+0000            152   RS0            BIT 0xd3
+0000            153   RS1            BIT 0xd4
+0000            154   F0             BIT 0xd5
+0000            155   AC             BIT 0xd6
+0000            156   CY             BIT 0xd7
+0000            157   T2CON_0        BIT 0xc8
+0000            158   T2CON_1        BIT 0xc9
+0000            159   T2CON_2        BIT 0xca
+0000            160   T2CON_3        BIT 0xcb
+0000            161   T2CON_4        BIT 0xcc
+0000            162   T2CON_5        BIT 0xcd
+0000            163   T2CON_6        BIT 0xce
+0000            164   T2CON_7        BIT 0xcf
+0000            165   CP_RL2         BIT 0xc8
+0000            166   C_T2           BIT 0xc9
+0000            167   TR2            BIT 0xca
+0000            168   EXEN2          BIT 0xcb
+0000            169   TCLK           BIT 0xcc
+0000            170   RCLK           BIT 0xcd
+0000            171   EXF2           BIT 0xce
+0000            172   TF2            BIT 0xcf
+0000            173   LEDRA_0        BIT 0xe8
+0000            174   LEDRA_1        BIT 0xe9
+0000            175   LEDRA_2        BIT 0xea
+0000            176   LEDRA_3        BIT 0xeb
+0000            177   LEDRA_4        BIT 0xec
+0000            178   LEDRA_5        BIT 0xed
+0000            179   LEDRA_6        BIT 0xee
+0000            180   LEDRA_7        BIT 0xef
+0000            181   SWA_0          BIT 0xe8
+0000            182   SWA_1          BIT 0xe9
+0000            183   SWA_2          BIT 0xea
+0000            184   SWA_3          BIT 0xeb
+0000            185   SWA_4          BIT 0xec
+0000            186   SWA_5          BIT 0xed
+0000            187   SWA_6          BIT 0xee
+0000            188   SWA_7          BIT 0xef
+0000            189   KEY_0          BIT 0xf8
+0000            190   KEY_1          BIT 0xf9
+0000            191   KEY_2          BIT 0xfa
+0000            192   KEY_3          BIT 0xfb
+0000            193   P4_0           BIT 0xc0
+0000            194   P4_1           BIT 0xc1
+0000            195   P4_2           BIT 0xc2
+0000            196   P4_3           BIT 0xc3
+0000            197   P4_4           BIT 0xc4
+0000            198   P4_5           BIT 0xc5
+0000            199   P4_6           BIT 0xc6
+0000            200   P4_7           BIT 0xc7
+0000              2   
+0000              3            CSEG at 0
+0000 02016A       4            ljmp mycode
+0003              5   
+0030              6            DSEG at 30H
+0030              7   bcd:     ds 5
+0035              8   
+0003              9            CSEG
+0003             10   
+0003             11   ; Look-up table for 7-seg displays
+0003             12   myLUT:
+0003 C0F9A4B0    13       DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99        ; 0 TO 4
+     99
+0008 9282F880    14       DB 0x92, 0x82, 0xF8, 0x80, 0x90        ; 4 TO 9
+     90
+000D 8883C6A1    15       DB 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E  ; A to F
+     868E
+0013             16   
+                 17   showBCD MAC
+                 18   	; Display LSD
+                 19       mov A, %0
+                 20       anl a, #0fh
+                 21       movc A, @A+dptr
+                 22       mov %1, A
+                 23   	; Display MSD
+                 24       mov A, %0
+                 25       swap a
+                 26       anl a, #0fh
+                 27       movc A, @A+dptr
+                 28       mov %2, A
+                 29   ENDMAC
+0013             30   
+0013             31   Display:
+0013 900003      32            mov dptr, #myLUT
+0016             33            ; Display LSD
+0016 E530        33       mov A, bcd+0
+0018 540F        33       anl a, #0fh
+001A 93          33       movc A, @A+dptr
+001B F591        33       mov HEX0, A
+001D             33            ; Display MSD
+001D E530        33       mov A, bcd+0
+001F C4          33       swap a
+0020 540F        33       anl a, #0fh
+0022 93          33       movc A, @A+dptr
+0023 F592        33       mov HEX1, A
+0025             34            ; Display LSD
+0025 E531        34       mov A, bcd+1
+0027 540F        34       anl a, #0fh
+0029 93          34       movc A, @A+dptr
+002A F593        34       mov HEX2, A
+002C             34            ; Display MSD
+002C E531        34       mov A, bcd+1
+002E C4          34       swap a
+002F 540F        34       anl a, #0fh
+0031 93          34       movc A, @A+dptr
+0032 F594        34       mov HEX3, A
+0034             35            ; Display LSD
+0034 E532        35       mov A, bcd+2
+0036 540F        35       anl a, #0fh
+0038 93          35       movc A, @A+dptr
+0039 F58E        35       mov HEX4, A
+003B             35            ; Display MSD
+003B E532        35       mov A, bcd+2
+003D C4          35       swap a
+003E 540F        35       anl a, #0fh
+0040 93          35       movc A, @A+dptr
+0041 F58F        35       mov HEX5, A
+0043 22          36       ret
+0044             37   
+                 38   MYRLC MAC
+                 39   	mov a, %0
+                 40   	rlc a
+                 41   	mov %0, a
+                 42   ENDMAC
+0044             43   
+0044             44   Shift_Digits:
+0044 7804        45            mov R0, #4 ; shift left four bits
+0046             46   Shift_Digits_L0:
+0046 C3          47            clr c
+0047 E530        48            mov a, bcd+0
+0049 33          48            rlc a
+004A F530        48            mov bcd+0, a
+004C E531        49            mov a, bcd+1
+004E 33          49            rlc a
+004F F531        49            mov bcd+1, a
+0051 E532        50            mov a, bcd+2
+0053 33          50            rlc a
+0054 F532        50            mov bcd+2, a
+0056 E533        51            mov a, bcd+3
+0058 33          51            rlc a
+0059 F533        51            mov bcd+3, a
+005B E534        52            mov a, bcd+4
+005D 33          52            rlc a
+005E F534        52            mov bcd+4, a
+0060 D8E4        53            djnz R0, Shift_Digits_L0
+0062             54            ; R7 has the new bcd digit      
+0062 EF          55            mov a, R7
+0063 4530        56            orl a, bcd+0
+0065 F530        57            mov bcd+0, a
+0067             58            ; bcd+3 and bcd+4 don't fit in the 7-segment displays so make them zero
+0067 E4          59            clr a
+0068 F534        60            mov bcd+4, a
+006A 22          61            ret
+006B             62   
+006B             63   Wait50ms:
+006B             64   ;33.33MHz, 1 clk per cycle: 0.03us
+006B 785A        65            mov R0, #90
+006D 794A        66   L3: mov R1, #74
+006F 7AFA        67   L2: mov R2, #250
+0071 DAFE        68   L1: djnz R2, L1 ;3*250*0.03us=22.5us
+0073 D9FA        69       djnz R1, L2 ;74*22.5us=1.665ms
+0075 D8F6        70       djnz R0, L3 ;1.665ms*30=50ms
+0077 22          71       ret
+0078             72   
+                 73   CHECK_COLUMN MAC
+                 74   	jb %0, CHECK_COL_%M
+                 75   	mov R7, %1
+                 76   	jnb %0, $ ; wait for key release
+                 77   	setb c
+                 78   	ret
+                 79   CHECK_COL_%M:
+                 80   ENDMAC
+0078             81   
+0078             82   Configure_Keypad_Pins:
+0078             83            ; Configure the row pins as output and the column pins as inputs
+0078 439B54      84            orl P1MOD, #0b_01010100 ; P1.6, P1.4, P1.2 output
+007B 439C01      85            orl P2MOD, #0b_00000001 ; P2.0 output
+007E 539CAB      86            anl P2MOD, #0b_10101011 ; P2.6, P2.4, P2.2 input
+0081 539DFE      87            anl P3MOD, #0b_11111110 ; P3.0 input
+0084 22          88            ret
+0085             89   
+0085             90   ; These are the pins used for the keypad in this program:
+0085             91   ROW1 EQU P1.2
+0085             92   ROW2 EQU P1.4
+0085             93   ROW3 EQU P1.6
+0085             94   ROw4 EQU P2.0
+0085             95   COL1 EQU P2.2
+0085             96   COL2 EQU P2.4
+0085             97   COL3 EQU P2.6
+0085             98   COL4 EQU P3.0
+0085             99   
+0085            100   ; This subroutine scans a 4x4 keypad.  If a key is pressed sets the carry
+0085            101   ; to one and returns the key code in register R7.
+0085            102   Keypad:
+0085            103            ; Make all the rows zero.  If any column is zero then a key is pressed.
+0085 C292       104            clr ROW1
+0087 C294       105            clr ROW2
+0089 C296       106            clr ROW3
+008B C2A0       107            clr ROW4
+008D A2A2       108            mov c, COL1
+008F 82A4       109            anl c, COL2
+0091 82A6       110            anl c, COL3
+0093 82B0       111            anl c, COL4
+0095 5002       112            jnc Keypad_Debounce
+0097 C3         113            clr c
+0098 22         114            ret
+0099            115                    
+0099            116   Keypad_Debounce:
+0099            117            ; A key maybe pressed.  Wait and check again to discard bounces.
+0099 12006B     118            lcall Wait50ms ; debounce
+009C A2A2       119            mov c, COL1
+009E 82A4       120            anl c, COL2
+00A0 82A6       121            anl c, COL3
+00A2 82B0       122            anl c, COL4
+00A4 5002       123            jnc Keypad_Key_Code
+00A6 C3         124            clr c
+00A7 22         125            ret
+00A8            126            
+00A8            127   Keypad_Key_Code:         
+00A8            128            ; A key is pressed.  Find out which one by checking each possible column and row combination.
+00A8            129            
+00A8            130            ; Check row 1   
+00A8 C292       131            clr  ROW1
+00AA D294       132            setb ROW2
+00AC D296       133            setb ROW3
+00AE D2A0       134            setb ROW4
+00B0 20A207     135            jb COL1, CHECK_COL_9
+00B3 7F01       135            mov R7, #01H
+00B5 30A2FD     135            jnb COL1, $ ; wait for key release
+00B8 D3         135            setb c
+00B9 22         135            ret
+00BA            135   CHECK_COL_9:
+00BA            135   
+00BA 20A407     136            jb COL2, CHECK_COL_10
+00BD 7F02       136            mov R7, #02H
+00BF 30A4FD     136            jnb COL2, $ ; wait for key release
+00C2 D3         136            setb c
+00C3 22         136            ret
+00C4            136   CHECK_COL_10:
+00C4 20A607     137            jb COL3, CHECK_COL_11
+00C7 7F03       137            mov R7, #03H
+00C9 30A6FD     137            jnb COL3, $ ; wait for key release
+00CC D3         137            setb c
+00CD 22         137            ret
+00CE            137   CHECK_COL_11:
+00CE 20B007     138            jb COL4, CHECK_COL_12
+00D1 7F0A       138            mov R7, #0AH
+00D3 30B0FD     138            jnb COL4, $ ; wait for key release
+00D6 D3         138            setb c
+00D7 22         138            ret
+00D8            138   CHECK_COL_12:
+00D8            139   
+00D8            140            ; Check row 2   
+00D8 D292       141            setb ROW1
+00DA C294       142            clr  ROW2
+00DC D296       143            setb ROW3
+00DE D2A0       144            setb ROW4
+00E0 20A207     145            jb COL1, CHECK_COL_13
+00E3 7F04       145            mov R7, #04H
+00E5 30A2FD     145            jnb COL1, $ ; wait for key release
+00E8 D3         145            setb c
+00E9 22         145            ret
+00EA            145   CHECK_COL_13:
+00EA 20A407     146            jb COL2, CHECK_COL_14
+00ED 7F05       146            mov R7, #05H
+00EF 30A4FD     146            jnb COL2, $ ; wait for key release
+00F2 D3         146            setb c
+00F3 22         146            ret
+00F4            146   CHECK_COL_14:
+00F4 20A607     147            jb COL3, CHECK_COL_15
+00F7 7F06       147            mov R7, #06H
+00F9 30A6FD     147            jnb COL3, $ ; wait for key release
+00FC D3         147            setb c
+00FD 22         147            ret
+00FE            147   CHECK_COL_15:
+00FE 20B007     148            jb COL4, CHECK_COL_16
+0101 7F0B       148            mov R7, #0BH
+0103 30B0FD     148            jnb COL4, $ ; wait for key release
+0106 D3         148            setb c
+0107 22         148            ret
+0108            148   CHECK_COL_16:
+0108            149   
+0108            150            ; Check row 3   
+0108 D292       151            setb ROW1
+010A D294       152            setb ROW2
+010C C296       153            clr  ROW3
+010E D2A0       154            setb ROW4
+0110 20A207     155            jb COL1, CHECK_COL_17
+0113 7F07       155            mov R7, #07H
+0115 30A2FD     155            jnb COL1, $ ; wait for key release
+0118 D3         155            setb c
+0119 22         155            ret
+011A            155   CHECK_COL_17:
+011A 20A407     156            jb COL2, CHECK_COL_18
+011D 7F08       156            mov R7, #08H
+011F 30A4FD     156            jnb COL2, $ ; wait for key release
+0122 D3         156            setb c
+0123 22         156            ret
+0124            156   CHECK_COL_18:
+0124 20A607     157            jb COL3, CHECK_COL_19
+0127 7F09       157            mov R7, #09H
+0129 30A6FD     157            jnb COL3, $ ; wait for key release
+012C D3         157            setb c
+012D 22         157            ret
+012E            157   CHECK_COL_19:
+012E 20B007     158            jb COL4, CHECK_COL_20
+0131 7F0C       158            mov R7, #0CH
+0133 30B0FD     158            jnb COL4, $ ; wait for key release
+0136 D3         158            setb c
+0137 22         158            ret
+0138            158   CHECK_COL_20:
+0138            159   
+0138            160            ; Check row 4   
+0138 D292       161            setb ROW1
+013A D294       162            setb ROW2
+013C D296       163            setb ROW3
+013E C2A0       164            clr  ROW4
+0140 20A207     165            jb COL1, CHECK_COL_21
+0143 7F0E       165            mov R7, #0EH
+0145 30A2FD     165            jnb COL1, $ ; wait for key release
+0148 D3         165            setb c
+0149 22         165            ret
+014A            165   CHECK_COL_21:
+014A 20A407     166            jb COL2, CHECK_COL_22
+014D 7F00       166            mov R7, #00H
+014F 30A4FD     166            jnb COL2, $ ; wait for key release
+0152 D3         166            setb c
+0153 22         166            ret
+0154            166   CHECK_COL_22:
+0154 20A607     167            jb COL3, CHECK_COL_23
+0157 7F0F       167            mov R7, #0FH
+0159 30A6FD     167            jnb COL3, $ ; wait for key release
+015C D3         167            setb c
+015D 22         167            ret
+015E            167   CHECK_COL_23:
+015E 20B007     168            jb COL4, CHECK_COL_24
+0161 7F0D       168            mov R7, #0DH
+0163 30B0FD     168            jnb COL4, $ ; wait for key release
+0166 D3         168            setb c
+0167 22         168            ret
+0168            168   CHECK_COL_24:
+0168            169   
+0168 C3         170            clr c
+0169 22         171            ret
+016A            172            
+016A            173   mycode:
+016A 75817F     174            mov SP, #7FH
+016D E4         175            clr a
+016E F5E8       176            mov LEDRA, a
+0170 F595       177            mov LEDRB, a
+0172 F530       178            mov bcd+0, a
+0174 F531       179            mov bcd+1, a
+0176 F532       180            mov bcd+2, a
+0178 F533       181            mov bcd+3, a
+017A F534       182            mov bcd+4, a
+017C 120013     183            lcall Display
+017F 120078     184            lcall Configure_Keypad_Pins
+0182            185   
+0182            186   forever:
+0182 120085     187            lcall Keypad
+0185 50FB       188            jnc forever
+0187 120044     189            lcall Shift_Digits
+018A 120013     190            lcall Display
+018D 020182     191            ljmp forever
+0190            192            
+0190            193   end

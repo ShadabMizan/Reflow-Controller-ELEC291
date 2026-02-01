@@ -1,0 +1,65 @@
+                  2   $LIST
+0000              4   
+0000 02000C       5       ljmp main
+0003              6   
+0003              7   debounce:
+0003 7F0A         8            mov R7, #10
+0005 7EFA         9   L1:      mov R6, #250
+0007 DEFE        10   L2: djnz R6, L2 ; 3 cycles -> 3*250*30ns=22.5us
+0009 DFFA        11       djnz R7, L1 ; 22.5us*25=0.5625ms
+000B 22          12       ret
+000C             13    
+000C             14   main:
+000C 75817F      15       mov sp, #0x7f
+000F 75E800      16            mov LEDRA, #0
+0012 759500      17            mov LEDRB, #0
+0015             18            
+0015             19   forever:
+0015 20F9FD      20            jb KEY.1, $
+0018 120003      21            lcall debounce
+001B 20F9F7      22            jb KEY.1, forever
+001E 30F9FD      23            jnb KEY.1, $
+0021             24   
+0021 908101      25            mov dptr, #0x8101
+0024 A882        26            mov R0, DPL
+0026 A983        27            mov R1, DPH
+0028 900055      28            mov dptr, #message
+002B AA82        29            mov R2, DPL
+002D AB83        30            mov R3, DPH
+002F             31            
+002F             32   copy_loop:
+002F 8A82        33            mov DPL, R2
+0031 8B83        34            mov DPH, R3
+0033 E4          35            clr a
+0034 93          36            movc a, @a+dptr
+0035 6011        37            jz copy_loop_done
+0037 A3          38            inc dptr
+0038 AA82        39            mov R2, DPL
+003A AB83        40            mov R3, DPH
+003C 8882        41            mov DPL, R0
+003E 8983        42            mov DPH, R1
+0040 F0          43            movx @dptr, a
+0041 A3          44            inc dptr
+0042 A882        45            mov R0, DPL
+0044 A983        46            mov R1, DPH
+0046 80E7        47            sjmp copy_loop
+0048             48   
+0048             49   copy_loop_done:
+0048 8882        50            mov DPL, R0
+004A 8983        51            mov DPH, R1
+004C F0          52            movx @dptr, a
+004D 908100      53            mov dptr, #0x8100
+0050 7401        54            mov a, #1 ; Tell debugger script to display buffer
+0052 F0          55            movx @dptr, a
+0053             56   
+0053 80C0        57       sjmp forever
+0055             58       
+0055 54686973    59   message: db 'This is a simple message.\r\n'
+     20697320
+     61207369
+     6D706C65
+     206D6573
+     73616765
+     2E0D0A
+0070             60   
+0070             61   END    

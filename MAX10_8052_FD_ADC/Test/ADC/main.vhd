@@ -1,0 +1,124 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity main is
+    port ( CLK_50   : in  std_logic;
+			 CLK_10   : in  std_logic;
+			 RESET   : in  std_logic;
+          LEDR  : out std_logic_vector(4 downto 0));
+end;
+
+architecture behave of main is
+
+    signal Cnt : integer := 0;
+    signal pCnt : integer := 0;
+
+    signal CMDVal : std_logic;
+    signal CMDCH : std_logic_vector (4 downto 0);
+    signal CMDSOP : std_logic;
+    signal CMDEOP : std_logic;
+    signal CMDRDY : std_logic;
+    signal RESVal : std_logic;
+    signal RESCH : std_logic_vector (4 downto 0);
+    signal RESData : std_logic_vector (11 downto 0);
+    signal RESSOP : std_logic;
+    signal RESEOP : std_logic;
+	 signal myclk_10: std_logic;
+
+    component myadc is
+        port (
+            clock_clk              : in  std_logic                     := 'X';             -- clk
+            reset_sink_reset_n     : in  std_logic                     := 'X';             -- reset_n
+            adc_pll_clock_clk      : in  std_logic                     := 'X';             -- clk
+            adc_pll_locked_export  : in  std_logic                     := 'X';             -- export
+            command_valid          : in  std_logic                     := 'X';             -- valid
+            command_channel        : in  std_logic_vector(4 downto 0)  := (others => 'X'); -- channel
+            command_startofpacket  : in  std_logic                     := 'X';             -- startofpacket
+            command_endofpacket    : in  std_logic                     := 'X';             -- endofpacket
+            command_ready          : out std_logic;                                        -- ready
+            response_valid         : out std_logic;                                        -- valid
+            response_channel       : out std_logic_vector(4 downto 0);                     -- channel
+            response_data          : out std_logic_vector(11 downto 0);                    -- data
+            response_startofpacket : out std_logic;                                        -- startofpacket
+            response_endofpacket   : out std_logic                                         -- endofpacket
+        );
+    end component myadc;
+
+begin
+
+    CMDCH <= "01000";
+	 myclk_10 <= CLK_10;
+
+    mADC : component myadc
+        port map (
+            clock_clk              => CLK_50,                  --          clock.clk
+            reset_sink_reset_n     => RESET,                   --     reset_sink.reset_n
+            adc_pll_clock_clk      => CLK_50,                  --  adc_pll_clock.clk
+            adc_pll_locked_export  => '1',                     -- adc_pll_locked.export
+            command_valid          => CMDVal,                  --        command.valid
+            command_channel        => CMDCH,                   --               .channel
+            command_startofpacket  => CMDSOP,                  --               .startofpacket
+            command_endofpacket    => CMDEOP,                  --               .endofpacket
+            command_ready          => CMDRDY,                  --               .ready
+            response_valid         => RESVal,                  --       response.valid
+            response_channel       => RESCH,                   --               .channel
+            response_data          => RESData,                 --               .data
+            response_startofpacket => RESSOP,                  --               .startofpacket
+            response_endofpacket   => RESEOP                   --               .endofpacket
+        );
+
+process 
+begin
+
+    wait until rising_edge(CLK_50);
+
+    pCnt <= pCnt + 1;
+
+    case pCnt is
+        when 1 => CMDSOP <= '1';
+                  CMDVal <= '1';
+        when 114 => CMDRDY <= '1';
+        when 115 => CMDSOP <= '0';
+                    CMDRDY <= '0';
+                    LEDR <= RESData(11 downto 7);
+        when 214 => CMDRDY <= '1';
+        when 215 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 314 => CMDRDY <= '1';
+        when 315 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 414 => CMDRDY <= '1';
+        when 415 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 514 => CMDRDY <= '1';
+        when 515 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 614 => CMDRDY <= '1';
+        when 615 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 714 => CMDRDY <= '1';
+        when 715 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 814 => CMDRDY <= '1';
+        when 815 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 914 => CMDRDY <= '1';
+        when 915 => CMDRDY <= '0';
+                        LEDR <= RESData(11 downto 7);
+        when 1014 => CMDRDY <= '1';
+        when 1015 => CMDRDY <= '0';
+                         LEDR <= RESData(11 downto 7);      
+        when 1114 => CMDRDY <= '1';
+        when 1115 => CMDRDY <= '0';
+                         CMDEOP <= '1';
+        when 1116 => CMDEOP <= '0';
+                         CMDVal <= '0';
+
+
+        when 2000 => pCnt <= 0;
+        when others => Cnt <= pCnt ;
+    end case;
+end process;
+
+end;

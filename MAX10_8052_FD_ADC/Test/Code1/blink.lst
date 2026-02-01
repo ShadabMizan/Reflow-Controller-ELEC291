@@ -1,0 +1,225 @@
+0000              1   ; Blinky.asm: blinks LEDR0 of the CV-8052 each second.
+                 -1   $MODMAX10
+0000              1   ;--------------------------------------------------------
+0000              2   ; Special Function Registers
+0000              3   ;--------------------------------------------------------
+0000              4   P0             DATA 0x80
+0000              5   SP             DATA 0x81
+0000              6   DPL            DATA 0x82
+0000              7   DPH            DATA 0x83
+0000              8   PCON           DATA 0x87
+0000              9   TCON           DATA 0x88
+0000             10   TMOD           DATA 0x89
+0000             11   TL0            DATA 0x8a
+0000             12   TL1            DATA 0x8b
+0000             13   TH0            DATA 0x8c
+0000             14   TH1            DATA 0x8d
+0000             15   P1             DATA 0x90
+0000             16   SCON           DATA 0x98
+0000             17   SBUF           DATA 0x99
+0000             18   P2             DATA 0xa0
+0000             19   IE             DATA 0xa8
+0000             20   P3             DATA 0xb0
+0000             21   IP             DATA 0xb8
+0000             22   PSW            DATA 0xd0
+0000             23   ACC            DATA 0xe0
+0000             24   B              DATA 0xf0
+0000             25   T2CON          DATA 0xc8
+0000             26   RCAP2L         DATA 0xca
+0000             27   RCAP2H         DATA 0xcb
+0000             28   TL2            DATA 0xcc
+0000             29   TH2            DATA 0xcd
+0000             30   DPS            DATA 0x86
+0000             31   DPH1           DATA 0x85
+0000             32   DPL1           DATA 0x84
+0000             33   HEX0           DATA 0x91
+0000             34   HEX1           DATA 0x92
+0000             35   HEX2           DATA 0x93
+0000             36   HEX3           DATA 0x94
+0000             37   HEX4           DATA 0x8e
+0000             38   HEX5           DATA 0x8f
+0000             39   LEDRA          DATA 0xe8
+0000             40   LEDRB          DATA 0x95
+0000             41   SWA            DATA 0xe8
+0000             42   SWB            DATA 0x95
+0000             43   KEY            DATA 0xf8
+0000             44   P0MOD          DATA 0x9a
+0000             45   P1MOD          DATA 0x9b
+0000             46   P2MOD          DATA 0x9c
+0000             47   P3MOD          DATA 0x9d
+0000             48   REP_ADD_L      DATA 0xf1
+0000             49   REP_ADD_H      DATA 0xf2
+0000             50   REP_VALUE      DATA 0xf3
+0000             51   DEBUG_CALL_L   DATA 0xfa
+0000             52   DEBUG_CALL_H   DATA 0xfb
+0000             53   BPC            DATA 0xfc
+0000             54   BPS            DATA 0xfd
+0000             55   BPAL           DATA 0xfe
+0000             56   BPAH           DATA 0xff
+0000             57   LBPAL          DATA 0xfa
+0000             58   LBPAH          DATA 0xfb
+0000             59   P4             DATA 0xc0
+0000             60   P4MOD          DATA 0xc1
+0000             61   XRAMUSEDAS     DATA 0xc3
+0000             62   UFM_ADD0       DATA 0xe1
+0000             63   UFM_ADD1       DATA 0xe2
+0000             64   UFM_ADD2       DATA 0xe3
+0000             65   UFM_DATA0      DATA 0xe4
+0000             66   UFM_DATA1      DATA 0xe5
+0000             67   UFM_DATA2      DATA 0xe6
+0000             68   UFM_DATA3      DATA 0xe7
+0000             69   UFM_CONTROL0   DATA 0xe9
+0000             70   UFM_CONTROL1   DATA 0xea
+0000             71   UFM_CONTROL2   DATA 0xeb
+0000             72   UFM_CONTROL3   DATA 0xec
+0000             73   UFM_DATA_CMD   DATA 0xed
+0000             74   UFM_DATA_STATUS DATA 0xee
+0000             75   UFM_CONTROL_CMD DATA 0xef
+0000             76   
+0000             77   ;--------------------------------------------------------
+0000             78   ; special function bits
+0000             79   ;--------------------------------------------------------
+0000             80   P0_0           BIT 0x80
+0000             81   P0_1           BIT 0x81
+0000             82   P0_2           BIT 0x82
+0000             83   P0_3           BIT 0x83
+0000             84   P0_4           BIT 0x84
+0000             85   P0_5           BIT 0x85
+0000             86   P0_6           BIT 0x86
+0000             87   P0_7           BIT 0x87
+0000             88   IT0            BIT 0x88
+0000             89   IE0            BIT 0x89
+0000             90   IT1            BIT 0x8a
+0000             91   IE1            BIT 0x8b
+0000             92   TR0            BIT 0x8c
+0000             93   TF0            BIT 0x8d
+0000             94   TR1            BIT 0x8e
+0000             95   TF1            BIT 0x8f
+0000             96   P1_0           BIT 0x90
+0000             97   P1_1           BIT 0x91
+0000             98   P1_2           BIT 0x92
+0000             99   P1_3           BIT 0x93
+0000            100   P1_4           BIT 0x94
+0000            101   P1_5           BIT 0x95
+0000            102   P1_6           BIT 0x96
+0000            103   P1_7           BIT 0x97
+0000            104   RI             BIT 0x98
+0000            105   TI             BIT 0x99
+0000            106   RB8            BIT 0x9a
+0000            107   TB8            BIT 0x9b
+0000            108   REN            BIT 0x9c
+0000            109   SM2            BIT 0x9d
+0000            110   SM1            BIT 0x9e
+0000            111   SM0            BIT 0x9f
+0000            112   P2_0           BIT 0xa0
+0000            113   P2_1           BIT 0xa1
+0000            114   P2_2           BIT 0xa2
+0000            115   P2_3           BIT 0xa3
+0000            116   P2_4           BIT 0xa4
+0000            117   P2_5           BIT 0xa5
+0000            118   P2_6           BIT 0xa6
+0000            119   P2_7           BIT 0xa7
+0000            120   EX0            BIT 0xa8
+0000            121   ET0            BIT 0xa9
+0000            122   EX1            BIT 0xaa
+0000            123   ET1            BIT 0xab
+0000            124   ES             BIT 0xac
+0000            125   ET2            BIT 0xad
+0000            126   EA             BIT 0xaf
+0000            127   P3_0           BIT 0xb0
+0000            128   P3_1           BIT 0xb1
+0000            129   P3_2           BIT 0xb2
+0000            130   P3_3           BIT 0xb3
+0000            131   P3_4           BIT 0xb4
+0000            132   P3_5           BIT 0xb5
+0000            133   P3_6           BIT 0xb6
+0000            134   P3_7           BIT 0xb7
+0000            135   RXD            BIT 0xb0
+0000            136   TXD            BIT 0xb1
+0000            137   INT0           BIT 0xb2
+0000            138   INT1           BIT 0xb3
+0000            139   T0             BIT 0xb4
+0000            140   T1             BIT 0xb5
+0000            141   WR             BIT 0xb6
+0000            142   RD             BIT 0xb7
+0000            143   PX0            BIT 0xb8
+0000            144   PT0            BIT 0xb9
+0000            145   PX1            BIT 0xba
+0000            146   PT1            BIT 0xbb
+0000            147   PS             BIT 0xbc
+0000            148   PT2            BIT 0xbd
+0000            149   P              BIT 0xd0
+0000            150   F1             BIT 0xd1
+0000            151   OV             BIT 0xd2
+0000            152   RS0            BIT 0xd3
+0000            153   RS1            BIT 0xd4
+0000            154   F0             BIT 0xd5
+0000            155   AC             BIT 0xd6
+0000            156   CY             BIT 0xd7
+0000            157   T2CON_0        BIT 0xc8
+0000            158   T2CON_1        BIT 0xc9
+0000            159   T2CON_2        BIT 0xca
+0000            160   T2CON_3        BIT 0xcb
+0000            161   T2CON_4        BIT 0xcc
+0000            162   T2CON_5        BIT 0xcd
+0000            163   T2CON_6        BIT 0xce
+0000            164   T2CON_7        BIT 0xcf
+0000            165   CP_RL2         BIT 0xc8
+0000            166   C_T2           BIT 0xc9
+0000            167   TR2            BIT 0xca
+0000            168   EXEN2          BIT 0xcb
+0000            169   TCLK           BIT 0xcc
+0000            170   RCLK           BIT 0xcd
+0000            171   EXF2           BIT 0xce
+0000            172   TF2            BIT 0xcf
+0000            173   LEDRA_0        BIT 0xe8
+0000            174   LEDRA_1        BIT 0xe9
+0000            175   LEDRA_2        BIT 0xea
+0000            176   LEDRA_3        BIT 0xeb
+0000            177   LEDRA_4        BIT 0xec
+0000            178   LEDRA_5        BIT 0xed
+0000            179   LEDRA_6        BIT 0xee
+0000            180   LEDRA_7        BIT 0xef
+0000            181   SWA_0          BIT 0xe8
+0000            182   SWA_1          BIT 0xe9
+0000            183   SWA_2          BIT 0xea
+0000            184   SWA_3          BIT 0xeb
+0000            185   SWA_4          BIT 0xec
+0000            186   SWA_5          BIT 0xed
+0000            187   SWA_6          BIT 0xee
+0000            188   SWA_7          BIT 0xef
+0000            189   KEY_0          BIT 0xf8
+0000            190   KEY_1          BIT 0xf9
+0000            191   KEY_2          BIT 0xfa
+0000            192   KEY_3          BIT 0xfb
+0000            193   P4_0           BIT 0xc0
+0000            194   P4_1           BIT 0xc1
+0000            195   P4_2           BIT 0xc2
+0000            196   P4_3           BIT 0xc3
+0000            197   P4_4           BIT 0xc4
+0000            198   P4_5           BIT 0xc5
+0000            199   P4_6           BIT 0xc6
+0000            200   P4_7           BIT 0xc7
+0000              3   
+0000              4   org 0000H
+0000 020010       5            ljmp myprogram
+0003              6   
+0003              7   ;For a 33.333333MHz clock, one machine cycle takes 30ns
+0003              8   WaitHalfSec:
+0003 7A5A         9            mov R2, #90
+0005 79FA        10   L3: mov R1, #250
+0007 78FA        11   L2: mov R0, #250
+0009 D8FE        12   L1: djnz R0, L1 ; 3 machine cycles-> 3*30ns*250=22.5us
+000B D9FA        13            djnz R1, L2 ; 22.5us*250=5.625ms
+000D DAF6        14            djnz R2, L3 ; 5.625ms*90=0.506s (approximately)
+000F 22          15            ret
+0010             16            
+0010             17   myprogram:
+0010 75817F      18            mov SP, #7FH ; Set the beginning of the stack (more on this later)
+0013 75E800      19            mov LEDRA, #0 ; Turn off all unused LEDs (Too bright!)
+0016 759500      20            mov LEDRB, #0
+0019             21   M0:
+0019 B2E8        22            cpl LEDRA.0
+001B 120003      23            lcall WaitHalfSec
+001E 80F9        24            sjmp M0
+0020             25   EN

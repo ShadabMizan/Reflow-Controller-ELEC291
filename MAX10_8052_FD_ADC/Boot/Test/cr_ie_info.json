@@ -1,0 +1,22 @@
+{
+	"system" : {
+		"platform" : "windows64",
+		"os_name" : "Windows 10",
+		"os_version" : "10.0"
+	},
+	"error" : {
+		"executable" : "quartus_stp",
+		"comment" : "not_applicable",
+		"error_message" : "Access Violation at 0X00007FFF327657EB",
+		"source_file" : "unknown",
+		"line" : "0",
+		"stack_trace" : "\t0x7fff327657ea: sld_chi + 0x157ea (?load_ram_addr@CHI_CONTROL_NODE_MOD_RAM@@AEAA_NK@Z + 0x10a)\n\t0x7fff32765abb: sld_chi + 0x15abb (?process_ram_offload_data@CHI_CONTROL_NODE_MOD_RAM@@AEAA_NKHPEAEK@Z + 0x1b)\n\t0x7fff32765eeb: sld_chi + 0x15eeb (?read_ram_value_at@CHI_CONTROL_NODE_MOD_RAM@@QEAA_NKHPEAEK@Z + 0x15b)\n\t0x7fff320d0b0a: sld_sli + 0x10b0a (sli_read_content_from_memory + 0x18a)\n\t 0x51cb4410: tcl86 + 0x14410 (TclInvokeStringCommand + 0xf0)\n\t 0x51cb61e2: tcl86 + 0x161e2 (TclNRRunCallbacks + 0x62)\n\t 0x51cb7a65: tcl86 + 0x17a65 (TclEvalEx + 0xa65)\n\t 0x51d46f8b: tcl86 + 0xa6f8b (Tcl_FSEvalFileEx + 0x22b)\n\t 0x51d45646: tcl86 + 0xa5646 (Tcl_EvalFile + 0x36)\n\t0x7fff346a2606: comp_qexe + 0x12606 (?qexe_evaluate_tcl_script@@YA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z + 0x376)\n\t0x7fff346a1864: comp_qexe + 0x11864 (qexe_do_tcl + 0x334)\n\t0x7fff346a5fe6: comp_qexe + 0x15fe6 (qexe_run + 0x2d6)\n\t0x7fff346a6e51: comp_qexe + 0x16e51 (?qexe_standard_main@@YAHPEAVQEXE_FRAMEWORK@@PEAPEBUQEXE_OPTION_DEFINITION@@HPEAPEBD@Z + 0xc1)\n\t0x7ff6fca33822: quartus_stp + 0x3822 (?ice_main@@YAHHPEAPEBD@Z + 0x52)\n\t0x7fff2c223328: CCL_MSG + 0x13328 (?msg_main_thread@@YAPEAXPEAX@Z + 0x18)\n\t0x7fff2c224b0e: CCL_MSG + 0x14b0e (?msg_thread_wrapper@@YAPEAXP6APEAXPEAX@Z0@Z + 0x6e)\n\t0x7fff2c335b00: ccl_mem + 0x15b00 (?mem_thread_wrapper@@YAPEAXP6APEAXPEAX@Z0@Z + 0x70)\n\t0x7fff2c222a11: CCL_MSG + 0x12a11 (?msg_exe_main@@YAHHPEAPEBDP6AHH0@Z@Z + 0xa1)\n\t0x7ff6fca342d2: quartus_stp + 0x42d2 (__tmainCRTStartup + 0x10e)\n\t0x7fff4a9f7373: KERNEL32 + 0x17373 (BaseThreadInitThunk + 0x13)\n\t0x7fff4bc9cc90: ntdll + 0x4cc90 (RtlUserThreadStart + 0x20)\n",
+		"subsystem" : "unknown"
+	},
+	"quartus" : {
+		"quartus_bits" : "64",
+		"version" : "16.1.0",
+		"build" : "196",
+		"edition" : "Lite Edition"
+	}
+}

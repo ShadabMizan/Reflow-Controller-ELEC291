@@ -1,0 +1,88 @@
+                  2   $LIST
+0000              4   
+0000 02000C       5       ljmp main
+0003              6   
+0003              7   debounce:
+0003 7F0A         8            mov R7, #10
+0005 7EFA         9   L1:      mov R6, #250
+0007 DEFE        10   L2: djnz R6, L2 ; 3 cycles -> 3*250*30ns=22.5us
+0009 DFFA        11       djnz R7, L1 ; 22.5us*25=0.5625ms
+000B 22          12       ret
+000C             13    
+000C             14   main:
+000C 75817F      15       mov sp, #0x7f
+000F 75E800      16            mov LEDRA, #0
+0012 759500      17            mov LEDRB, #0
+0015             18            
+0015 908101      19            mov dptr, #0x8101
+0018             20            
+0018             21   forever:
+0018             22   
+0018             23            ; Polling check of the sprocket bit
+0018 3090FD      24            jnb P1.0, $
+001B 120003      25            lcall debounce
+001E 3090F7      26            jnb P1.0, forever
+0021             27   
+0021 2090FD      28            jb P1.0, $
+0024 120003      29            lcall debounce
+0027 2090EE      30            jb P1.0, forever
+002A             31   
+002A             32            ; Now the tricky part.  We want to sample in the middle of the sprokect pulse
+002A             33            ; but we don't know how long is the sproket pulse.  So we sample from the
+002A             34            ; begining of the sproket pulse to the end, and take the value read in the middle.
+002A             35                    
+002A 7820        36            mov R0, #0x20 ; store samples from memory location 20h up to 60h, for 64 samples
+002C             37   poll_loop:
+002C 120003      38            lcall debounce
+002F E580        39            mov a, P0
+0031 F4          40            cpl a
+0032 F6          41            mov @R0, a
+0033 08          42            inc R0
+0034 B86002      43            cjne R0, #0x60, poll_cont
+0037 8003        44            sjmp poll_done
+0039             45   poll_cont:
+0039 3090F0      46            jnb P1.0, poll_loop
+003C             47   poll_done:
+003C             48            ; Pick the value in the middle of the buffer
+003C E8          49            mov a, R0
+003D 2420        50            add a, #0x20
+003F C3          51            clr c
+0040 13          52            rrc a ; divides by two
+0041 F8          53            mov R0, a
+0042 E6          54            mov a, @R0
+0043             55            
+0043 F5E8        56            mov LEDRA, a
+0045 F5F0        57            mov b, a
+0047 7400        58            mov a, #0
+0049 A290        59            mov c, P1.0
+004B B3          60            cpl c
+004C 92E1        61            mov acc.1, c
+004E F595        62            mov LEDRB, a
+0050             63            
+0050             64            ; Write received ASCII to debugger buffer
+0050 E5F0        65            mov a, b
+0052 B4FF02      66            cjne a, #0xff, Save_Char ; When we first insert paper, we get 0xff
+0055 8004        67            sjmp finish_message
+0057             68   
+0057             69   Save_Char:       
+0057 F0          70            movx @dptr, a
+0058 A3          71            inc dptr
+0059 80BD        72            sjmp forever
+005B             73            
+005B             74   finish_message:
+005B 740D        75            mov a, #'\r'
+005D F0          76            movx @dptr, a
+005E A3          77            inc dptr
+005F 740A        78            mov a, #'\n'
+0061 F0          79            movx @dptr, a
+0062 A3          80            inc dptr        
+0063 E4          81            clr a
+0064 F0          82            movx @dptr, a ; zero terminate the string
+0065 908100      83            mov dptr, #0x8100
+0068 7401        84            mov a, #1 ; Tell debugger script to display buffer
+006A F0          85            movx @dptr, a
+006B 908101      86            mov dptr, #0x8101 ; Start over
+006E             87            
+006E 80A8        88       sjmp forever
+0070             89   
+0070             90   END    

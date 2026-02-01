@@ -1,0 +1,11 @@
+                  2   $LIST
+0000              4   loop:
+0000 7A5A         5       mov R2, #90
+0002 79FA         6   L3: mov R1, #250
+0004 78FA         7   L2: mov R0, #250
+0006 D8FE         8   L1: djnz R0, L1 ; 3 machine cycles-> 3*30ns*250=22.5us
+0008 D9FA         9       djnz R1, L2 ; 22.5us*250=5.625ms
+000A DAF6        10       djnz R2, L3 ; 5.625ms*90=0.506s (approximately)
+000C B2E8        11       cpl LEDRA.0
+000E 80F0        12       sjmp loop
+0010             13   end

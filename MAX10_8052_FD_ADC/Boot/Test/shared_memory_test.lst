@@ -1,0 +1,868 @@
+0000              1   ;--------------------------------------------------------
+0000              2   ; File Created by C51
+0000              3   ; Version 1.0.0 #1170 (Feb 16 2022) (MSVC)
+0000              4   ; This file was generated Fri Oct 04 23:51:37 2024
+0000              5   ;--------------------------------------------------------
+                  5   $name shared_memory_test
+                  6   $optc51 --model-small
+0000              8            R_DSEG    segment data
+0000              9            R_CSEG    segment code
+0000             10            R_BSEG    segment bit
+0000             11            R_XSEG    segment xdata
+0000             12            R_PSEG    segment xdata
+0000             13            R_ISEG    segment idata
+0000             14            R_OSEG    segment data overlay
+0000             15            BIT_BANK  segment data overlay
+0000             16            R_HOME    segment code
+0000             17            R_GSINIT  segment code
+0000             18            R_IXSEG   segment xdata
+0000             19            R_CONST   segment code
+0000             20            R_XINIT   segment code
+0000             21            R_DINIT   segment code
+0000             22   
+0000             23   ;--------------------------------------------------------
+0000             24   ; Public variables in this module
+0000             25   ;--------------------------------------------------------
+0000             26            public _seven_seg
+0000             27            public _main
+0000             28            public _de2_8052_crt0
+0000             29            public _buff
+0000             30   ;--------------------------------------------------------
+0000             31   ; Special Function Registers
+0000             32   ;--------------------------------------------------------
+0000             33   _P0             DATA 0x80
+0000             34   _SP             DATA 0x81
+0000             35   _DPL            DATA 0x82
+0000             36   _DPH            DATA 0x83
+0000             37   _PCON           DATA 0x87
+0000             38   _TCON           DATA 0x88
+0000             39   _TMOD           DATA 0x89
+0000             40   _TL0            DATA 0x8a
+0000             41   _TL1            DATA 0x8b
+0000             42   _TH0            DATA 0x8c
+0000             43   _TH1            DATA 0x8d
+0000             44   _P1             DATA 0x90
+0000             45   _SCON           DATA 0x98
+0000             46   _SBUF           DATA 0x99
+0000             47   _P2             DATA 0xa0
+0000             48   _IE             DATA 0xa8
+0000             49   _P3             DATA 0xb0
+0000             50   _IP             DATA 0xb8
+0000             51   _PSW            DATA 0xd0
+0000             52   _ACC            DATA 0xe0
+0000             53   _B              DATA 0xf0
+0000             54   _T2CON          DATA 0xc8
+0000             55   _RCAP2L         DATA 0xca
+0000             56   _RCAP2H         DATA 0xcb
+0000             57   _TL2            DATA 0xcc
+0000             58   _TH2            DATA 0xcd
+0000             59   _DPS            DATA 0x86
+0000             60   _DPH1           DATA 0x85
+0000             61   _DPL1           DATA 0x84
+0000             62   _HEX0           DATA 0x91
+0000             63   _HEX1           DATA 0x92
+0000             64   _HEX2           DATA 0x93
+0000             65   _HEX3           DATA 0x94
+0000             66   _HEX4           DATA 0x8e
+0000             67   _HEX5           DATA 0x8f
+0000             68   _LEDRA          DATA 0xe8
+0000             69   _LEDRB          DATA 0x95
+0000             70   _SWA            DATA 0xe8
+0000             71   _SWB            DATA 0x95
+0000             72   _KEY            DATA 0xf8
+0000             73   _P0MOD          DATA 0x9a
+0000             74   _P1MOD          DATA 0x9b
+0000             75   _P2MOD          DATA 0x9c
+0000             76   _P3MOD          DATA 0x9d
+0000             77   _REP_ADD_L      DATA 0xf1
+0000             78   _REP_ADD_H      DATA 0xf2
+0000             79   _REP_VALUE      DATA 0xf3
+0000             80   _DEBUG_CALL_L   DATA 0xfa
+0000             81   _DEBUG_CALL_H   DATA 0xfb
+0000             82   _BPC            DATA 0xfc
+0000             83   _BPS            DATA 0xfd
+0000             84   _BPAL           DATA 0xfe
+0000             85   _BPAH           DATA 0xff
+0000             86   _LBPAL          DATA 0xfa
+0000             87   _LBPAH          DATA 0xfb
+0000             88   _P4             DATA 0xc0
+0000             89   _P4MOD          DATA 0xc1
+0000             90   _XRAMUSEDAS     DATA 0xc3
+0000             91   _UFM_ADD0       DATA 0xe1
+0000             92   _UFM_ADD1       DATA 0xe2
+0000             93   _UFM_ADD2       DATA 0xe3
+0000             94   _UFM_DATA0      DATA 0xe4
+0000             95   _UFM_DATA1      DATA 0xe5
+0000             96   _UFM_DATA2      DATA 0xe6
+0000             97   _UFM_DATA3      DATA 0xe7
+0000             98   _UFM_CONTROL0   DATA 0xe9
+0000             99   _UFM_CONTROL1   DATA 0xea
+0000            100   _UFM_CONTROL2   DATA 0xeb
+0000            101   _UFM_CONTROL3   DATA 0xec
+0000            102   _UFM_DATA_CMD   DATA 0xed
+0000            103   _UFM_DATA_STATUS DATA 0xee
+0000            104   _UFM_CONTROL_CMD DATA 0xef
+0000            105   ;--------------------------------------------------------
+0000            106   ; special function bits
+0000            107   ;--------------------------------------------------------
+0000            108   _P0_0           BIT 0x80
+0000            109   _P0_1           BIT 0x81
+0000            110   _P0_2           BIT 0x82
+0000            111   _P0_3           BIT 0x83
+0000            112   _P0_4           BIT 0x84
+0000            113   _P0_5           BIT 0x85
+0000            114   _P0_6           BIT 0x86
+0000            115   _P0_7           BIT 0x87
+0000            116   _IT0            BIT 0x88
+0000            117   _IE0            BIT 0x89
+0000            118   _IT1            BIT 0x8a
+0000            119   _IE1            BIT 0x8b
+0000            120   _TR0            BIT 0x8c
+0000            121   _TF0            BIT 0x8d
+0000            122   _TR1            BIT 0x8e
+0000            123   _TF1            BIT 0x8f
+0000            124   _P1_0           BIT 0x90
+0000            125   _P1_1           BIT 0x91
+0000            126   _P1_2           BIT 0x92
+0000            127   _P1_3           BIT 0x93
+0000            128   _P1_4           BIT 0x94
+0000            129   _P1_5           BIT 0x95
+0000            130   _P1_6           BIT 0x96
+0000            131   _P1_7           BIT 0x97
+0000            132   _RI             BIT 0x98
+0000            133   _TI             BIT 0x99
+0000            134   _RB8            BIT 0x9a
+0000            135   _TB8            BIT 0x9b
+0000            136   _REN            BIT 0x9c
+0000            137   _SM2            BIT 0x9d
+0000            138   _SM1            BIT 0x9e
+0000            139   _SM0            BIT 0x9f
+0000            140   _P2_0           BIT 0xa0
+0000            141   _P2_1           BIT 0xa1
+0000            142   _P2_2           BIT 0xa2
+0000            143   _P2_3           BIT 0xa3
+0000            144   _P2_4           BIT 0xa4
+0000            145   _P2_5           BIT 0xa5
+0000            146   _P2_6           BIT 0xa6
+0000            147   _P2_7           BIT 0xa7
+0000            148   _EX0            BIT 0xa8
+0000            149   _ET0            BIT 0xa9
+0000            150   _EX1            BIT 0xaa
+0000            151   _ET1            BIT 0xab
+0000            152   _ES             BIT 0xac
+0000            153   _ET2            BIT 0xad
+0000            154   _EA             BIT 0xaf
+0000            155   _P3_0           BIT 0xb0
+0000            156   _P3_1           BIT 0xb1
+0000            157   _P3_2           BIT 0xb2
+0000            158   _P3_3           BIT 0xb3
+0000            159   _P3_4           BIT 0xb4
+0000            160   _P3_5           BIT 0xb5
+0000            161   _P3_6           BIT 0xb6
+0000            162   _P3_7           BIT 0xb7
+0000            163   _RXD            BIT 0xb0
+0000            164   _TXD            BIT 0xb1
+0000            165   _INT0           BIT 0xb2
+0000            166   _INT1           BIT 0xb3
+0000            167   _T0             BIT 0xb4
+0000            168   _T1             BIT 0xb5
+0000            169   _WR             BIT 0xb6
+0000            170   _RD             BIT 0xb7
+0000            171   _PX0            BIT 0xb8
+0000            172   _PT0            BIT 0xb9
+0000            173   _PX1            BIT 0xba
+0000            174   _PT1            BIT 0xbb
+0000            175   _PS             BIT 0xbc
+0000            176   _PT2            BIT 0xbd
+0000            177   _P              BIT 0xd0
+0000            178   _F1             BIT 0xd1
+0000            179   _OV             BIT 0xd2
+0000            180   _RS0            BIT 0xd3
+0000            181   _RS1            BIT 0xd4
+0000            182   _F0             BIT 0xd5
+0000            183   _AC             BIT 0xd6
+0000            184   _CY             BIT 0xd7
+0000            185   _T2CON_0        BIT 0xc8
+0000            186   _T2CON_1        BIT 0xc9
+0000            187   _T2CON_2        BIT 0xca
+0000            188   _T2CON_3        BIT 0xcb
+0000            189   _T2CON_4        BIT 0xcc
+0000            190   _T2CON_5        BIT 0xcd
+0000            191   _T2CON_6        BIT 0xce
+0000            192   _T2CON_7        BIT 0xcf
+0000            193   _CP_RL2         BIT 0xc8
+0000            194   _C_T2           BIT 0xc9
+0000            195   _TR2            BIT 0xca
+0000            196   _EXEN2          BIT 0xcb
+0000            197   _TCLK           BIT 0xcc
+0000            198   _RCLK           BIT 0xcd
+0000            199   _EXF2           BIT 0xce
+0000            200   _TF2            BIT 0xcf
+0000            201   _LEDRA_0        BIT 0xe8
+0000            202   _LEDRA_1        BIT 0xe9
+0000            203   _LEDRA_2        BIT 0xea
+0000            204   _LEDRA_3        BIT 0xeb
+0000            205   _LEDRA_4        BIT 0xec
+0000            206   _LEDRA_5        BIT 0xed
+0000            207   _LEDRA_6        BIT 0xee
+0000            208   _LEDRA_7        BIT 0xef
+0000            209   _SWA_0          BIT 0xe8
+0000            210   _SWA_1          BIT 0xe9
+0000            211   _SWA_2          BIT 0xea
+0000            212   _SWA_3          BIT 0xeb
+0000            213   _SWA_4          BIT 0xec
+0000            214   _SWA_5          BIT 0xed
+0000            215   _SWA_6          BIT 0xee
+0000            216   _SWA_7          BIT 0xef
+0000            217   _KEY_1          BIT 0xf9
+0000            218   _KEY_2          BIT 0xfa
+0000            219   _KEY_3          BIT 0xfb
+0000            220   _KEY_4          BIT 0xfc
+0000            221   _P4_0           BIT 0xc0
+0000            222   _P4_1           BIT 0xc1
+0000            223   _P4_2           BIT 0xc2
+0000            224   _P4_3           BIT 0xc3
+0000            225   _P4_4           BIT 0xc4
+0000            226   _P4_5           BIT 0xc5
+0000            227   _P4_6           BIT 0xc6
+0000            228   _P4_7           BIT 0xc7
+0000            229   ;--------------------------------------------------------
+0000            230   ; overlayable register banks
+0000            231   ;--------------------------------------------------------
+0000            232            rbank0 segment data overlay
+0000            233   ;--------------------------------------------------------
+0000            234   ; internal ram data
+0000            235   ;--------------------------------------------------------
+0000            236            rseg R_DSEG
+0000            237   ;--------------------------------------------------------
+0000            238   ; overlayable items in internal ram 
+0000            239   ;--------------------------------------------------------
+0000            240            rseg R_OSEG
+0000            241   ;--------------------------------------------------------
+0000            242   ; indirectly addressable internal ram data
+0000            243   ;--------------------------------------------------------
+0000            244            rseg R_ISEG
+0000            245   ;--------------------------------------------------------
+0000            246   ; absolute internal ram data
+0000            247   ;--------------------------------------------------------
+0000            248            DSEG
+0000            249   ;--------------------------------------------------------
+0000            250   ; bit data
+0000            251   ;--------------------------------------------------------
+0000            252            rseg R_BSEG
+0000            253   ;--------------------------------------------------------
+0000            254   ; paged external ram data
+0000            255   ;--------------------------------------------------------
+0000            256            rseg R_PSEG
+0000            257   ;--------------------------------------------------------
+0000            258   ; external ram data
+0000            259   ;--------------------------------------------------------
+0000            260            rseg R_XSEG
+8000            261            XSEG at 0x8000
+8000            262   _rxcount: ds 1
+8001            263            public _rxcount
+0000            264            rseg R_XSEG
+8001            265            XSEG at 0x8001
+8001            266   _rxbuff: ds 254
+80FF            267            public _rxbuff
+0000            268            rseg R_XSEG
+8100            269            XSEG at 0x8100
+8100            270   _txcount: ds 1
+8101            271            public _txcount
+0000            272            rseg R_XSEG
+8101            273            XSEG at 0x8101
+8101            274   _txbuff: ds 254
+81FF            275            public _txbuff
+0000            276            rseg R_XSEG
+0000            277   _buff:
+0000            278            ds 256
+0100            279   ;--------------------------------------------------------
+0100            280   ; absolute external ram data
+0100            281   ;--------------------------------------------------------
+81FF            282            XSEG
+81FF            283   ;--------------------------------------------------------
+81FF            284   ; external initialized ram data
+81FF            285   ;--------------------------------------------------------
+0000            286            rseg R_IXSEG
+0000            287            rseg R_HOME
+0000            288            rseg R_GSINIT
+0000            289            rseg R_CSEG
+0000            290   ;--------------------------------------------------------
+0000            291   ; Reset entry point and interrupt vectors
+0000            292   ;--------------------------------------------------------
+0000            293            CSEG at 0x0000
+0000 020000     294            ljmp    _crt0
+0003            295   ;--------------------------------------------------------
+0003            296   ; global & static initialisations
+0003            297   ;--------------------------------------------------------
+0000            298            rseg R_HOME
+0000            299            rseg R_GSINIT
+0000            300            rseg R_GSINIT
+0000            301   ;--------------------------------------------------------
+0000            302   ; data variables initialization
+0000            303   ;--------------------------------------------------------
+0000            304            rseg R_DINIT
+0000            305            ; The linker places a 'ret' at the end of segment R_DINIT.
+0000            306   ;--------------------------------------------------------
+0000            307   ; code
+0000            308   ;--------------------------------------------------------
+0000            309            rseg R_CSEG
+0000            310   ;------------------------------------------------------------
+0000            311   ;Allocation info for local variables in function 'de2_8052_crt0'
+0000            312   ;------------------------------------------------------------
+0000            313   ;------------------------------------------------------------
+0000            314   ;        C:/Source/call51/Bin/../include/mcs51/MAX10_8052.h:302: void de2_8052_crt0 (void) _naked
+0000            315   ;        -----------------------------------------
+0000            316   ;         function de2_8052_crt0
+0000            317   ;        -----------------------------------------
+0000            318   _de2_8052_crt0:
+0000            319   ;        naked function: no prologue.
+0000            320   ;        C:/Source/call51/Bin/../include/mcs51/MAX10_8052.h:371: _endasm;
+0000            321            
+0000            322            
+0000            323             rseg R_GSINIT
+0000            324             public _crt0
+0000            325            _crt0:
+0000 7581FF     326             mov sp,#_stack_start-1
+0003 120000     327             lcall __c51_external_startup
+0006 E582       328             mov a,dpl
+0008 6000       329             jz __c51_init_data
+000A 020000     330             ljmp __c51_program_startup
+000D            331            __c51_init_data:
+000D            332            
+000D            333   ; Initialize xdata variables
+000D            334            
+000D 758200     335             mov dpl, #_R_XINIT_start
+0010 758300     336             mov dph, #(_R_XINIT_start>>8)
+0013 758400     337             mov _DPL1, #_R_IXSEG_start
+0016 758500     338             mov _DPH1, #(_R_IXSEG_start>>8)
+0019 7800       339             mov r0, #_R_IXSEG_size
+001B 7900       340             mov r1, #(_R_IXSEG_size>>8)
+001D            341            
+001D            342            XInitLoop?repeat?:
+001D E8         343             mov a, r0
+001E 49         344             orl a, r1
+001F 6000       345             jz XInitLoop?done?
+0021 E4         346             clr a
+0022 758600     347             mov _DPS, #0 ; Using dpl, dph
+0025 93         348             movc a,@a+dptr
+0026 A3         349             inc dptr
+0027 758601     350             mov _DPS, #1 ; Using DPL1, DPH1
+002A F0         351             movx @dptr, a
+002B A3         352             inc dptr
+002C 18         353             dec r0
+002D B8FF78     354             cjne r0, #0xff, XInitLoop?repeat?
+0030 19         355             dec r1
+0031 8000       356             sjmp XInitLoop?repeat?
+0033            357            
+0033            358            XInitLoop?done?:
+0033            359            
+0033            360   ; Clear xdata variables
+0033 758600     361             mov _DPS, #0 ; Make sure we are using dpl, dph
+0036 758200     362             mov dpl, #_R_XSEG_start
+0039 758300     363             mov dph, #(_R_XSEG_start>>8)
+003C 7C00       364             mov r4, #_R_XSEG_size
+003E 7D00       365             mov r5, #(_R_XSEG_size>>8)
+0040            366            
+0040            367            XClearLoop?repeat?:
+0040 EC         368             mov a, r4
+0041 4D         369             orl a, r5
+0042 6000       370             jz XClearLoop?done?
+0044 E4         371             clr a
+0045 F0         372             movx @dptr, a
+0046 A3         373             inc dptr
+0047 1C         374             dec r4
+0048 BCFF88     375             cjne r4, #0xff, XClearLoop?repeat?
+004B 1D         376             dec r5
+004C 8000       377             sjmp XClearLoop?repeat?
+004E            378            
+004E            379            XClearLoop?done?:
+004E 120000     380             lcall _R_DINIT_start ; Initialize data/idata variables
+0051            381            
+0051            382            __c51_program_startup:
+0051 120000     383             lcall _main
+0054            384            
+0054            385            forever?home?:
+0054 8000       386             sjmp forever?home?
+0056            387            
+0056            388             
+0056            389   ;        naked function: no epilogue.
+0056            390   ;------------------------------------------------------------
+0056            391   ;Allocation info for local variables in function 'main'
+0056            392   ;------------------------------------------------------------
+0056            393   ;j                         Allocated to registers r2 r3 
+0056            394   ;------------------------------------------------------------
+0056            395   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:24: void main (void)
+0056            396   ;        -----------------------------------------
+0056            397   ;         function main
+0056            398   ;        -----------------------------------------
+0056            399   _main:
+0056            400            using   0
+0056            401   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:28: LEDRA=0;
+0056            402   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:29: LEDRB=0;
+0056            403   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:31: sprintf(txbuff, "******************************************************************************\r\n");
+0056 E4         404            clr     a
+0057 F5E8       405            mov     _LEDRA,a
+0059 F595       406            mov     _LEDRB,a
+005B 7498       407            mov     a,#__str_0
+005D C0E0       408            push    acc
+005F 7480       409            mov     a,#(__str_0 >> 8)
+0061 C0E0       410            push    acc
+0063 7480       411            mov     a,#0x80
+0065 C0E0       412            push    acc
+0067 7401       413            mov     a,#_txbuff
+0069 C0E0       414            push    acc
+006B 7481       415            mov     a,#(_txbuff >> 8)
+006D C0E0       416            push    acc
+006F E4         417            clr     a
+0070 C0E0       418            push    acc
+0072 120000     419            lcall   _sprintf
+0075 E581       420            mov     a,sp
+0077 24FA       421            add     a,#0xfa
+0079 F581       422            mov     sp,a
+007B            423   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:32: txcount=strlen(txbuff);
+007B 908101     424            mov     dptr,#_txbuff
+007E 75F000     425            mov     b,#0x00
+0081 120000     426            lcall   _strlen
+0084 AA82       427            mov     r2,dpl
+0086 AB83       428            mov     r3,dph
+0088 908100     429            mov     dptr,#_txcount
+008B EA         430            mov     a,r2
+008C F0         431            movx    @dptr,a
+008D            432   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:33: while(txcount!=0);
+008D            433   L003001?:
+008D 908100     434            mov     dptr,#_txcount
+0090 E0         435            movx    a,@dptr
+0091 FA         436            mov     r2,a
+0092 7000       437            jnz     L003001?
+0094            438   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:34: sprintf(txbuff, "Hello, World!\r\n");
+0094 7418       439            mov     a,#__str_1
+0096 C0E0       440            push    acc
+0098 7482       441            mov     a,#(__str_1 >> 8)
+009A C0E0       442            push    acc
+009C 7480       443            mov     a,#0x80
+009E C0E0       444            push    acc
+00A0 7401       445            mov     a,#_txbuff
+00A2 C0E0       446            push    acc
+00A4 7481       447            mov     a,#(_txbuff >> 8)
+00A6 C0E0       448            push    acc
+00A8 E4         449            clr     a
+00A9 C0E0       450            push    acc
+00AB 120000     451            lcall   _sprintf
+00AE E581       452            mov     a,sp
+00B0 24FA       453            add     a,#0xfa
+00B2 F581       454            mov     sp,a
+00B4            455   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:35: txcount=strlen(txbuff);
+00B4 908101     456            mov     dptr,#_txbuff
+00B7 75F000     457            mov     b,#0x00
+00BA 120000     458            lcall   _strlen
+00BD AA82       459            mov     r2,dpl
+00BF AB83       460            mov     r3,dph
+00C1 908100     461            mov     dptr,#_txcount
+00C4 EA         462            mov     a,r2
+00C5 F0         463            movx    @dptr,a
+00C6            464   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:36: while(txcount!=0);
+00C6            465   L003004?:
+00C6 908100     466            mov     dptr,#_txcount
+00C9 E0         467            movx    a,@dptr
+00CA FA         468            mov     r2,a
+00CB 7000       469            jnz     L003004?
+00CD            470   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:37: sprintf(txbuff, "Another line for you!\r\n");
+00CD 7498       471            mov     a,#__str_2
+00CF C0E0       472            push    acc
+00D1 7482       473            mov     a,#(__str_2 >> 8)
+00D3 C0E0       474            push    acc
+00D5 7480       475            mov     a,#0x80
+00D7 C0E0       476            push    acc
+00D9 7401       477            mov     a,#_txbuff
+00DB C0E0       478            push    acc
+00DD 7481       479            mov     a,#(_txbuff >> 8)
+00DF C0E0       480            push    acc
+00E1 E4         481            clr     a
+00E2 C0E0       482            push    acc
+00E4 120000     483            lcall   _sprintf
+00E7 E581       484            mov     a,sp
+00E9 24FA       485            add     a,#0xfa
+00EB F581       486            mov     sp,a
+00ED            487   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:38: txcount=strlen(txbuff);
+00ED 908101     488            mov     dptr,#_txbuff
+00F0 75F000     489            mov     b,#0x00
+00F3 120000     490            lcall   _strlen
+00F6 AA82       491            mov     r2,dpl
+00F8 AB83       492            mov     r3,dph
+00FA 908100     493            mov     dptr,#_txcount
+00FD EA         494            mov     a,r2
+00FE F0         495            movx    @dptr,a
+00FF            496   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:39: while(txcount!=0);
+00FF            497   L003007?:
+00FF 908100     498            mov     dptr,#_txcount
+0102 E0         499            movx    a,@dptr
+0103 FA         500            mov     r2,a
+0104 7000       501            jnz     L003007?
+0106            502   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:40: sprintf(txbuff, "******************************************************************************\r\n");
+0106 7498       503            mov     a,#__str_0
+0108 C0E0       504            push    acc
+010A 7480       505            mov     a,#(__str_0 >> 8)
+010C C0E0       506            push    acc
+010E 7480       507            mov     a,#0x80
+0110 C0E0       508            push    acc
+0112 7401       509            mov     a,#_txbuff
+0114 C0E0       510            push    acc
+0116 7481       511            mov     a,#(_txbuff >> 8)
+0118 C0E0       512            push    acc
+011A E4         513            clr     a
+011B C0E0       514            push    acc
+011D 120000     515            lcall   _sprintf
+0120 E581       516            mov     a,sp
+0122 24FA       517            add     a,#0xfa
+0124 F581       518            mov     sp,a
+0126            519   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:41: txcount=strlen(txbuff);
+0126 908101     520            mov     dptr,#_txbuff
+0129 75F000     521            mov     b,#0x00
+012C 120000     522            lcall   _strlen
+012F AA82       523            mov     r2,dpl
+0131 AB83       524            mov     r3,dph
+0133 908100     525            mov     dptr,#_txcount
+0136 EA         526            mov     a,r2
+0137 F0         527            movx    @dptr,a
+0138            528   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:42: while(txcount!=0);
+0138            529   L003010?:
+0138 908100     530            mov     dptr,#_txcount
+013B E0         531            movx    a,@dptr
+013C FA         532            mov     r2,a
+013D 7000       533            jnz     L003010?
+013F            534   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:44: sprintf(txbuff, "\r\n");
+013F 7458       535            mov     a,#__str_3
+0141 C0E0       536            push    acc
+0143 7483       537            mov     a,#(__str_3 >> 8)
+0145 C0E0       538            push    acc
+0147 7480       539            mov     a,#0x80
+0149 C0E0       540            push    acc
+014B 7401       541            mov     a,#_txbuff
+014D C0E0       542            push    acc
+014F 7481       543            mov     a,#(_txbuff >> 8)
+0151 C0E0       544            push    acc
+0153 E4         545            clr     a
+0154 C0E0       546            push    acc
+0156 120000     547            lcall   _sprintf
+0159 E581       548            mov     a,sp
+015B 24FA       549            add     a,#0xfa
+015D F581       550            mov     sp,a
+015F            551   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:45: for (j=0; j<100; j++)
+015F 7A00       552            mov     r2,#0x00
+0161 7B00       553            mov     r3,#0x00
+0163            554   L003051?:
+0163 C3         555            clr     c
+0164 EA         556            mov     a,r2
+0165 9464       557            subb    a,#0x64
+0167 EB         558            mov     a,r3
+0168 6480       559            xrl     a,#0x80
+016A 9480       560            subb    a,#0x80
+016C 5000       561            jnc     L003054?
+016E            562   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:47: sprintf(buff, "The number is %03d\r\n", j);
+016E C002       563            push    ar2
+0170 C003       564            push    ar3
+0172 C002       565            push    ar2
+0174 C003       566            push    ar3
+0176 7418       567            mov     a,#__str_4
+0178 C0E0       568            push    acc
+017A 7484       569            mov     a,#(__str_4 >> 8)
+017C C0E0       570            push    acc
+017E 7480       571            mov     a,#0x80
+0180 C0E0       572            push    acc
+0182 7418       573            mov     a,#_buff
+0184 C0E0       574            push    acc
+0186 741A       575            mov     a,#(_buff >> 8)
+0188 C0E0       576            push    acc
+018A E4         577            clr     a
+018B C0E0       578            push    acc
+018D 120000     579            lcall   _sprintf
+0190 E581       580            mov     a,sp
+0192 24F8       581            add     a,#0xf8
+0194 F581       582            mov     sp,a
+0196            583   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:48: strcat(txbuff, buff);
+0196 750018     584            mov     _strcat_PARM_2,#_buff
+0199 75011A     585            mov     (_strcat_PARM_2 + 1),#(_buff >> 8)
+019C 750200     586            mov     (_strcat_PARM_2 + 2),#0x00
+019F 908101     587            mov     dptr,#_txbuff
+01A2 75F000     588            mov     b,#0x00
+01A5 120000     589            lcall   _strcat
+01A8 D003       590            pop     ar3
+01AA D002       591            pop     ar2
+01AC            592   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:45: for (j=0; j<100; j++)
+01AC 0A         593            inc     r2
+01AD BA0098     594            cjne    r2,#0x00,L003051?
+01B0 0B         595            inc     r3
+01B1 8000       596            sjmp    L003051?
+01B3            597   L003054?:
+01B3            598   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:50: txcount=1;
+01B3 908100     599            mov     dptr,#_txcount
+01B6 7401       600            mov     a,#0x01
+01B8 F0         601            movx    @dptr,a
+01B9            602   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:51: while(txcount!=0);
+01B9            603   L003013?:
+01B9 908100     604            mov     dptr,#_txcount
+01BC E0         605            movx    a,@dptr
+01BD FA         606            mov     r2,a
+01BE 7000       607            jnz     L003013?
+01C0            608   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:53: while(1)
+01C0            609   L003049?:
+01C0            610   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:55: if(KEY_1==0)
+01C0 20F958     611            jb      _KEY_1,L003023?
+01C3            612   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:57: sprintf(txbuff, "KEY_1=0\r\n");
+01C3 7498       613            mov     a,#__str_5
+01C5 C0E0       614            push    acc
+01C7 7485       615            mov     a,#(__str_5 >> 8)
+01C9 C0E0       616            push    acc
+01CB 7480       617            mov     a,#0x80
+01CD C0E0       618            push    acc
+01CF 7401       619            mov     a,#_txbuff
+01D1 C0E0       620            push    acc
+01D3 7481       621            mov     a,#(_txbuff >> 8)
+01D5 C0E0       622            push    acc
+01D7 E4         623            clr     a
+01D8 C0E0       624            push    acc
+01DA 120000     625            lcall   _sprintf
+01DD E581       626            mov     a,sp
+01DF 24FA       627            add     a,#0xfa
+01E1 F581       628            mov     sp,a
+01E3            629   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:58: txcount=strlen(txbuff);
+01E3 908101     630            mov     dptr,#_txbuff
+01E6 75F000     631            mov     b,#0x00
+01E9 120000     632            lcall   _strlen
+01EC AA82       633            mov     r2,dpl
+01EE AB83       634            mov     r3,dph
+01F0 908100     635            mov     dptr,#_txcount
+01F3 EA         636            mov     a,r2
+01F4 F0         637            movx    @dptr,a
+01F5            638   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:59: while(txcount!=0);
+01F5            639   L003016?:
+01F5 908100     640            mov     dptr,#_txcount
+01F8 E0         641            movx    a,@dptr
+01F9 FA         642            mov     r2,a
+01FA 7000       643            jnz     L003016?
+01FC            644   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:60: while(KEY_1==0);
+01FC            645   L003019?:
+01FC 30F918     646            jnb     _KEY_1,L003019?
+01FF            647   L003023?:
+01FF            648   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:62: if(KEY_2==0)
+01FF 20FA58     649            jb      _KEY_2,L003031?
+0202            650   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:64: sprintf(txbuff, "KEY_2=0\r\n");
+0202 7498       651            mov     a,#__str_6
+0204 C0E0       652            push    acc
+0206 7486       653            mov     a,#(__str_6 >> 8)
+0208 C0E0       654            push    acc
+020A 7480       655            mov     a,#0x80
+020C C0E0       656            push    acc
+020E 7401       657            mov     a,#_txbuff
+0210 C0E0       658            push    acc
+0212 7481       659            mov     a,#(_txbuff >> 8)
+0214 C0E0       660            push    acc
+0216 E4         661            clr     a
+0217 C0E0       662            push    acc
+0219 120000     663            lcall   _sprintf
+021C E581       664            mov     a,sp
+021E 24FA       665            add     a,#0xfa
+0220 F581       666            mov     sp,a
+0222            667   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:65: txcount=strlen(txbuff);
+0222 908101     668            mov     dptr,#_txbuff
+0225 75F000     669            mov     b,#0x00
+0228 120000     670            lcall   _strlen
+022B AA82       671            mov     r2,dpl
+022D AB83       672            mov     r3,dph
+022F 908100     673            mov     dptr,#_txcount
+0232 EA         674            mov     a,r2
+0233 F0         675            movx    @dptr,a
+0234            676   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:66: while(txcount!=0);
+0234            677   L003024?:
+0234 908100     678            mov     dptr,#_txcount
+0237 E0         679            movx    a,@dptr
+0238 FA         680            mov     r2,a
+0239 7000       681            jnz     L003024?
+023B            682   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:67: while(KEY_2==0);
+023B            683   L003027?:
+023B 30FA18     684            jnb     _KEY_2,L003027?
+023E            685   L003031?:
+023E            686   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:69: if(KEY_3==0)
+023E 20FB58     687            jb      _KEY_3,L003039?
+0241            688   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:71: sprintf(txbuff, "KEY_3=0\r\n");
+0241 7498       689            mov     a,#__str_7
+0243 C0E0       690            push    acc
+0245 7487       691            mov     a,#(__str_7 >> 8)
+0247 C0E0       692            push    acc
+0249 7480       693            mov     a,#0x80
+024B C0E0       694            push    acc
+024D 7401       695            mov     a,#_txbuff
+024F C0E0       696            push    acc
+0251 7481       697            mov     a,#(_txbuff >> 8)
+0253 C0E0       698            push    acc
+0255 E4         699            clr     a
+0256 C0E0       700            push    acc
+0258 120000     701            lcall   _sprintf
+025B E581       702            mov     a,sp
+025D 24FA       703            add     a,#0xfa
+025F F581       704            mov     sp,a
+0261            705   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:72: txcount=strlen(txbuff);
+0261 908101     706            mov     dptr,#_txbuff
+0264 75F000     707            mov     b,#0x00
+0267 120000     708            lcall   _strlen
+026A AA82       709            mov     r2,dpl
+026C AB83       710            mov     r3,dph
+026E 908100     711            mov     dptr,#_txcount
+0271 EA         712            mov     a,r2
+0272 F0         713            movx    @dptr,a
+0273            714   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:73: while(txcount!=0);
+0273            715   L003032?:
+0273 908100     716            mov     dptr,#_txcount
+0276 E0         717            movx    a,@dptr
+0277 FA         718            mov     r2,a
+0278 7000       719            jnz     L003032?
+027A            720   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:74: while(KEY_3==0);
+027A            721   L003035?:
+027A 30FB18     722            jnb     _KEY_3,L003035?
+027D            723   L003039?:
+027D            724   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:76: if(KEY_4==0)
+027D 30FC58     725            jnb     _KEY_4,L003099?
+0280 020000     726            ljmp    L003049?
+0283            727   L003099?:
+0283            728   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:78: sprintf(txbuff, "KEY_4=0\r\n");
+0283 7498       729            mov     a,#__str_8
+0285 C0E0       730            push    acc
+0287 7488       731            mov     a,#(__str_8 >> 8)
+0289 C0E0       732            push    acc
+028B 7480       733            mov     a,#0x80
+028D C0E0       734            push    acc
+028F 7401       735            mov     a,#_txbuff
+0291 C0E0       736            push    acc
+0293 7481       737            mov     a,#(_txbuff >> 8)
+0295 C0E0       738            push    acc
+0297 E4         739            clr     a
+0298 C0E0       740            push    acc
+029A 120000     741            lcall   _sprintf
+029D E581       742            mov     a,sp
+029F 24FA       743            add     a,#0xfa
+02A1 F581       744            mov     sp,a
+02A3            745   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:79: txcount=strlen(txbuff);
+02A3 908101     746            mov     dptr,#_txbuff
+02A6 75F000     747            mov     b,#0x00
+02A9 120000     748            lcall   _strlen
+02AC AA82       749            mov     r2,dpl
+02AE AB83       750            mov     r3,dph
+02B0 908100     751            mov     dptr,#_txcount
+02B3 EA         752            mov     a,r2
+02B4 F0         753            movx    @dptr,a
+02B5            754   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:80: while(txcount!=0);
+02B5            755   L003040?:
+02B5 908100     756            mov     dptr,#_txcount
+02B8 E0         757            movx    a,@dptr
+02B9 FA         758            mov     r2,a
+02BA 7000       759            jnz     L003040?
+02BC            760   ;        C:\Source\MAX10_8052\Boot\Test\shared_memory_test.c:81: while(KEY_4==0);
+02BC            761   L003043?:
+02BC 30FC18     762            jnb     _KEY_4,L003043?
+02BF 020000     763            ljmp    L003049?
+0000            764            rseg R_CSEG
+0000            765   
+0000            766            rseg R_XINIT
+0000            767   
+0000            768            rseg R_CONST
+0000            769   _seven_seg:
+0000 C0         770            db 0xc0         ; 192
+0001 F9         771            db 0xf9         ; 249
+0002 A4         772            db 0xa4         ; 164
+0003 B0         773            db 0xb0         ; 176
+0004 99         774            db 0x99         ; 153
+0005 92         775            db 0x92         ; 146
+0006 82         776            db 0x82         ; 130
+0007 F8         777            db 0xf8         ; 248
+0008 80         778            db 0x80         ; 128
+0009 90         779            db 0x90         ; 144
+000A 88         780            db 0x88         ; 136
+000B 83         781            db 0x83         ; 131
+000C C6         782            db 0xc6         ; 198
+000D A1         783            db 0xa1         ; 161
+000E 86         784            db 0x86         ; 134
+000F 8E         785            db 0x8e         ; 142
+0010            786   __str_0:
+0010 2A2A2A2A   787            db '************************************************************'
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+004C 2A2A2A2A   788            db '******************'
+     2A2A2A2A
+     2A2A2A2A
+     2A2A2A2A
+     2A2A
+005E 0D         789            db 0x0D
+005F 0A         790            db 0x0A
+0060 00         791            db 0x00
+0061            792   __str_1:
+0061 48656C6C   793            db 'Hello, World!'
+     6F2C2057
+     6F726C64
+     21
+006E 0D         794            db 0x0D
+006F 0A         795            db 0x0A
+0070 00         796            db 0x00
+0071            797   __str_2:
+0071 416E6F74   798            db 'Another line for you!'
+     68657220
+     6C696E65
+     20666F72
+     20796F75
+     21
+0086 0D         799            db 0x0D
+0087 0A         800            db 0x0A
+0088 00         801            db 0x00
+0089            802   __str_3:
+0089 0D         803            db 0x0D
+008A 0A         804            db 0x0A
+008B 00         805            db 0x00
+008C            806   __str_4:
+008C 54686520   807            db 'The number is %03d'
+     6E756D62
+     65722069
+     73202530
+     3364
+009E 0D         808            db 0x0D
+009F 0A         809            db 0x0A
+00A0 00         810            db 0x00
+00A1            811   __str_5:
+00A1 4B45595F   812            db 'KEY_1=0'
+     313D30
+00A8 0D         813            db 0x0D
+00A9 0A         814            db 0x0A
+00AA 00         815            db 0x00
+00AB            816   __str_6:
+00AB 4B45595F   817            db 'KEY_2=0'
+     323D30
+00B2 0D         818            db 0x0D
+00B3 0A         819            db 0x0A
+00B4 00         820            db 0x00
+00B5            821   __str_7:
+00B5 4B45595F   822            db 'KEY_3=0'
+     333D30
+00BC 0D         823            db 0x0D
+00BD 0A         824            db 0x0A
+00BE 00         825            db 0x00
+00BF            826   __str_8:
+00BF 4B45595F   827            db 'KEY_4=0'
+     343D30
+00C6 0D         828            db 0x0D
+00C7 0A         829            db 0x0A
+00C8 00         830            db 0x00
+00C9            831   
+0003            832            CSEG
+0003            833   
+0003            834   end

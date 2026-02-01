@@ -1,0 +1,1387 @@
+0000              1   ;--------------------------------------------------------
+0000              2   ; File Created by C51
+0000              3   ; Version 1.0.0 #1034 (May  5 2015) (MSVC)
+0000              4   ; This file was generated Wed Oct 02 13:11:38 2024
+0000              5   ;--------------------------------------------------------
+                  5   $name NewRegsTest
+                  6   $optc51 --model-small
+0000              8            R_DSEG    segment data
+0000              9            R_CSEG    segment code
+0000             10            R_BSEG    segment bit
+0000             11            R_XSEG    segment xdata
+0000             12            R_PSEG    segment xdata
+0000             13            R_ISEG    segment idata
+0000             14            R_OSEG    segment data overlay
+0000             15            BIT_BANK  segment data overlay
+0000             16            R_HOME    segment code
+0000             17            R_GSINIT  segment code
+0000             18            R_IXSEG   segment xdata
+0000             19            R_CONST   segment code
+0000             20            R_XINIT   segment code
+0000             21            R_DINIT   segment code
+0000             22   
+0000             23   ;--------------------------------------------------------
+0000             24   ; Public variables in this module
+0000             25   ;--------------------------------------------------------
+0000             26            public _Write_UFM_data_bytes_PARM_2
+0000             27            public _Read_UFM_data_bytes_PARM_2
+0000             28            public _Write_UFM_data_PARM_2
+0000             29            public _Write_UFM_control_PARM_2
+0000             30            public _main
+0000             31            public _Write_UFM_data_bytes
+0000             32            public _Read_UFM_data_bytes
+0000             33            public _Write_UFM_data
+0000             34            public _Read_UFM_data
+0000             35            public _Write_UFM_control
+0000             36            public _Read_UFM_control
+0000             37            public __c51_external_startup
+0000             38            public _de2_8052_crt0
+0000             39   ;--------------------------------------------------------
+0000             40   ; Special Function Registers
+0000             41   ;--------------------------------------------------------
+0000             42   _P0             DATA 0x80
+0000             43   _SP             DATA 0x81
+0000             44   _DPL            DATA 0x82
+0000             45   _DPH            DATA 0x83
+0000             46   _PCON           DATA 0x87
+0000             47   _TCON           DATA 0x88
+0000             48   _TMOD           DATA 0x89
+0000             49   _TL0            DATA 0x8a
+0000             50   _TL1            DATA 0x8b
+0000             51   _TH0            DATA 0x8c
+0000             52   _TH1            DATA 0x8d
+0000             53   _P1             DATA 0x90
+0000             54   _SCON           DATA 0x98
+0000             55   _SBUF           DATA 0x99
+0000             56   _P2             DATA 0xa0
+0000             57   _IE             DATA 0xa8
+0000             58   _P3             DATA 0xb0
+0000             59   _IP             DATA 0xb8
+0000             60   _PSW            DATA 0xd0
+0000             61   _ACC            DATA 0xe0
+0000             62   _B              DATA 0xf0
+0000             63   _T2CON          DATA 0xc8
+0000             64   _RCAP2L         DATA 0xca
+0000             65   _RCAP2H         DATA 0xcb
+0000             66   _TL2            DATA 0xcc
+0000             67   _TH2            DATA 0xcd
+0000             68   _DPS            DATA 0x86
+0000             69   _DPH1           DATA 0x85
+0000             70   _DPL1           DATA 0x84
+0000             71   _HEX0           DATA 0x91
+0000             72   _HEX1           DATA 0x92
+0000             73   _HEX2           DATA 0x93
+0000             74   _HEX3           DATA 0x94
+0000             75   _HEX4           DATA 0x8e
+0000             76   _HEX5           DATA 0x8f
+0000             77   _LEDRA          DATA 0xe8
+0000             78   _LEDRB          DATA 0x95
+0000             79   _SWA            DATA 0xe8
+0000             80   _SWB            DATA 0x95
+0000             81   _KEY            DATA 0xf8
+0000             82   _P0MOD          DATA 0x9a
+0000             83   _P1MOD          DATA 0x9b
+0000             84   _P2MOD          DATA 0x9c
+0000             85   _P3MOD          DATA 0x9d
+0000             86   _LCD_CMD        DATA 0xd8
+0000             87   _LCD_DATA       DATA 0xd9
+0000             88   _LCD_MOD        DATA 0xda
+0000             89   _JCMD           DATA 0xc0
+0000             90   _JBUF           DATA 0xc1
+0000             91   _JCNT           DATA 0xc2
+0000             92   _REP_ADD_L      DATA 0xf1
+0000             93   _REP_ADD_H      DATA 0xf2
+0000             94   _REP_VALUE      DATA 0xf3
+0000             95   _DEBUG_CALL_L   DATA 0xfa
+0000             96   _DEBUG_CALL_H   DATA 0xfb
+0000             97   _BPC            DATA 0xfc
+0000             98   _BPS            DATA 0xfd
+0000             99   _BPAL           DATA 0xfe
+0000            100   _BPAH           DATA 0xff
+0000            101   _LBPAL          DATA 0xfa
+0000            102   _LBPAH          DATA 0xfb
+0000            103   _P4             DATA 0xb1
+0000            104   _XRAMUSEDAS     DATA 0xc3
+0000            105   _UFM_ADD0       DATA 0xe1
+0000            106   _UFM_ADD1       DATA 0xe2
+0000            107   _UFM_ADD2       DATA 0xe3
+0000            108   _UFM_DATA0      DATA 0xe4
+0000            109   _UFM_DATA1      DATA 0xe5
+0000            110   _UFM_DATA2      DATA 0xe6
+0000            111   _UFM_DATA3      DATA 0xe7
+0000            112   _UFM_CONTROL0   DATA 0xe9
+0000            113   _UFM_CONTROL1   DATA 0xea
+0000            114   _UFM_CONTROL2   DATA 0xeb
+0000            115   _UFM_CONTROL3   DATA 0xec
+0000            116   _UFM_DATA_CMD   DATA 0xed
+0000            117   _UFM_DATA_STATUS DATA 0xee
+0000            118   _UFM_CONTROL_CMD DATA 0xef
+0000            119   ;--------------------------------------------------------
+0000            120   ; special function bits
+0000            121   ;--------------------------------------------------------
+0000            122   _P0_0           BIT 0x80
+0000            123   _P0_1           BIT 0x81
+0000            124   _P0_2           BIT 0x82
+0000            125   _P0_3           BIT 0x83
+0000            126   _P0_4           BIT 0x84
+0000            127   _P0_5           BIT 0x85
+0000            128   _P0_6           BIT 0x86
+0000            129   _P0_7           BIT 0x87
+0000            130   _IT0            BIT 0x88
+0000            131   _IE0            BIT 0x89
+0000            132   _IT1            BIT 0x8a
+0000            133   _IE1            BIT 0x8b
+0000            134   _TR0            BIT 0x8c
+0000            135   _TF0            BIT 0x8d
+0000            136   _TR1            BIT 0x8e
+0000            137   _TF1            BIT 0x8f
+0000            138   _P1_0           BIT 0x90
+0000            139   _P1_1           BIT 0x91
+0000            140   _P1_2           BIT 0x92
+0000            141   _P1_3           BIT 0x93
+0000            142   _P1_4           BIT 0x94
+0000            143   _P1_5           BIT 0x95
+0000            144   _P1_6           BIT 0x96
+0000            145   _P1_7           BIT 0x97
+0000            146   _RI             BIT 0x98
+0000            147   _TI             BIT 0x99
+0000            148   _RB8            BIT 0x9a
+0000            149   _TB8            BIT 0x9b
+0000            150   _REN            BIT 0x9c
+0000            151   _SM2            BIT 0x9d
+0000            152   _SM1            BIT 0x9e
+0000            153   _SM0            BIT 0x9f
+0000            154   _P2_0           BIT 0xa0
+0000            155   _P2_1           BIT 0xa1
+0000            156   _P2_2           BIT 0xa2
+0000            157   _P2_3           BIT 0xa3
+0000            158   _P2_4           BIT 0xa4
+0000            159   _P2_5           BIT 0xa5
+0000            160   _P2_6           BIT 0xa6
+0000            161   _P2_7           BIT 0xa7
+0000            162   _EX0            BIT 0xa8
+0000            163   _ET0            BIT 0xa9
+0000            164   _EX1            BIT 0xaa
+0000            165   _ET1            BIT 0xab
+0000            166   _ES             BIT 0xac
+0000            167   _ET2            BIT 0xad
+0000            168   _EA             BIT 0xaf
+0000            169   _P3_0           BIT 0xb0
+0000            170   _P3_1           BIT 0xb1
+0000            171   _P3_2           BIT 0xb2
+0000            172   _P3_3           BIT 0xb3
+0000            173   _P3_4           BIT 0xb4
+0000            174   _P3_5           BIT 0xb5
+0000            175   _P3_6           BIT 0xb6
+0000            176   _P3_7           BIT 0xb7
+0000            177   _RXD            BIT 0xb0
+0000            178   _TXD            BIT 0xb1
+0000            179   _INT0           BIT 0xb2
+0000            180   _INT1           BIT 0xb3
+0000            181   _T0             BIT 0xb4
+0000            182   _T1             BIT 0xb5
+0000            183   _WR             BIT 0xb6
+0000            184   _RD             BIT 0xb7
+0000            185   _PX0            BIT 0xb8
+0000            186   _PT0            BIT 0xb9
+0000            187   _PX1            BIT 0xba
+0000            188   _PT1            BIT 0xbb
+0000            189   _PS             BIT 0xbc
+0000            190   _PT2            BIT 0xbd
+0000            191   _P              BIT 0xd0
+0000            192   _F1             BIT 0xd1
+0000            193   _OV             BIT 0xd2
+0000            194   _RS0            BIT 0xd3
+0000            195   _RS1            BIT 0xd4
+0000            196   _F0             BIT 0xd5
+0000            197   _AC             BIT 0xd6
+0000            198   _CY             BIT 0xd7
+0000            199   _T2CON_0        BIT 0xc8
+0000            200   _T2CON_1        BIT 0xc9
+0000            201   _T2CON_2        BIT 0xca
+0000            202   _T2CON_3        BIT 0xcb
+0000            203   _T2CON_4        BIT 0xcc
+0000            204   _T2CON_5        BIT 0xcd
+0000            205   _T2CON_6        BIT 0xce
+0000            206   _T2CON_7        BIT 0xcf
+0000            207   _CP_RL2         BIT 0xc8
+0000            208   _C_T2           BIT 0xc9
+0000            209   _TR2            BIT 0xca
+0000            210   _EXEN2          BIT 0xcb
+0000            211   _TCLK           BIT 0xcc
+0000            212   _RCLK           BIT 0xcd
+0000            213   _EXF2           BIT 0xce
+0000            214   _TF2            BIT 0xcf
+0000            215   _LEDRA_0        BIT 0xe8
+0000            216   _LEDRA_1        BIT 0xe9
+0000            217   _LEDRA_2        BIT 0xea
+0000            218   _LEDRA_3        BIT 0xeb
+0000            219   _LEDRA_4        BIT 0xec
+0000            220   _LEDRA_5        BIT 0xed
+0000            221   _LEDRA_6        BIT 0xee
+0000            222   _LEDRA_7        BIT 0xef
+0000            223   _SWA_0          BIT 0xe8
+0000            224   _SWA_1          BIT 0xe9
+0000            225   _SWA_2          BIT 0xea
+0000            226   _SWA_3          BIT 0xeb
+0000            227   _SWA_4          BIT 0xec
+0000            228   _SWA_5          BIT 0xed
+0000            229   _SWA_6          BIT 0xee
+0000            230   _SWA_7          BIT 0xef
+0000            231   _KEY_0          BIT 0xf8
+0000            232   _KEY_1          BIT 0xf9
+0000            233   _KEY_2          BIT 0xfa
+0000            234   _KEY_3          BIT 0xfb
+0000            235   _LCD_RW         BIT 0xd8
+0000            236   _LCD_EN         BIT 0xd9
+0000            237   _LCD_RS         BIT 0xda
+0000            238   _LCD_ON         BIT 0xdb
+0000            239   _LCD_BLON       BIT 0xdc
+0000            240   _JRXRDY         BIT 0xc0
+0000            241   _JTXRDY         BIT 0xc1
+0000            242   _JRXEN          BIT 0xc2
+0000            243   _JTXEN          BIT 0xc3
+0000            244   _JTXFULL        BIT 0xc4
+0000            245   _JRXFULL        BIT 0xc5
+0000            246   _JTXEMPTY       BIT 0xc6
+0000            247   _JTDI           BIT 0xc7
+0000            248   ;--------------------------------------------------------
+0000            249   ; overlayable register banks
+0000            250   ;--------------------------------------------------------
+0000            251            rbank0 segment data overlay
+0000            252   ;--------------------------------------------------------
+0000            253   ; internal ram data
+0000            254   ;--------------------------------------------------------
+0000            255            rseg R_DSEG
+0000            256   _main_mybytes_1_59:
+0000            257            ds 4
+0004            258   _main_sloc0_1_0:
+0004            259            ds 2
+0006            260   ;--------------------------------------------------------
+0006            261   ; overlayable items in internal ram 
+0006            262   ;--------------------------------------------------------
+0000            263            rseg    R_OSEG
+0000            264   _Read_UFM_control_result_1_47:
+0000            265            ds 4
+0004            266            rseg    R_OSEG
+0004            267   _Write_UFM_control_PARM_2:
+0004            268            ds 4
+0008            269   _Write_UFM_control_mybytes_1_49:
+0008            270            ds 4
+000C            271            rseg    R_OSEG
+000C            272   _Read_UFM_data_result_1_51:
+000C            273            ds 4
+0010            274            rseg    R_OSEG
+0010            275   _Write_UFM_data_PARM_2:
+0010            276            ds 4
+0014            277   _Write_UFM_data_mybytes_1_53:
+0014            278            ds 4
+0018            279            rseg    R_OSEG
+0018            280   _Read_UFM_data_bytes_PARM_2:
+0018            281            ds 3
+001B            282            rseg    R_OSEG
+001B            283   _Write_UFM_data_bytes_PARM_2:
+001B            284            ds 3
+001E            285   ;--------------------------------------------------------
+001E            286   ; indirectly addressable internal ram data
+001E            287   ;--------------------------------------------------------
+0000            288            rseg R_ISEG
+0000            289   ;--------------------------------------------------------
+0000            290   ; absolute internal ram data
+0000            291   ;--------------------------------------------------------
+0000            292            DSEG
+0000            293   ;--------------------------------------------------------
+0000            294   ; bit data
+0000            295   ;--------------------------------------------------------
+0000            296            rseg R_BSEG
+0000            297   ;--------------------------------------------------------
+0000            298   ; paged external ram data
+0000            299   ;--------------------------------------------------------
+0000            300            rseg R_PSEG
+0000            301   ;--------------------------------------------------------
+0000            302   ; external ram data
+0000            303   ;--------------------------------------------------------
+0000            304            rseg R_XSEG
+0000            305   ;--------------------------------------------------------
+0000            306   ; absolute external ram data
+0000            307   ;--------------------------------------------------------
+0000            308            XSEG
+0000            309   ;--------------------------------------------------------
+0000            310   ; external initialized ram data
+0000            311   ;--------------------------------------------------------
+0000            312            rseg R_IXSEG
+0000            313            rseg R_HOME
+0000            314            rseg R_GSINIT
+0000            315            rseg R_CSEG
+0000            316   ;--------------------------------------------------------
+0000            317   ; Reset entry point and interrupt vectors
+0000            318   ;--------------------------------------------------------
+0000            319            CSEG at 0x0000
+0000 020100     320            ljmp    _crt0
+0003            321   ;--------------------------------------------------------
+0003            322   ; global & static initialisations
+0003            323   ;--------------------------------------------------------
+0000            324            rseg R_HOME
+0000            325            rseg R_GSINIT
+0000            326            rseg R_GSINIT
+0000            327   ;--------------------------------------------------------
+0000            328   ; data variables initialization
+0000            329   ;--------------------------------------------------------
+0000            330            rseg R_DINIT
+0000            331            ; The linker places a 'ret' at the end of segment R_DINIT.
+0000            332   ;--------------------------------------------------------
+0000            333   ; code
+0000            334   ;--------------------------------------------------------
+0000            335            rseg R_CSEG
+0000            336   ;------------------------------------------------------------
+0000            337   ;Allocation info for local variables in function 'de2_8052_crt0'
+0000            338   ;------------------------------------------------------------
+0000            339   ;------------------------------------------------------------
+0000            340   ;        C:/Source/call51/bin/../include/mcs51/MAX10_8052.h:314: void de2_8052_crt0 (void) _naked
+0000            341   ;        -----------------------------------------
+0000            342   ;         function de2_8052_crt0
+0000            343   ;        -----------------------------------------
+0000            344   _de2_8052_crt0:
+0000            345   ;        naked function: no prologue.
+0000            346   ;        C:/Source/call51/bin/../include/mcs51/MAX10_8052.h:383: _endasm;
+0000            347            
+0000            348            
+0000            349             rseg R_GSINIT
+0000            350             public _crt0
+0000            351            _crt0:
+0000 7581FF     352             mov sp,#_stack_start-1
+0003 120100     353             lcall __c51_external_startup
+0006 E582       354             mov a,dpl
+0008 6001       355             jz __c51_init_data
+000A 020100     356             ljmp __c51_program_startup
+000D            357            __c51_init_data:
+000D            358            
+000D            359   ; Initialize xdata variables
+000D            360            
+000D 758200     361             mov dpl, #_R_XINIT_start
+0010 758300     362             mov dph, #(_R_XINIT_start>>8)
+0013 758400     363             mov _DPL1, #_R_IXSEG_start
+0016 758500     364             mov _DPH1, #(_R_IXSEG_start>>8)
+0019 7800       365             mov r0, #_R_IXSEG_size
+001B 7900       366             mov r1, #(_R_IXSEG_size>>8)
+001D            367            
+001D            368            XInitLoop?repeat?:
+001D E8         369             mov a, r0
+001E 49         370             orl a, r1
+001F 6001       371             jz XInitLoop?done?
+0021 E4         372             clr a
+0022 758600     373             mov _DPS, #0 ; Using dpl, dph
+0025 93         374             movc a,@a+dptr
+0026 A3         375             inc dptr
+0027 758601     376             mov _DPS, #1 ; Using DPL1, DPH1
+002A F0         377             movx @dptr, a
+002B A3         378             inc dptr
+002C 18         379             dec r0
+002D B8FF70     380             cjne r0, #0xff, XInitLoop?repeat?
+0030 19         381             dec r1
+0031 8001       382             sjmp XInitLoop?repeat?
+0033            383            
+0033            384            XInitLoop?done?:
+0033            385            
+0033            386   ; Clear xdata variables
+0033 758600     387             mov _DPS, #0 ; Make sure we are using dpl, dph
+0036 758200     388             mov dpl, #_R_XSEG_start
+0039 758300     389             mov dph, #(_R_XSEG_start>>8)
+003C 7C00       390             mov r4, #_R_XSEG_size
+003E 7D00       391             mov r5, #(_R_XSEG_size>>8)
+0040            392            
+0040            393            XClearLoop?repeat?:
+0040 EC         394             mov a, r4
+0041 4D         395             orl a, r5
+0042 6001       396             jz XClearLoop?done?
+0044 E4         397             clr a
+0045 F0         398             movx @dptr, a
+0046 A3         399             inc dptr
+0047 1C         400             dec r4
+0048 BCFF80     401             cjne r4, #0xff, XClearLoop?repeat?
+004B 1D         402             dec r5
+004C 8001       403             sjmp XClearLoop?repeat?
+004E            404            
+004E            405            XClearLoop?done?:
+004E 120100     406             lcall _R_DINIT_start ; Initialize data/idata variables
+0051            407            
+0051            408            __c51_program_startup:
+0051 120100     409             lcall _main
+0054            410            
+0054            411            forever?home?:
+0054 8001       412             sjmp forever?home?
+0056            413            
+0056            414             
+0056            415   ;        naked function: no epilogue.
+0056            416   ;------------------------------------------------------------
+0056            417   ;Allocation info for local variables in function '_c51_external_startup'
+0056            418   ;------------------------------------------------------------
+0056            419   ;------------------------------------------------------------
+0056            420   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:21: unsigned char _c51_external_startup(void)
+0056            421   ;        -----------------------------------------
+0056            422   ;         function _c51_external_startup
+0056            423   ;        -----------------------------------------
+0056            424   __c51_external_startup:
+0056            425            using   0
+0056            426   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:23: RCAP2H=HIGH(TIMER_2_RELOAD);
+0056 75CBFF     427            mov     _RCAP2H,#0xFF
+0059            428   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:24: RCAP2L=LOW(TIMER_2_RELOAD);
+0059 75CAF7     429            mov     _RCAP2L,#0xF7
+005C            430   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:25: T2CON=0x34; // #00110100B
+005C 75C834     431            mov     _T2CON,#0x34
+005F            432   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:26: SCON=0x52; // Serial port in mode 1, ren, txrdy, rxempty
+005F 759852     433            mov     _SCON,#0x52
+0062            434   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:28: return 0;
+0062 758200     435            mov     dpl,#0x00
+0065 22         436            ret
+0066            437   ;------------------------------------------------------------
+0066            438   ;Allocation info for local variables in function 'Read_UFM_control'
+0066            439   ;------------------------------------------------------------
+0066            440   ;addr                      Allocated to registers r2 
+0066            441   ;result                    Allocated with name '_Read_UFM_control_result_1_47'
+0066            442   ;------------------------------------------------------------
+0066            443   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:31: unsigned long Read_UFM_control (unsigned char addr)
+0066            444   ;        -----------------------------------------
+0066            445   ;         function Read_UFM_control
+0066            446   ;        -----------------------------------------
+0066            447   _Read_UFM_control:
+0066 AA82       448            mov     r2,dpl
+0068            449   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:38: UFM_CONTROL_CMD=addr & 0b_001; // read=0, write=0      
+0068 7401       450            mov     a,#0x01
+006A 5A         451            anl     a,r2
+006B F5EF       452            mov     _UFM_CONTROL_CMD,a
+006D            453   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:39: UFM_CONTROL_CMD|=0b_010; // read=1
+006D 43EF02     454            orl     _UFM_CONTROL_CMD,#0x02
+0070            455   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:40: UFM_CONTROL_CMD=0b_000; // read=0, write=0
+0070 75EF00     456            mov     _UFM_CONTROL_CMD,#0x00
+0073            457   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:42: result.byte[3]=UFM_CONTROL3;
+0073 85ECA3     458            mov     (_Read_UFM_control_result_1_47 + 0x0003),_UFM_CONTROL3
+0076            459   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:43: result.byte[2]=UFM_CONTROL2;
+0076 85EBA2     460            mov     (_Read_UFM_control_result_1_47 + 0x0002),_UFM_CONTROL2
+0079            461   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:44: result.byte[1]=UFM_CONTROL1;
+0079 85EAA1     462            mov     (_Read_UFM_control_result_1_47 + 0x0001),_UFM_CONTROL1
+007C            463   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:45: result.byte[0]=UFM_CONTROL0;
+007C 85E9A0     464            mov     _Read_UFM_control_result_1_47,_UFM_CONTROL0
+007F            465   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:47: return result.l;
+007F 85A082     466            mov     dpl,_Read_UFM_control_result_1_47
+0082 85A183     467            mov     dph,(_Read_UFM_control_result_1_47 + 1)
+0085 85A2F0     468            mov     b,(_Read_UFM_control_result_1_47 + 2)
+0088 E5A3       469            mov     a,(_Read_UFM_control_result_1_47 + 3)
+008A 22         470            ret
+008B            471   ;------------------------------------------------------------
+008B            472   ;Allocation info for local variables in function 'Write_UFM_control'
+008B            473   ;------------------------------------------------------------
+008B            474   ;value                     Allocated with name '_Write_UFM_control_PARM_2'
+008B            475   ;addr                      Allocated to registers r2 
+008B            476   ;mybytes                   Allocated with name '_Write_UFM_control_mybytes_1_49'
+008B            477   ;------------------------------------------------------------
+008B            478   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:50: void Write_UFM_control (unsigned char addr, unsigned long value)
+008B            479   ;        -----------------------------------------
+008B            480   ;         function Write_UFM_control
+008B            481   ;        -----------------------------------------
+008B            482   _Write_UFM_control:
+008B AA82       483            mov     r2,dpl
+008D            484   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:57: mybytes.l=value;
+008D 8508F0     485            mov     _Write_UFM_control_mybytes_1_49,_Write_UFM_control_PARM_2
+0090 8509F1     486            mov     (_Write_UFM_control_mybytes_1_49 + 1),(_Write_UFM_control_PARM_2 + 1)
+0093 850AF2     487            mov     (_Write_UFM_control_mybytes_1_49 + 2),(_Write_UFM_control_PARM_2 + 2)
+0096 850BF3     488            mov     (_Write_UFM_control_mybytes_1_49 + 3),(_Write_UFM_control_PARM_2 + 3)
+0099            489   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:58: UFM_CONTROL3=mybytes.byte[3];
+0099 85F3EC     490            mov     _UFM_CONTROL3,(_Write_UFM_control_mybytes_1_49 + 0x0003)
+009C            491   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:59: UFM_CONTROL2=mybytes.byte[2];
+009C 85F2EB     492            mov     _UFM_CONTROL2,(_Write_UFM_control_mybytes_1_49 + 0x0002)
+009F            493   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:60: UFM_CONTROL1=mybytes.byte[1];
+009F 85F1EA     494            mov     _UFM_CONTROL1,(_Write_UFM_control_mybytes_1_49 + 0x0001)
+00A2            495   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:61: UFM_CONTROL0=mybytes.byte[0];
+00A2 85F0E9     496            mov     _UFM_CONTROL0,_Write_UFM_control_mybytes_1_49
+00A5            497   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:63: UFM_CONTROL_CMD=addr & 0b_001; // read=0, write=0      
+00A5 7401       498            mov     a,#0x01
+00A7 5A         499            anl     a,r2
+00A8 F5EF       500            mov     _UFM_CONTROL_CMD,a
+00AA            501   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:64: UFM_CONTROL_CMD|=0b_100; // read=1
+00AA 43EF04     502            orl     _UFM_CONTROL_CMD,#0x04
+00AD            503   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:65: UFM_CONTROL_CMD=0b_000; // read=0, write=0
+00AD 75EF00     504            mov     _UFM_CONTROL_CMD,#0x00
+00B0 22         505            ret
+00B1            506   ;------------------------------------------------------------
+00B1            507   ;Allocation info for local variables in function 'Read_UFM_data'
+00B1            508   ;------------------------------------------------------------
+00B1            509   ;addr                      Allocated to registers r2 r3 r4 r5 
+00B1            510   ;result                    Allocated with name '_Read_UFM_data_result_1_51'
+00B1            511   ;------------------------------------------------------------
+00B1            512   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:68: unsigned long Read_UFM_data (unsigned long addr)
+00B1            513   ;        -----------------------------------------
+00B1            514   ;         function Read_UFM_data
+00B1            515   ;        -----------------------------------------
+00B1            516   _Read_UFM_data:
+00B1 AA82       517            mov     r2,dpl
+00B3 AB83       518            mov     r3,dph
+00B5 ACF0       519            mov     r4,b
+00B7 FD         520            mov     r5,a
+00B8            521   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:77: result.l=addr;
+00B8 8A40       522            mov     _Read_UFM_data_result_1_51,r2
+00BA 8B41       523            mov     (_Read_UFM_data_result_1_51 + 1),r3
+00BC 8C42       524            mov     (_Read_UFM_data_result_1_51 + 2),r4
+00BE 8D43       525            mov     (_Read_UFM_data_result_1_51 + 3),r5
+00C0            526   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:78: UFM_ADD0=result.byte[0];
+00C0 8540E1     527            mov     _UFM_ADD0,_Read_UFM_data_result_1_51
+00C3            528   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:79: UFM_ADD1=result.byte[1];
+00C3 8541E2     529            mov     _UFM_ADD1,(_Read_UFM_data_result_1_51 + 0x0001)
+00C6            530   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:80: UFM_ADD2=result.byte[2];
+00C6 8542E3     531            mov     _UFM_ADD2,(_Read_UFM_data_result_1_51 + 0x0002)
+00C9            532   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:84: UFM_DATA_CMD=0b_01_0001; // write=0, read=1, burstcount=0001b
+00C9 75ED11     533            mov     _UFM_DATA_CMD,#0x11
+00CC            534   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:85: UFM_DATA_CMD=0b_00_0001; // read=0, write=0
+00CC 75ED01     535            mov     _UFM_DATA_CMD,#0x01
+00CF            536   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:87: while((UFM_DATA_STATUS&0x02)!=0x02);// Wait for readdatavalid
+00CF            537   L006001?:
+00CF 7402       538            mov     a,#0x02
+00D1 55EE       539            anl     a,_UFM_DATA_STATUS
+00D3 FA         540            mov     r2,a
+00D4 BA02D0     541            cjne    r2,#0x02,L006001?
+00D7            542   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:89: result.byte[3]=UFM_DATA3;
+00D7 85E743     543            mov     (_Read_UFM_data_result_1_51 + 0x0003),_UFM_DATA3
+00DA            544   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:90: result.byte[2]=UFM_DATA2;
+00DA 85E642     545            mov     (_Read_UFM_data_result_1_51 + 0x0002),_UFM_DATA2
+00DD            546   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:91: result.byte[1]=UFM_DATA1;
+00DD 85E541     547            mov     (_Read_UFM_data_result_1_51 + 0x0001),_UFM_DATA1
+00E0            548   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:92: result.byte[0]=UFM_DATA0;
+00E0 85E440     549            mov     _Read_UFM_data_result_1_51,_UFM_DATA0
+00E3            550   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:94: return result.l;
+00E3 854082     551            mov     dpl,_Read_UFM_data_result_1_51
+00E6 854183     552            mov     dph,(_Read_UFM_data_result_1_51 + 1)
+00E9 8542F0     553            mov     b,(_Read_UFM_data_result_1_51 + 2)
+00EC E543       554            mov     a,(_Read_UFM_data_result_1_51 + 3)
+00EE 22         555            ret
+00EF            556   ;------------------------------------------------------------
+00EF            557   ;Allocation info for local variables in function 'Write_UFM_data'
+00EF            558   ;------------------------------------------------------------
+00EF            559   ;value                     Allocated with name '_Write_UFM_data_PARM_2'
+00EF            560   ;addr                      Allocated to registers r2 r3 r4 r5 
+00EF            561   ;mybytes                   Allocated with name '_Write_UFM_data_mybytes_1_53'
+00EF            562   ;------------------------------------------------------------
+00EF            563   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:97: void Write_UFM_data (unsigned long addr, unsigned long value)
+00EF            564   ;        -----------------------------------------
+00EF            565   ;         function Write_UFM_data
+00EF            566   ;        -----------------------------------------
+00EF            567   _Write_UFM_data:
+00EF AA82       568            mov     r2,dpl
+00F1 AB83       569            mov     r3,dph
+00F3 ACF0       570            mov     r4,b
+00F5 FD         571            mov     r5,a
+00F6            572   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:106: mybytes.l=addr;
+00F6 8A90       573            mov     _Write_UFM_data_mybytes_1_53,r2
+00F8 8B91       574            mov     (_Write_UFM_data_mybytes_1_53 + 1),r3
+00FA 8C92       575            mov     (_Write_UFM_data_mybytes_1_53 + 2),r4
+00FC 8D93       576            mov     (_Write_UFM_data_mybytes_1_53 + 3),r5
+00FE            577   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:107: UFM_ADD0=mybytes.byte[0];
+00FE 8590E1     578            mov     _UFM_ADD0,_Write_UFM_data_mybytes_1_53
+0101            579   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:108: UFM_ADD1=mybytes.byte[1];
+0101 8591E2     580            mov     _UFM_ADD1,(_Write_UFM_data_mybytes_1_53 + 0x0001)
+0104            581   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:109: UFM_ADD2=mybytes.byte[2];
+0104 8592E3     582            mov     _UFM_ADD2,(_Write_UFM_data_mybytes_1_53 + 0x0002)
+0107            583   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:111: mybytes.l=value;
+0107 85B890     584            mov     _Write_UFM_data_mybytes_1_53,_Write_UFM_data_PARM_2
+010A 85B991     585            mov     (_Write_UFM_data_mybytes_1_53 + 1),(_Write_UFM_data_PARM_2 + 1)
+010D 85BA92     586            mov     (_Write_UFM_data_mybytes_1_53 + 2),(_Write_UFM_data_PARM_2 + 2)
+0110 85BB93     587            mov     (_Write_UFM_data_mybytes_1_53 + 3),(_Write_UFM_data_PARM_2 + 3)
+0113            588   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:112: UFM_DATA3=mybytes.byte[3];
+0113 8593E7     589            mov     _UFM_DATA3,(_Write_UFM_data_mybytes_1_53 + 0x0003)
+0116            590   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:113: UFM_DATA2=mybytes.byte[2];
+0116 8592E6     591            mov     _UFM_DATA2,(_Write_UFM_data_mybytes_1_53 + 0x0002)
+0119            592   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:114: UFM_DATA1=mybytes.byte[1];
+0119 8591E5     593            mov     _UFM_DATA1,(_Write_UFM_data_mybytes_1_53 + 0x0001)
+011C            594   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:115: UFM_DATA0=mybytes.byte[0];
+011C 8590E4     595            mov     _UFM_DATA0,_Write_UFM_data_mybytes_1_53
+011F            596   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:117: UFM_DATA_CMD=0b_00_0001;  // read=0, write=0, burstcount=0001b
+011F 75ED01     597            mov     _UFM_DATA_CMD,#0x01
+0122            598   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:118: UFM_DATA_CMD|=0b_10_0001; // read=1, write=0, burstcount=0001b
+0122 43ED21     599            orl     _UFM_DATA_CMD,#0x21
+0125            600   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:119: while((UFM_DATA_STATUS&0x01)==0x01);// Wait for write to finish
+0125            601   L007001?:
+0125 7401       602            mov     a,#0x01
+0127 55EE       603            anl     a,_UFM_DATA_STATUS
+0129 FA         604            mov     r2,a
+012A BA0150     605            cjne    r2,#0x01,L007008?
+012D 8001       606            sjmp    L007001?
+012F            607   L007008?:
+012F            608   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:120: UFM_DATA_CMD=0b_00_0001;  // read=0, write=0, burstcount=0000b
+012F 75ED01     609            mov     _UFM_DATA_CMD,#0x01
+0132 22         610            ret
+0133            611   ;------------------------------------------------------------
+0133            612   ;Allocation info for local variables in function 'Read_UFM_data_bytes'
+0133            613   ;------------------------------------------------------------
+0133            614   ;mybytes                   Allocated with name '_Read_UFM_data_bytes_PARM_2'
+0133            615   ;addr                      Allocated to registers r2 r3 r4 r5 
+0133            616   ;------------------------------------------------------------
+0133            617   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:123: void Read_UFM_data_bytes (unsigned long addr, unsigned char * mybytes)
+0133            618   ;        -----------------------------------------
+0133            619   ;         function Read_UFM_data_bytes
+0133            620   ;        -----------------------------------------
+0133            621   _Read_UFM_data_bytes:
+0133 AA82       622            mov     r2,dpl
+0135 AB83       623            mov     r3,dph
+0137 ACF0       624            mov     r4,b
+0139 FD         625            mov     r5,a
+013A            626   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:131: UFM_ADD0=addr%0x100;
+013A 8A06       627            mov     ar6,r2
+013C 7F00       628            mov     r7,#0x00
+013E 7800       629            mov     r0,#0x00
+0140 7900       630            mov     r1,#0x00
+0142 8EE1       631            mov     _UFM_ADD0,r6
+0144            632   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:132: UFM_ADD1=addr/0x100;
+0144 8B02       633            mov     ar2,r3
+0146 8C03       634            mov     ar3,r4
+0148 8D04       635            mov     ar4,r5
+014A 7D00       636            mov     r5,#0x00
+014C 8AE2       637            mov     _UFM_ADD1,r2
+014E            638   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:133: UFM_ADD2=0;
+014E 75E300     639            mov     _UFM_ADD2,#0x00
+0151            640   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:135: UFM_DATA_CMD=0b_01_0001; // write=0, read=1, burstcount=0001b
+0151 75ED11     641            mov     _UFM_DATA_CMD,#0x11
+0154            642   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:136: UFM_DATA_CMD=0b_00_0001; // read=0, write=0
+0154 75ED01     643            mov     _UFM_DATA_CMD,#0x01
+0157            644   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:137: while((UFM_DATA_STATUS&0x02)!=0x02);// Wait for readdatavalid
+0157            645   L008001?:
+0157 7402       646            mov     a,#0x02
+0159 55EE       647            anl     a,_UFM_DATA_STATUS
+015B FA         648            mov     r2,a
+015C BA0290     649            cjne    r2,#0x02,L008001?
+015F            650   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:139: mybytes[3]=UFM_DATA3;
+015F 7403       651            mov     a,#0x03
+0161 2568       652            add     a,_Read_UFM_data_bytes_PARM_2
+0163 FA         653            mov     r2,a
+0164 E4         654            clr     a
+0165 3569       655            addc    a,(_Read_UFM_data_bytes_PARM_2 + 1)
+0167 FB         656            mov     r3,a
+0168 AC6A       657            mov     r4,(_Read_UFM_data_bytes_PARM_2 + 2)
+016A 8A82       658            mov     dpl,r2
+016C 8B83       659            mov     dph,r3
+016E 8CF0       660            mov     b,r4
+0170 E5E7       661            mov     a,_UFM_DATA3
+0172 120100     662            lcall   __gptrput
+0175            663   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:140: mybytes[2]=UFM_DATA2;
+0175 7402       664            mov     a,#0x02
+0177 2568       665            add     a,_Read_UFM_data_bytes_PARM_2
+0179 FA         666            mov     r2,a
+017A E4         667            clr     a
+017B 3569       668            addc    a,(_Read_UFM_data_bytes_PARM_2 + 1)
+017D FB         669            mov     r3,a
+017E AC6A       670            mov     r4,(_Read_UFM_data_bytes_PARM_2 + 2)
+0180 8A82       671            mov     dpl,r2
+0182 8B83       672            mov     dph,r3
+0184 8CF0       673            mov     b,r4
+0186 E5E6       674            mov     a,_UFM_DATA2
+0188 120100     675            lcall   __gptrput
+018B            676   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:141: mybytes[1]=UFM_DATA1;
+018B 7401       677            mov     a,#0x01
+018D 2568       678            add     a,_Read_UFM_data_bytes_PARM_2
+018F FA         679            mov     r2,a
+0190 E4         680            clr     a
+0191 3569       681            addc    a,(_Read_UFM_data_bytes_PARM_2 + 1)
+0193 FB         682            mov     r3,a
+0194 AC6A       683            mov     r4,(_Read_UFM_data_bytes_PARM_2 + 2)
+0196 8A82       684            mov     dpl,r2
+0198 8B83       685            mov     dph,r3
+019A 8CF0       686            mov     b,r4
+019C E5E5       687            mov     a,_UFM_DATA1
+019E 120100     688            lcall   __gptrput
+01A1            689   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:142: mybytes[0]=UFM_DATA0;
+01A1 AA68       690            mov     r2,_Read_UFM_data_bytes_PARM_2
+01A3 AB69       691            mov     r3,(_Read_UFM_data_bytes_PARM_2 + 1)
+01A5 AC6A       692            mov     r4,(_Read_UFM_data_bytes_PARM_2 + 2)
+01A7 8A82       693            mov     dpl,r2
+01A9 8B83       694            mov     dph,r3
+01AB 8CF0       695            mov     b,r4
+01AD E5E4       696            mov     a,_UFM_DATA0
+01AF 020100     697            ljmp    __gptrput
+01B2            698   ;------------------------------------------------------------
+01B2            699   ;Allocation info for local variables in function 'Write_UFM_data_bytes'
+01B2            700   ;------------------------------------------------------------
+01B2            701   ;mybytes                   Allocated with name '_Write_UFM_data_bytes_PARM_2'
+01B2            702   ;addr                      Allocated to registers r2 r3 
+01B2            703   ;------------------------------------------------------------
+01B2            704   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:145: void Write_UFM_data_bytes (unsigned int addr, unsigned char * mybytes)
+01B2            705   ;        -----------------------------------------
+01B2            706   ;         function Write_UFM_data_bytes
+01B2            707   ;        -----------------------------------------
+01B2            708   _Write_UFM_data_bytes:
+01B2 AA82       709            mov     r2,dpl
+01B4 AB83       710            mov     r3,dph
+01B6            711   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:153: UFM_ADD0=addr%0x100;
+01B6 8A04       712            mov     ar4,r2
+01B8 7D00       713            mov     r5,#0x00
+01BA 8CE1       714            mov     _UFM_ADD0,r4
+01BC            715   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:154: UFM_ADD1=addr/0x100;
+01BC 8B02       716            mov     ar2,r3
+01BE 8AE2       717            mov     _UFM_ADD1,r2
+01C0            718   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:155: UFM_ADD2=0;
+01C0 75E300     719            mov     _UFM_ADD2,#0x00
+01C3            720   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:157: UFM_DATA3=mybytes[3];
+01C3 7403       721            mov     a,#0x03
+01C5 2518       722            add     a,_Write_UFM_data_bytes_PARM_2
+01C7 FA         723            mov     r2,a
+01C8 E4         724            clr     a
+01C9 3519       725            addc    a,(_Write_UFM_data_bytes_PARM_2 + 1)
+01CB FB         726            mov     r3,a
+01CC AC1A       727            mov     r4,(_Write_UFM_data_bytes_PARM_2 + 2)
+01CE 8A82       728            mov     dpl,r2
+01D0 8B83       729            mov     dph,r3
+01D2 8CF0       730            mov     b,r4
+01D4 120100     731            lcall   __gptrget
+01D7 F5E7       732            mov     _UFM_DATA3,a
+01D9            733   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:158: UFM_DATA2=mybytes[2];
+01D9 7402       734            mov     a,#0x02
+01DB 2518       735            add     a,_Write_UFM_data_bytes_PARM_2
+01DD FA         736            mov     r2,a
+01DE E4         737            clr     a
+01DF 3519       738            addc    a,(_Write_UFM_data_bytes_PARM_2 + 1)
+01E1 FB         739            mov     r3,a
+01E2 AC1A       740            mov     r4,(_Write_UFM_data_bytes_PARM_2 + 2)
+01E4 8A82       741            mov     dpl,r2
+01E6 8B83       742            mov     dph,r3
+01E8 8CF0       743            mov     b,r4
+01EA 120100     744            lcall   __gptrget
+01ED F5E6       745            mov     _UFM_DATA2,a
+01EF            746   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:159: UFM_DATA1=mybytes[1];
+01EF 7401       747            mov     a,#0x01
+01F1 2518       748            add     a,_Write_UFM_data_bytes_PARM_2
+01F3 FA         749            mov     r2,a
+01F4 E4         750            clr     a
+01F5 3519       751            addc    a,(_Write_UFM_data_bytes_PARM_2 + 1)
+01F7 FB         752            mov     r3,a
+01F8 AC1A       753            mov     r4,(_Write_UFM_data_bytes_PARM_2 + 2)
+01FA 8A82       754            mov     dpl,r2
+01FC 8B83       755            mov     dph,r3
+01FE 8CF0       756            mov     b,r4
+0200 120100     757            lcall   __gptrget
+0203 F5E5       758            mov     _UFM_DATA1,a
+0205            759   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:160: UFM_DATA0=mybytes[0];
+0205 AA18       760            mov     r2,_Write_UFM_data_bytes_PARM_2
+0207 AB19       761            mov     r3,(_Write_UFM_data_bytes_PARM_2 + 1)
+0209 AC1A       762            mov     r4,(_Write_UFM_data_bytes_PARM_2 + 2)
+020B 8A82       763            mov     dpl,r2
+020D 8B83       764            mov     dph,r3
+020F 8CF0       765            mov     b,r4
+0211 120100     766            lcall   __gptrget
+0214 F5E4       767            mov     _UFM_DATA0,a
+0216            768   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:162: UFM_DATA_CMD=0b_00_0001;  // read=0, write=0, burstcount=0001b
+0216 75ED01     769            mov     _UFM_DATA_CMD,#0x01
+0219            770   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:163: UFM_DATA_CMD|=0b_10_0001; // read=1, write=0, burstcount=0001b
+0219 43ED21     771            orl     _UFM_DATA_CMD,#0x21
+021C            772   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:164: while((UFM_DATA_STATUS&0x01)==0x01);// Wait for write to finish
+021C            773   L009001?:
+021C 7401       774            mov     a,#0x01
+021E 55EE       775            anl     a,_UFM_DATA_STATUS
+0220 FA         776            mov     r2,a
+0221 BA0190     777            cjne    r2,#0x01,L009008?
+0224 8001       778            sjmp    L009001?
+0226            779   L009008?:
+0226            780   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:165: UFM_DATA_CMD=0b_00_0001;  // read=0, write=0, burstcount=0000b
+0226 75ED01     781            mov     _UFM_DATA_CMD,#0x01
+0229 22         782            ret
+022A            783   ;------------------------------------------------------------
+022A            784   ;Allocation info for local variables in function 'main'
+022A            785   ;------------------------------------------------------------
+022A            786   ;mybytes                   Allocated with name '_main_mybytes_1_59'
+022A            787   ;j                         Allocated to registers r2 r3 
+022A            788   ;sloc0                     Allocated with name '_main_sloc0_1_0'
+022A            789   ;------------------------------------------------------------
+022A            790   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:168: void main (void)
+022A            791   ;        -----------------------------------------
+022A            792   ;         function main
+022A            793   ;        -----------------------------------------
+022A            794   _main:
+022A            795   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:174: LEDRA=0x00;
+022A 75E800     796            mov     _LEDRA,#0x00
+022D            797   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:175: LEDRB=0x00;
+022D            798   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:178: UFM_DATA_CMD=0x00;
+022D            799   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:179: UFM_CONTROL_CMD=0x00;
+022D            800   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:181: printf("User Flash Memory test.\r\n");
+022D E4         801            clr     a
+022E F595       802            mov     _LEDRB,a
+0230 F5ED       803            mov     _UFM_DATA_CMD,a
+0232 F5EF       804            mov     _UFM_CONTROL_CMD,a
+0234 74D0       805            mov     a,#__str_0
+0236 C0E0       806            push    acc
+0238 7489       807            mov     a,#(__str_0 >> 8)
+023A C0E0       808            push    acc
+023C 7480       809            mov     a,#0x80
+023E C0E0       810            push    acc
+0240 120100     811            lcall   _printf
+0243 1581       812            dec     sp
+0245 1581       813            dec     sp
+0247 1581       814            dec     sp
+0249            815   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:182: printf("flash_status_reg=0x%08lx\r\n", Read_UFM_control(0));
+0249 758200     816            mov     dpl,#0x00
+024C 120100     817            lcall   _Read_UFM_control
+024F AA82       818            mov     r2,dpl
+0251 AB83       819            mov     r3,dph
+0253 ACF0       820            mov     r4,b
+0255 FD         821            mov     r5,a
+0256 C002       822            push    ar2
+0258 C003       823            push    ar3
+025A C004       824            push    ar4
+025C C005       825            push    ar5
+025E 7490       826            mov     a,#__str_1
+0260 C0E0       827            push    acc
+0262 748A       828            mov     a,#(__str_1 >> 8)
+0264 C0E0       829            push    acc
+0266 7480       830            mov     a,#0x80
+0268 C0E0       831            push    acc
+026A 120100     832            lcall   _printf
+026D E581       833            mov     a,sp
+026F 24F9       834            add     a,#0xf9
+0271 F581       835            mov     sp,a
+0273            836   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:183: printf("flash_control_reg=0x%08lx\r\n", Read_UFM_control(1));
+0273 758201     837            mov     dpl,#0x01
+0276 120100     838            lcall   _Read_UFM_control
+0279 AA82       839            mov     r2,dpl
+027B AB83       840            mov     r3,dph
+027D ACF0       841            mov     r4,b
+027F FD         842            mov     r5,a
+0280 C002       843            push    ar2
+0282 C003       844            push    ar3
+0284 C004       845            push    ar4
+0286 C005       846            push    ar5
+0288 74D0       847            mov     a,#__str_2
+028A C0E0       848            push    acc
+028C 748A       849            mov     a,#(__str_2 >> 8)
+028E C0E0       850            push    acc
+0290 7480       851            mov     a,#0x80
+0292 C0E0       852            push    acc
+0294 120100     853            lcall   _printf
+0297 E581       854            mov     a,sp
+0299 24F9       855            add     a,#0xf9
+029B F581       856            mov     sp,a
+029D            857   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:184: printf("flash_data(0)=0x%08lx\r\n", Read_UFM_data(0x0000L));
+029D 900000     858            mov     dptr,#(0x00&0x00ff)
+02A0 E4         859            clr     a
+02A1 F5F0       860            mov     b,a
+02A3 120100     861            lcall   _Read_UFM_data
+02A6 AA82       862            mov     r2,dpl
+02A8 AB83       863            mov     r3,dph
+02AA ACF0       864            mov     r4,b
+02AC FD         865            mov     r5,a
+02AD C002       866            push    ar2
+02AF C003       867            push    ar3
+02B1 C004       868            push    ar4
+02B3 C005       869            push    ar5
+02B5 7410       870            mov     a,#__str_3
+02B7 C0E0       871            push    acc
+02B9 748B       872            mov     a,#(__str_3 >> 8)
+02BB C0E0       873            push    acc
+02BD 7480       874            mov     a,#0x80
+02BF C0E0       875            push    acc
+02C1 120100     876            lcall   _printf
+02C4 E581       877            mov     a,sp
+02C6 24F9       878            add     a,#0xf9
+02C8 F581       879            mov     sp,a
+02CA            880   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:185: printf("flash_data(1)=0x%08lx\r\n", Read_UFM_data(0x0001L));
+02CA 900001     881            mov     dptr,#(0x01&0x00ff)
+02CD E4         882            clr     a
+02CE F5F0       883            mov     b,a
+02D0 120100     884            lcall   _Read_UFM_data
+02D3 AA82       885            mov     r2,dpl
+02D5 AB83       886            mov     r3,dph
+02D7 ACF0       887            mov     r4,b
+02D9 FD         888            mov     r5,a
+02DA C002       889            push    ar2
+02DC C003       890            push    ar3
+02DE C004       891            push    ar4
+02E0 C005       892            push    ar5
+02E2 7450       893            mov     a,#__str_4
+02E4 C0E0       894            push    acc
+02E6 748B       895            mov     a,#(__str_4 >> 8)
+02E8 C0E0       896            push    acc
+02EA 7480       897            mov     a,#0x80
+02EC C0E0       898            push    acc
+02EE 120100     899            lcall   _printf
+02F1 E581       900            mov     a,sp
+02F3 24F9       901            add     a,#0xf9
+02F5 F581       902            mov     sp,a
+02F7            903   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:186: printf("flash_data(2)=0x%08lx\r\n", Read_UFM_data(0x0002L));
+02F7 900002     904            mov     dptr,#(0x02&0x00ff)
+02FA E4         905            clr     a
+02FB F5F0       906            mov     b,a
+02FD 120100     907            lcall   _Read_UFM_data
+0300 AA82       908            mov     r2,dpl
+0302 AB83       909            mov     r3,dph
+0304 ACF0       910            mov     r4,b
+0306 FD         911            mov     r5,a
+0307 C002       912            push    ar2
+0309 C003       913            push    ar3
+030B C004       914            push    ar4
+030D C005       915            push    ar5
+030F 7490       916            mov     a,#__str_5
+0311 C0E0       917            push    acc
+0313 748B       918            mov     a,#(__str_5 >> 8)
+0315 C0E0       919            push    acc
+0317 7480       920            mov     a,#0x80
+0319 C0E0       921            push    acc
+031B 120100     922            lcall   _printf
+031E E581       923            mov     a,sp
+0320 24F9       924            add     a,#0xf9
+0322 F581       925            mov     sp,a
+0324            926   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:187: printf("flash_status_reg=0x%08lx\r\n", Read_UFM_control(0));
+0324 758200     927            mov     dpl,#0x00
+0327 120100     928            lcall   _Read_UFM_control
+032A AA82       929            mov     r2,dpl
+032C AB83       930            mov     r3,dph
+032E ACF0       931            mov     r4,b
+0330 FD         932            mov     r5,a
+0331 C002       933            push    ar2
+0333 C003       934            push    ar3
+0335 C004       935            push    ar4
+0337 C005       936            push    ar5
+0339 7490       937            mov     a,#__str_1
+033B C0E0       938            push    acc
+033D 748A       939            mov     a,#(__str_1 >> 8)
+033F C0E0       940            push    acc
+0341 7480       941            mov     a,#0x80
+0343 C0E0       942            push    acc
+0345 120100     943            lcall   _printf
+0348 E581       944            mov     a,sp
+034A 24F9       945            add     a,#0xf9
+034C F581       946            mov     sp,a
+034E            947   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:212: printf("\r\nErasing UFM1\r\n");
+034E 74D0       948            mov     a,#__str_6
+0350 C0E0       949            push    acc
+0352 748B       950            mov     a,#(__str_6 >> 8)
+0354 C0E0       951            push    acc
+0356 7480       952            mov     a,#0x80
+0358 C0E0       953            push    acc
+035A 120100     954            lcall   _printf
+035D 1581       955            dec     sp
+035F 1581       956            dec     sp
+0361 1581       957            dec     sp
+0363            958   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:214: Write_UFM_control(1, 0x0f1fffffL); // (23 downto 20) <= '0001'
+0363 7508FF     959            mov     _Write_UFM_control_PARM_2,#0xFF
+0366 7509FF     960            mov     (_Write_UFM_control_PARM_2 + 1),#0xFF
+0369 750A1F     961            mov     (_Write_UFM_control_PARM_2 + 2),#0x1F
+036C 750B0F     962            mov     (_Write_UFM_control_PARM_2 + 3),#0x0F
+036F 758201     963            mov     dpl,#0x01
+0372 120100     964            lcall   _Write_UFM_control
+0375            965   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:216: while ((Read_UFM_control(0)&0x00000003L)!=0);
+0375            966   L010001?:
+0375 758200     967            mov     dpl,#0x00
+0378 120100     968            lcall   _Read_UFM_control
+037B AA82       969            mov     r2,dpl
+037D AB83       970            mov     r3,dph
+037F ACF0       971            mov     r4,b
+0381 FD         972            mov     r5,a
+0382 EA         973            mov     a,r2
+0383 5403       974            anl     a,#0x03
+0385            975   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:217: printf("flash_status_reg=0x%08lx\r\n", Read_UFM_control(0));
+0385 7001       976            jnz     L010001?
+0387 F582       977            mov     dpl,a
+0389 120100     978            lcall   _Read_UFM_control
+038C AA82       979            mov     r2,dpl
+038E AB83       980            mov     r3,dph
+0390 ACF0       981            mov     r4,b
+0392 FD         982            mov     r5,a
+0393 C002       983            push    ar2
+0395 C003       984            push    ar3
+0397 C004       985            push    ar4
+0399 C005       986            push    ar5
+039B 7490       987            mov     a,#__str_1
+039D C0E0       988            push    acc
+039F 748A       989            mov     a,#(__str_1 >> 8)
+03A1 C0E0       990            push    acc
+03A3 7480       991            mov     a,#0x80
+03A5 C0E0       992            push    acc
+03A7 120100     993            lcall   _printf
+03AA E581       994            mov     a,sp
+03AC 24F9       995            add     a,#0xf9
+03AE F581       996            mov     sp,a
+03B0            997   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:218: Read_UFM_data_bytes(0, mybytes);
+03B0 756810     998            mov     _Read_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+03B3 756900     999            mov     (_Read_UFM_data_bytes_PARM_2 + 1),#0x00
+03B6 756A40    1000            mov     (_Read_UFM_data_bytes_PARM_2 + 2),#0x40
+03B9 900000    1001            mov     dptr,#(0x00&0x00ff)
+03BC E4        1002            clr     a
+03BD F5F0      1003            mov     b,a
+03BF 120100    1004            lcall   _Read_UFM_data_bytes
+03C2           1005   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:219: printf("flash_data(0)=0x%02x%02x%02x%02x\r\n", mybytes[3], mybytes[2], mybytes[1], mybytes[0]);
+03C2 AA10      1006            mov     r2,_main_mybytes_1_59
+03C4 7B00      1007            mov     r3,#0x00
+03C6 AC11      1008            mov     r4,(_main_mybytes_1_59 + 0x0001)
+03C8 7D00      1009            mov     r5,#0x00
+03CA 851250    1010            mov     _main_sloc0_1_0,(_main_mybytes_1_59 + 0x0002)
+03CD 755100    1011            mov     (_main_sloc0_1_0 + 1),#0x00
+03D0 AE13      1012            mov     r6,(_main_mybytes_1_59 + 0x0003)
+03D2 7F00      1013            mov     r7,#0x00
+03D4 C002      1014            push    ar2
+03D6 C003      1015            push    ar3
+03D8 C004      1016            push    ar4
+03DA C005      1017            push    ar5
+03DC C050      1018            push    _main_sloc0_1_0
+03DE C051      1019            push    (_main_sloc0_1_0 + 1)
+03E0 C006      1020            push    ar6
+03E2 C007      1021            push    ar7
+03E4 7450      1022            mov     a,#__str_7
+03E6 C0E0      1023            push    acc
+03E8 748C      1024            mov     a,#(__str_7 >> 8)
+03EA C0E0      1025            push    acc
+03EC 7480      1026            mov     a,#0x80
+03EE C0E0      1027            push    acc
+03F0 120100    1028            lcall   _printf
+03F3 E581      1029            mov     a,sp
+03F5 24F5      1030            add     a,#0xf5
+03F7 F581      1031            mov     sp,a
+03F9           1032   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:220: Read_UFM_data_bytes(1, mybytes);
+03F9 756810    1033            mov     _Read_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+03FC 756900    1034            mov     (_Read_UFM_data_bytes_PARM_2 + 1),#0x00
+03FF 756A40    1035            mov     (_Read_UFM_data_bytes_PARM_2 + 2),#0x40
+0402 900001    1036            mov     dptr,#(0x01&0x00ff)
+0405 E4        1037            clr     a
+0406 F5F0      1038            mov     b,a
+0408 120100    1039            lcall   _Read_UFM_data_bytes
+040B           1040   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:221: printf("flash_data(1)=0x%02x%02x%02x%02x\r\n", mybytes[3], mybytes[2], mybytes[1], mybytes[0]);
+040B AA10      1041            mov     r2,_main_mybytes_1_59
+040D 7B00      1042            mov     r3,#0x00
+040F AC11      1043            mov     r4,(_main_mybytes_1_59 + 0x0001)
+0411 7D00      1044            mov     r5,#0x00
+0413 851250    1045            mov     _main_sloc0_1_0,(_main_mybytes_1_59 + 0x0002)
+0416 755100    1046            mov     (_main_sloc0_1_0 + 1),#0x00
+0419 AE13      1047            mov     r6,(_main_mybytes_1_59 + 0x0003)
+041B 7F00      1048            mov     r7,#0x00
+041D C002      1049            push    ar2
+041F C003      1050            push    ar3
+0421 C004      1051            push    ar4
+0423 C005      1052            push    ar5
+0425 C050      1053            push    _main_sloc0_1_0
+0427 C051      1054            push    (_main_sloc0_1_0 + 1)
+0429 C006      1055            push    ar6
+042B C007      1056            push    ar7
+042D 7490      1057            mov     a,#__str_8
+042F C0E0      1058            push    acc
+0431 748C      1059            mov     a,#(__str_8 >> 8)
+0433 C0E0      1060            push    acc
+0435 7480      1061            mov     a,#0x80
+0437 C0E0      1062            push    acc
+0439 120100    1063            lcall   _printf
+043C E581      1064            mov     a,sp
+043E 24F5      1065            add     a,#0xf5
+0440 F581      1066            mov     sp,a
+0442           1067   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:222: Read_UFM_data_bytes(2, mybytes);
+0442 756810    1068            mov     _Read_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+0445 756900    1069            mov     (_Read_UFM_data_bytes_PARM_2 + 1),#0x00
+0448 756A40    1070            mov     (_Read_UFM_data_bytes_PARM_2 + 2),#0x40
+044B 900002    1071            mov     dptr,#(0x02&0x00ff)
+044E E4        1072            clr     a
+044F F5F0      1073            mov     b,a
+0451 120100    1074            lcall   _Read_UFM_data_bytes
+0454           1075   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:223: printf("flash_data(2)=0x%02x%02x%02x%02x\r\n", mybytes[3], mybytes[2], mybytes[1], mybytes[0]);
+0454 AA10      1076            mov     r2,_main_mybytes_1_59
+0456 7B00      1077            mov     r3,#0x00
+0458 AC11      1078            mov     r4,(_main_mybytes_1_59 + 0x0001)
+045A 7D00      1079            mov     r5,#0x00
+045C 851250    1080            mov     _main_sloc0_1_0,(_main_mybytes_1_59 + 0x0002)
+045F 755100    1081            mov     (_main_sloc0_1_0 + 1),#0x00
+0462 AE13      1082            mov     r6,(_main_mybytes_1_59 + 0x0003)
+0464 7F00      1083            mov     r7,#0x00
+0466 C002      1084            push    ar2
+0468 C003      1085            push    ar3
+046A C004      1086            push    ar4
+046C C005      1087            push    ar5
+046E C050      1088            push    _main_sloc0_1_0
+0470 C051      1089            push    (_main_sloc0_1_0 + 1)
+0472 C006      1090            push    ar6
+0474 C007      1091            push    ar7
+0476 74D0      1092            mov     a,#__str_9
+0478 C0E0      1093            push    acc
+047A 748C      1094            mov     a,#(__str_9 >> 8)
+047C C0E0      1095            push    acc
+047E 7480      1096            mov     a,#0x80
+0480 C0E0      1097            push    acc
+0482 120100    1098            lcall   _printf
+0485 E581      1099            mov     a,sp
+0487 24F5      1100            add     a,#0xf5
+0489 F581      1101            mov     sp,a
+048B           1102   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:225: printf("\r\nWriting to UFM1\r\n");
+048B 7410      1103            mov     a,#__str_10
+048D C0E0      1104            push    acc
+048F 748D      1105            mov     a,#(__str_10 >> 8)
+0491 C0E0      1106            push    acc
+0493 7480      1107            mov     a,#0x80
+0495 C0E0      1108            push    acc
+0497 120100    1109            lcall   _printf
+049A 1581      1110            dec     sp
+049C 1581      1111            dec     sp
+049E 1581      1112            dec     sp
+04A0           1113   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:226: mybytes[3]=0x12; mybytes[2]=0x34; mybytes[1]=0x56; mybytes[0]=0x78;
+04A0 751312    1114            mov     (_main_mybytes_1_59 + 0x0003),#0x12
+04A3 751234    1115            mov     (_main_mybytes_1_59 + 0x0002),#0x34
+04A6 751156    1116            mov     (_main_mybytes_1_59 + 0x0001),#0x56
+04A9 751078    1117            mov     _main_mybytes_1_59,#0x78
+04AC           1118   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:227: Write_UFM_data_bytes(0, mybytes);     
+04AC 751810    1119            mov     _Write_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+04AF 751900    1120            mov     (_Write_UFM_data_bytes_PARM_2 + 1),#0x00
+04B2 751A40    1121            mov     (_Write_UFM_data_bytes_PARM_2 + 2),#0x40
+04B5 900000    1122            mov     dptr,#0x0000
+04B8 120100    1123            lcall   _Write_UFM_data_bytes
+04BB           1124   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:228: mybytes[3]=0x55; mybytes[2]=0x55; mybytes[1]=0x55; mybytes[0]=0x55;
+04BB 751355    1125            mov     (_main_mybytes_1_59 + 0x0003),#0x55
+04BE 751255    1126            mov     (_main_mybytes_1_59 + 0x0002),#0x55
+04C1 751155    1127            mov     (_main_mybytes_1_59 + 0x0001),#0x55
+04C4 751055    1128            mov     _main_mybytes_1_59,#0x55
+04C7           1129   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:229: Write_UFM_data_bytes(1, mybytes);     
+04C7 751810    1130            mov     _Write_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+04CA 751900    1131            mov     (_Write_UFM_data_bytes_PARM_2 + 1),#0x00
+04CD 751A40    1132            mov     (_Write_UFM_data_bytes_PARM_2 + 2),#0x40
+04D0 900001    1133            mov     dptr,#0x0001
+04D3 120100    1134            lcall   _Write_UFM_data_bytes
+04D6           1135   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:230: mybytes[3]=0xaa; mybytes[2]=0xaa; mybytes[1]=0xaa; mybytes[0]=0xaa;
+04D6 7513AA    1136            mov     (_main_mybytes_1_59 + 0x0003),#0xAA
+04D9 7512AA    1137            mov     (_main_mybytes_1_59 + 0x0002),#0xAA
+04DC 7511AA    1138            mov     (_main_mybytes_1_59 + 0x0001),#0xAA
+04DF 7510AA    1139            mov     _main_mybytes_1_59,#0xAA
+04E2           1140   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:231: Write_UFM_data_bytes(2, mybytes);
+04E2 751810    1141            mov     _Write_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+04E5 751900    1142            mov     (_Write_UFM_data_bytes_PARM_2 + 1),#0x00
+04E8 751A40    1143            mov     (_Write_UFM_data_bytes_PARM_2 + 2),#0x40
+04EB 900002    1144            mov     dptr,#0x0002
+04EE 120100    1145            lcall   _Write_UFM_data_bytes
+04F1           1146   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:233: for(j=0; j<292; j++); // Need some delay after writing to read.  275 fails.  300 works.
+04F1 7A24      1147            mov     r2,#0x24
+04F3 7B01      1148            mov     r3,#0x01
+04F5           1149   L010006?:
+04F5 1A        1150            dec     r2
+04F6 BAFF90    1151            cjne    r2,#0xff,L010016?
+04F9 1B        1152            dec     r3
+04FA           1153   L010016?:
+04FA EA        1154            mov     a,r2
+04FB 4B        1155            orl     a,r3
+04FC           1156   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:235: Read_UFM_data_bytes(0, mybytes);
+04FC 7001      1157            jnz     L010006?
+04FE 756810    1158            mov     _Read_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+0501 F569      1159            mov     (_Read_UFM_data_bytes_PARM_2 + 1),a
+0503 756A40    1160            mov     (_Read_UFM_data_bytes_PARM_2 + 2),#0x40
+0506 900000    1161            mov     dptr,#(0x00&0x00ff)
+0509 E4        1162            clr     a
+050A F5F0      1163            mov     b,a
+050C 120100    1164            lcall   _Read_UFM_data_bytes
+050F           1165   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:236: printf("flash_data(0)=0x%02x%02x%02x%02x\r\n", mybytes[3], mybytes[2], mybytes[1], mybytes[0]);
+050F AA10      1166            mov     r2,_main_mybytes_1_59
+0511 7B00      1167            mov     r3,#0x00
+0513 AC11      1168            mov     r4,(_main_mybytes_1_59 + 0x0001)
+0515 7D00      1169            mov     r5,#0x00
+0517 851250    1170            mov     _main_sloc0_1_0,(_main_mybytes_1_59 + 0x0002)
+051A 755100    1171            mov     (_main_sloc0_1_0 + 1),#0x00
+051D AE13      1172            mov     r6,(_main_mybytes_1_59 + 0x0003)
+051F 7F00      1173            mov     r7,#0x00
+0521 C002      1174            push    ar2
+0523 C003      1175            push    ar3
+0525 C004      1176            push    ar4
+0527 C005      1177            push    ar5
+0529 C050      1178            push    _main_sloc0_1_0
+052B C051      1179            push    (_main_sloc0_1_0 + 1)
+052D C006      1180            push    ar6
+052F C007      1181            push    ar7
+0531 7450      1182            mov     a,#__str_7
+0533 C0E0      1183            push    acc
+0535 748C      1184            mov     a,#(__str_7 >> 8)
+0537 C0E0      1185            push    acc
+0539 7480      1186            mov     a,#0x80
+053B C0E0      1187            push    acc
+053D 120100    1188            lcall   _printf
+0540 E581      1189            mov     a,sp
+0542 24F5      1190            add     a,#0xf5
+0544 F581      1191            mov     sp,a
+0546           1192   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:237: Read_UFM_data_bytes(1, mybytes);
+0546 756810    1193            mov     _Read_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+0549 756900    1194            mov     (_Read_UFM_data_bytes_PARM_2 + 1),#0x00
+054C 756A40    1195            mov     (_Read_UFM_data_bytes_PARM_2 + 2),#0x40
+054F 900001    1196            mov     dptr,#(0x01&0x00ff)
+0552 E4        1197            clr     a
+0553 F5F0      1198            mov     b,a
+0555 120100    1199            lcall   _Read_UFM_data_bytes
+0558           1200   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:238: printf("flash_data(1)=0x%02x%02x%02x%02x\r\n", mybytes[3], mybytes[2], mybytes[1], mybytes[0]);
+0558 AA10      1201            mov     r2,_main_mybytes_1_59
+055A 7B00      1202            mov     r3,#0x00
+055C AC11      1203            mov     r4,(_main_mybytes_1_59 + 0x0001)
+055E 7D00      1204            mov     r5,#0x00
+0560 851250    1205            mov     _main_sloc0_1_0,(_main_mybytes_1_59 + 0x0002)
+0563 755100    1206            mov     (_main_sloc0_1_0 + 1),#0x00
+0566 AE13      1207            mov     r6,(_main_mybytes_1_59 + 0x0003)
+0568 7F00      1208            mov     r7,#0x00
+056A C002      1209            push    ar2
+056C C003      1210            push    ar3
+056E C004      1211            push    ar4
+0570 C005      1212            push    ar5
+0572 C050      1213            push    _main_sloc0_1_0
+0574 C051      1214            push    (_main_sloc0_1_0 + 1)
+0576 C006      1215            push    ar6
+0578 C007      1216            push    ar7
+057A 7490      1217            mov     a,#__str_8
+057C C0E0      1218            push    acc
+057E 748C      1219            mov     a,#(__str_8 >> 8)
+0580 C0E0      1220            push    acc
+0582 7480      1221            mov     a,#0x80
+0584 C0E0      1222            push    acc
+0586 120100    1223            lcall   _printf
+0589 E581      1224            mov     a,sp
+058B 24F5      1225            add     a,#0xf5
+058D F581      1226            mov     sp,a
+058F           1227   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:239: Read_UFM_data_bytes(2, mybytes);
+058F 756810    1228            mov     _Read_UFM_data_bytes_PARM_2,#_main_mybytes_1_59
+0592 756900    1229            mov     (_Read_UFM_data_bytes_PARM_2 + 1),#0x00
+0595 756A40    1230            mov     (_Read_UFM_data_bytes_PARM_2 + 2),#0x40
+0598 900002    1231            mov     dptr,#(0x02&0x00ff)
+059B E4        1232            clr     a
+059C F5F0      1233            mov     b,a
+059E 120100    1234            lcall   _Read_UFM_data_bytes
+05A1           1235   ;        C:\Source\MAX10_8052\Test\Code\NewRegsTest.c:240: printf("flash_data(2)=0x%02x%02x%02x%02x\r\n", mybytes[3], mybytes[2], mybytes[1], mybytes[0]);
+05A1 AA10      1236            mov     r2,_main_mybytes_1_59
+05A3 7B00      1237            mov     r3,#0x00
+05A5 AC11      1238            mov     r4,(_main_mybytes_1_59 + 0x0001)
+05A7 7D00      1239            mov     r5,#0x00
+05A9 851250    1240            mov     _main_sloc0_1_0,(_main_mybytes_1_59 + 0x0002)
+05AC 755100    1241            mov     (_main_sloc0_1_0 + 1),#0x00
+05AF AE13      1242            mov     r6,(_main_mybytes_1_59 + 0x0003)
+05B1 7F00      1243            mov     r7,#0x00
+05B3 C002      1244            push    ar2
+05B5 C003      1245            push    ar3
+05B7 C004      1246            push    ar4
+05B9 C005      1247            push    ar5
+05BB C050      1248            push    _main_sloc0_1_0
+05BD C051      1249            push    (_main_sloc0_1_0 + 1)
+05BF C006      1250            push    ar6
+05C1 C007      1251            push    ar7
+05C3 74D0      1252            mov     a,#__str_9
+05C5 C0E0      1253            push    acc
+05C7 748C      1254            mov     a,#(__str_9 >> 8)
+05C9 C0E0      1255            push    acc
+05CB 7480      1256            mov     a,#0x80
+05CD C0E0      1257            push    acc
+05CF 120100    1258            lcall   _printf
+05D2 E581      1259            mov     a,sp
+05D4 24F5      1260            add     a,#0xf5
+05D6 F581      1261            mov     sp,a
+05D8 22        1262            ret
+0000           1263            rseg R_CSEG
+0000           1264   
+0000           1265            rseg R_XINIT
+0000           1266   
+0000           1267            rseg R_CONST
+0000           1268   __str_0:
+0000 55736572  1269            db 'User Flash Memory test.'
+     20466C61
+     7368204D
+     656D6F72
+     79207465
+     73742E
+0017 0D        1270            db 0x0D
+0018 0A        1271            db 0x0A
+0019 00        1272            db 0x00
+001A           1273   __str_1:
+001A 666C6173  1274            db 'flash_status_reg=0x%08lx'
+     685F7374
+     61747573
+     5F726567
+     3D307825
+     30386C78
+0032 0D        1275            db 0x0D
+0033 0A        1276            db 0x0A
+0034 00        1277            db 0x00
+0035           1278   __str_2:
+0035 666C6173  1279            db 'flash_control_reg=0x%08lx'
+     685F636F
+     6E74726F
+     6C5F7265
+     673D3078
+     2530386C
+     78
+004E 0D        1280            db 0x0D
+004F 0A        1281            db 0x0A
+0050 00        1282            db 0x00
+0051           1283   __str_3:
+0051 666C6173  1284            db 'flash_data(0)=0x%08lx'
+     685F6461
+     74612830
+     293D3078
+     2530386C
+     78
+0066 0D        1285            db 0x0D
+0067 0A        1286            db 0x0A
+0068 00        1287            db 0x00
+0069           1288   __str_4:
+0069 666C6173  1289            db 'flash_data(1)=0x%08lx'
+     685F6461
+     74612831
+     293D3078
+     2530386C
+     78
+007E 0D        1290            db 0x0D
+007F 0A        1291            db 0x0A
+0080 00        1292            db 0x00
+0081           1293   __str_5:
+0081 666C6173  1294            db 'flash_data(2)=0x%08lx'
+     685F6461
+     74612832
+     293D3078
+     2530386C
+     78
+0096 0D        1295            db 0x0D
+0097 0A        1296            db 0x0A
+0098 00        1297            db 0x00
+0099           1298   __str_6:
+0099 0D        1299            db 0x0D
+009A 0A        1300            db 0x0A
+009B 45726173  1301            db 'Erasing UFM1'
+     696E6720
+     55464D31
+00A7 0D        1302            db 0x0D
+00A8 0A        1303            db 0x0A
+00A9 00        1304            db 0x00
+00AA           1305   __str_7:
+00AA 666C6173  1306            db 'flash_data(0)=0x%02x%02x%02x%02x'
+     685F6461
+     74612830
+     293D3078
+     25303278
+     25303278
+     25303278
+     25303278
+00CA 0D        1307            db 0x0D
+00CB 0A        1308            db 0x0A
+00CC 00        1309            db 0x00
+00CD           1310   __str_8:
+00CD 666C6173  1311            db 'flash_data(1)=0x%02x%02x%02x%02x'
+     685F6461
+     74612831
+     293D3078
+     25303278
+     25303278
+     25303278
+     25303278
+00ED 0D        1312            db 0x0D
+00EE 0A        1313            db 0x0A
+00EF 00        1314            db 0x00
+00F0           1315   __str_9:
+00F0 666C6173  1316            db 'flash_data(2)=0x%02x%02x%02x%02x'
+     685F6461
+     74612832
+     293D3078
+     25303278
+     25303278
+     25303278
+     25303278
+0110 0D        1317            db 0x0D
+0111 0A        1318            db 0x0A
+0112 00        1319            db 0x00
+0113           1320   __str_10:
+0113 0D        1321            db 0x0D
+0114 0A        1322            db 0x0A
+0115 57726974  1323            db 'Writing to UFM1'
+     696E6720
+     746F2055
+     464D31
+0124 0D        1324            db 0x0D
+0125 0A        1325            db 0x0A
+0126 00        1326            db 0x00
+0127           1327   
+0003           1328            CSEG
+0003           1329   
+0003           1330   end

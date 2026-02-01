@@ -1,0 +1,156 @@
+Flow report for CV_8052
+Mon Jan 19 09:12:45 2026
+Quartus Prime Version 23.1std.0 Build 991 11/28/2023 SC Lite Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Flow Summary
+  3. Flow Settings
+  4. Flow Non-Default Global Settings
+  5. Flow Elapsed Time
+  6. Flow OS Summary
+  7. Flow Log
+  8. Flow Messages
+  9. Flow Suppressed Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2023  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+
+
+
++-------------------------------------------------------------------------------------+
+; Flow Summary                                                                        ;
++------------------------------------+------------------------------------------------+
+; Flow Status                        ; Successful - Mon Jan 19 09:12:36 2026          ;
+; Quartus Prime Version              ; 23.1std.0 Build 991 11/28/2023 SC Lite Edition ;
+; Revision Name                      ; CV_8052                                        ;
+; Top-level Entity Name              ; CV_8052                                        ;
+; Family                             ; MAX 10                                         ;
+; Device                             ; 10M50DAF484C7G                                 ;
+; Timing Models                      ; Final                                          ;
+; Total logic elements               ; 4,513 / 49,760 ( 9 % )                         ;
+;     Total combinational functions  ; 4,341 / 49,760 ( 9 % )                         ;
+;     Dedicated logic registers      ; 1,784 / 49,760 ( 4 % )                         ;
+; Total registers                    ; 1784                                           ;
+; Total pins                         ; 130 / 360 ( 36 % )                             ;
+; Total virtual pins                 ; 0                                              ;
+; Total memory bits                  ; 824,064 / 1,677,312 ( 49 % )                   ;
+; Embedded Multiplier 9-bit elements ; 1 / 288 ( < 1 % )                              ;
+; Total PLLs                         ; 2 / 4 ( 50 % )                                 ;
+; UFM blocks                         ; 1 / 1 ( 100 % )                                ;
+; ADC blocks                         ; 1 / 2 ( 50 % )                                 ;
++------------------------------------+------------------------------------------------+
+
+
++-----------------------------------------+
+; Flow Settings                           ;
++-------------------+---------------------+
+; Option            ; Setting             ;
++-------------------+---------------------+
+; Start date & time ; 01/19/2026 09:11:11 ;
+; Main task         ; Compilation         ;
+; Revision Name     ; CV_8052             ;
++-------------------+---------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Flow Non-Default Global Settings                                                                                                                        ;
++-------------------------------------+----------------------------------------------------------------+---------------+---------------------+------------+
+; Assignment Name                     ; Value                                                          ; Default Value ; Entity Name         ; Section Id ;
++-------------------------------------+----------------------------------------------------------------+---------------+---------------------+------------+
+; ADVANCED_PHYSICAL_OPTIMIZATION      ; -- (Not supported for targeted family)                         ; --            ; --                  ; --         ;
+; ALM_REGISTER_PACKING_EFFORT         ; Low                                                            ; Medium        ; --                  ; --         ;
+; AUTO_DELAY_CHAINS                   ; Off                                                            ; On            ; --                  ; --         ;
+; COMPILER_SIGNATURE_ID               ; 1096825947404.176884267119312                                  ; --            ; --                  ; --         ;
+; DO_COMBINED_ANALYSIS                ; On                                                             ; Off           ; --                  ; --         ;
+; ENABLE_CLOCK_LATENCY                ; On                                                             ; Off           ; --                  ; --         ;
+; FITTER_EFFORT                       ; Fast Fit                                                       ; Auto Fit      ; --                  ; --         ;
+; MAX_CORE_JUNCTION_TEMP              ; 85                                                             ; --            ; --                  ; --         ;
+; MESSAGE_DISABLE                     ; 332060                                                         ; --            ; altera_onchip_flash ; --         ;
+; MIN_CORE_JUNCTION_TEMP              ; 0                                                              ; --            ; --                  ; --         ;
+; MISC_FILE                           ; ADC/synthesis/../ADC.cmp                                       ; --            ; --                  ; --         ;
+; MISC_FILE                           ; ADC/synthesis/../../ADC.qsys                                   ; --            ; --                  ; --         ;
+; MISC_FILE                           ; onchip_flash/synthesis/../onchip_flash.cmp                     ; --            ; --                  ; --         ;
+; MISC_FILE                           ; onchip_flash/synthesis/../../onchip_flash.qsys                 ; --            ; --                  ; --         ;
+; MISC_FILE                           ; CV_PLL.cmp                                                     ; --            ; --                  ; --         ;
+; MISC_FILE                           ; CV_PLL.ppf                                                     ; --            ; --                  ; --         ;
+; MUX_RESTRUCTURE                     ; On                                                             ; Auto          ; --                  ; --         ;
+; NUMBER_OF_PATHS_TO_REPORT           ; 400                                                            ; 200           ; --                  ; --         ;
+; NUM_PARALLEL_PROCESSORS             ; All                                                            ; --            ; --                  ; --         ;
+; OPTIMIZATION_TECHNIQUE              ; -- (Not supported for targeted family)                         ; Balanced      ; --                  ; --         ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS      ; Half Signal Swing                                              ; --            ; --                  ; --         ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS      ; Half Signal Swing                                              ; --            ; --                  ; --         ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS     ; Half Vccio                                                     ; --            ; --                  ; --         ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS     ; Half Vccio                                                     ; --            ; --                  ; --         ;
+; PARTITION_COLOR                     ; -- (Not supported for targeted family)                         ; --            ; --                  ; Top        ;
+; PARTITION_FITTER_PRESERVATION_LEVEL ; -- (Not supported for targeted family)                         ; --            ; --                  ; Top        ;
+; PARTITION_NETLIST_TYPE              ; -- (Not supported for targeted family)                         ; --            ; --                  ; Top        ;
+; POWER_BOARD_THERMAL_MODEL           ; None (CONSERVATIVE)                                            ; --            ; --                  ; --         ;
+; POWER_PRESET_COOLING_SOLUTION       ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW                          ; --            ; --                  ; --         ;
+; SLD_FILE                            ; ADC/synthesis/ADC.debuginfo                                    ; --            ; --                  ; --         ;
+; SLD_FILE                            ; onchip_flash/synthesis/onchip_flash.debuginfo                  ; --            ; --                  ; --         ;
+; SLD_INFO                            ; QSYS_NAME ADC HAS_SOPCINFO 1 GENERATION_ID 1768497360          ; --            ; ADC                 ; --         ;
+; SLD_INFO                            ; QSYS_NAME onchip_flash HAS_SOPCINFO 1 GENERATION_ID 1729203432 ; --            ; onchip_flash        ; --         ;
+; SOPCINFO_FILE                       ; ADC/synthesis/../../ADC.sopcinfo                               ; --            ; --                  ; --         ;
+; SOPCINFO_FILE                       ; onchip_flash/synthesis/../../onchip_flash.sopcinfo             ; --            ; --                  ; --         ;
+; SYNTHESIS_ONLY_QIP                  ; On                                                             ; --            ; --                  ; --         ;
+; SYNTHESIS_ONLY_QIP                  ; On                                                             ; --            ; --                  ; --         ;
+; WEAK_PULL_UP_RESISTOR               ; On                                                             ; Off           ; --                  ; --         ;
++-------------------------------------+----------------------------------------------------------------+---------------+---------------------+------------+
+
+
++--------------------------------------------------------------------------------------------------------------------------+
+; Flow Elapsed Time                                                                                                        ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Analysis & Synthesis ; 00:00:47     ; 1.0                     ; 750 MB              ; 00:01:12                           ;
+; Fitter               ; 00:00:28     ; 1.6                     ; 1493 MB             ; 00:00:48                           ;
+; Assembler            ; 00:00:05     ; 1.0                     ; 614 MB              ; 00:00:04                           ;
+; Timing Analyzer      ; 00:00:08     ; 2.2                     ; 760 MB              ; 00:00:17                           ;
+; Total                ; 00:01:28     ; --                      ; --                  ; 00:02:21                           ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
+
+
++-------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                     ;
++----------------------+------------------+-------------+------------+----------------+
+; Module Name          ; Machine Hostname ; OS Name     ; OS Version ; Processor type ;
++----------------------+------------------+-------------+------------+----------------+
+; Analysis & Synthesis ; UBC_JCF_ASUS     ; Windows 8.1 ; 6.3        ; x86_64         ;
+; Fitter               ; UBC_JCF_ASUS     ; Windows 8.1 ; 6.3        ; x86_64         ;
+; Assembler            ; UBC_JCF_ASUS     ; Windows 8.1 ; 6.3        ; x86_64         ;
+; Timing Analyzer      ; UBC_JCF_ASUS     ; Windows 8.1 ; 6.3        ; x86_64         ;
++----------------------+------------------+-------------+------------+----------------+
+
+
+------------
+; Flow Log ;
+------------
+quartus_map --read_settings_files=on --write_settings_files=off CV_8052 -c CV_8052
+quartus_fit --read_settings_files=off --write_settings_files=off CV_8052 -c CV_8052
+quartus_asm --read_settings_files=off --write_settings_files=off CV_8052 -c CV_8052
+quartus_sta CV_8052 -c CV_8052
+
+
+

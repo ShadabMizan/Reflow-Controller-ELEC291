@@ -1,0 +1,1970 @@
+0000              1   ;--------------------------------------------------------
+0000              2   ; File Created by C51
+0000              3   ; Version 1.0.0 #1170 (Feb 16 2022) (MSVC)
+0000              4   ; This file was generated Sun Sep 29 18:43:15 2024
+0000              5   ;--------------------------------------------------------
+                  5   $name CV_Boot_SPI
+                  6   $optc51 --model-small
+0000              8            R_DSEG    segment data
+0000              9            R_CSEG    segment code
+0000             10            R_BSEG    segment bit
+0000             11            R_XSEG    segment xdata
+0000             12            R_PSEG    segment xdata
+0000             13            R_ISEG    segment idata
+0000             14            R_OSEG    segment data overlay
+0000             15            BIT_BANK  segment data overlay
+0000             16            R_HOME    segment code
+0000             17            R_GSINIT  segment code
+0000             18            R_IXSEG   segment xdata
+0000             19            R_CONST   segment code
+0000             20            R_XINIT   segment code
+0000             21            R_DINIT   segment code
+0000             22   
+0000             23   ;--------------------------------------------------------
+0000             24   ; Public variables in this module
+0000             25   ;--------------------------------------------------------
+0000             26            public _Write_XRAM_PARM_2
+0000             27            public _seven_seg
+0000             28            public _hexval
+0000             29            public _dummy_switch
+0000             30            public _main
+0000             31            public _Manual_Load
+0000             32            public _OutWord
+0000             33            public _OutByte
+0000             34            public _str2hex
+0000             35            public _loadintelhex
+0000             36            public _Load_Ram_Fast_and_Run_Debugger
+0000             37            public _Load_Ram_Fast_and_Run
+0000             38            public _Copy_Flash_to_RAM
+0000             39            public _FlashBuff
+0000             40            public _FlashByte
+0000             41            public _Read_XRAM
+0000             42            public _Write_XRAM
+0000             43            public _EraseSector
+0000             44            public _In_Byte_Flash
+0000             45            public _getbyte
+0000             46            public _chartohex
+0000             47            public _sends
+0000             48            public _getchare
+0000             49            public _inituart
+0000             50            public _Check_WIP
+0000             51            public _DoSPI
+0000             52            public _de2_8052_crt0
+0000             53            public _getchar_echo
+0000             54            public _buff
+0000             55            public _FlashBuff_PARM_3
+0000             56            public _FlashBuff_PARM_2
+0000             57            public _FlashByte_PARM_2
+0000             58            public _putchar
+0000             59            public _getchar
+0000             60   ;--------------------------------------------------------
+0000             61   ; Special Function Registers
+0000             62   ;--------------------------------------------------------
+0000             63   _P0             DATA 0x80
+0000             64   _SP             DATA 0x81
+0000             65   _DPL            DATA 0x82
+0000             66   _DPH            DATA 0x83
+0000             67   _PCON           DATA 0x87
+0000             68   _TCON           DATA 0x88
+0000             69   _TMOD           DATA 0x89
+0000             70   _TL0            DATA 0x8a
+0000             71   _TL1            DATA 0x8b
+0000             72   _TH0            DATA 0x8c
+0000             73   _TH1            DATA 0x8d
+0000             74   _P1             DATA 0x90
+0000             75   _SCON           DATA 0x98
+0000             76   _SBUF           DATA 0x99
+0000             77   _P2             DATA 0xa0
+0000             78   _IE             DATA 0xa8
+0000             79   _P3             DATA 0xb0
+0000             80   _IP             DATA 0xb8
+0000             81   _PSW            DATA 0xd0
+0000             82   _ACC            DATA 0xe0
+0000             83   _B              DATA 0xf0
+0000             84   _T2CON          DATA 0xc8
+0000             85   _RCAP2L         DATA 0xca
+0000             86   _RCAP2H         DATA 0xcb
+0000             87   _TL2            DATA 0xcc
+0000             88   _TH2            DATA 0xcd
+0000             89   _DPS            DATA 0x86
+0000             90   _DPH1           DATA 0x85
+0000             91   _DPL1           DATA 0x84
+0000             92   _HEX0           DATA 0x91
+0000             93   _HEX1           DATA 0x92
+0000             94   _HEX2           DATA 0x93
+0000             95   _HEX3           DATA 0x94
+0000             96   _HEX4           DATA 0x8e
+0000             97   _HEX5           DATA 0x8f
+0000             98   _LEDRA          DATA 0xe8
+0000             99   _LEDRB          DATA 0x95
+0000            100   _SWA            DATA 0xe8
+0000            101   _SWB            DATA 0x95
+0000            102   _KEY            DATA 0xf8
+0000            103   _P0MOD          DATA 0x9a
+0000            104   _P1MOD          DATA 0x9b
+0000            105   _P2MOD          DATA 0x9c
+0000            106   _P3MOD          DATA 0x9d
+0000            107   _LCD_CMD        DATA 0xd8
+0000            108   _LCD_DATA       DATA 0xd9
+0000            109   _LCD_MOD        DATA 0xda
+0000            110   _JCMD           DATA 0xc0
+0000            111   _JBUF           DATA 0xc1
+0000            112   _JCNT           DATA 0xc2
+0000            113   _REP_ADD_L      DATA 0xf1
+0000            114   _REP_ADD_H      DATA 0xf2
+0000            115   _REP_VALUE      DATA 0xf3
+0000            116   _DEBUG_CALL_L   DATA 0xfa
+0000            117   _DEBUG_CALL_H   DATA 0xfb
+0000            118   _BPC            DATA 0xfc
+0000            119   _BPS            DATA 0xfd
+0000            120   _BPAL           DATA 0xfe
+0000            121   _BPAH           DATA 0xff
+0000            122   _LBPAL          DATA 0xfa
+0000            123   _LBPAH          DATA 0xfb
+0000            124   _XRAMUSEDAS     DATA 0xc3
+0000            125   _FLASH_CMD      DATA 0xdb
+0000            126   _FLASH_DATA     DATA 0xdc
+0000            127   _FLASH_MOD      DATA 0xdd
+0000            128   _FLASH_ADD0     DATA 0xe1
+0000            129   _FLASH_ADD1     DATA 0xe2
+0000            130   _FLASH_ADD2     DATA 0xe3
+0000            131   ;--------------------------------------------------------
+0000            132   ; special function bits
+0000            133   ;--------------------------------------------------------
+0000            134   _P0_0           BIT 0x80
+0000            135   _P0_1           BIT 0x81
+0000            136   _P0_2           BIT 0x82
+0000            137   _P0_3           BIT 0x83
+0000            138   _P0_4           BIT 0x84
+0000            139   _P0_5           BIT 0x85
+0000            140   _P0_6           BIT 0x86
+0000            141   _P0_7           BIT 0x87
+0000            142   _IT0            BIT 0x88
+0000            143   _IE0            BIT 0x89
+0000            144   _IT1            BIT 0x8a
+0000            145   _IE1            BIT 0x8b
+0000            146   _TR0            BIT 0x8c
+0000            147   _TF0            BIT 0x8d
+0000            148   _TR1            BIT 0x8e
+0000            149   _TF1            BIT 0x8f
+0000            150   _P1_0           BIT 0x90
+0000            151   _P1_1           BIT 0x91
+0000            152   _P1_2           BIT 0x92
+0000            153   _P1_3           BIT 0x93
+0000            154   _P1_4           BIT 0x94
+0000            155   _P1_5           BIT 0x95
+0000            156   _P1_6           BIT 0x96
+0000            157   _P1_7           BIT 0x97
+0000            158   _RI             BIT 0x98
+0000            159   _TI             BIT 0x99
+0000            160   _RB8            BIT 0x9a
+0000            161   _TB8            BIT 0x9b
+0000            162   _REN            BIT 0x9c
+0000            163   _SM2            BIT 0x9d
+0000            164   _SM1            BIT 0x9e
+0000            165   _SM0            BIT 0x9f
+0000            166   _P2_0           BIT 0xa0
+0000            167   _P2_1           BIT 0xa1
+0000            168   _P2_2           BIT 0xa2
+0000            169   _P2_3           BIT 0xa3
+0000            170   _P2_4           BIT 0xa4
+0000            171   _P2_5           BIT 0xa5
+0000            172   _P2_6           BIT 0xa6
+0000            173   _P2_7           BIT 0xa7
+0000            174   _EX0            BIT 0xa8
+0000            175   _ET0            BIT 0xa9
+0000            176   _EX1            BIT 0xaa
+0000            177   _ET1            BIT 0xab
+0000            178   _ES             BIT 0xac
+0000            179   _ET2            BIT 0xad
+0000            180   _EA             BIT 0xaf
+0000            181   _P3_0           BIT 0xb0
+0000            182   _P3_1           BIT 0xb1
+0000            183   _P3_2           BIT 0xb2
+0000            184   _P3_3           BIT 0xb3
+0000            185   _P3_4           BIT 0xb4
+0000            186   _P3_5           BIT 0xb5
+0000            187   _P3_6           BIT 0xb6
+0000            188   _P3_7           BIT 0xb7
+0000            189   _RXD            BIT 0xb0
+0000            190   _TXD            BIT 0xb1
+0000            191   _INT0           BIT 0xb2
+0000            192   _INT1           BIT 0xb3
+0000            193   _T0             BIT 0xb4
+0000            194   _T1             BIT 0xb5
+0000            195   _WR             BIT 0xb6
+0000            196   _RD             BIT 0xb7
+0000            197   _PX0            BIT 0xb8
+0000            198   _PT0            BIT 0xb9
+0000            199   _PX1            BIT 0xba
+0000            200   _PT1            BIT 0xbb
+0000            201   _PS             BIT 0xbc
+0000            202   _PT2            BIT 0xbd
+0000            203   _P              BIT 0xd0
+0000            204   _F1             BIT 0xd1
+0000            205   _OV             BIT 0xd2
+0000            206   _RS0            BIT 0xd3
+0000            207   _RS1            BIT 0xd4
+0000            208   _F0             BIT 0xd5
+0000            209   _AC             BIT 0xd6
+0000            210   _CY             BIT 0xd7
+0000            211   _T2CON_0        BIT 0xc8
+0000            212   _T2CON_1        BIT 0xc9
+0000            213   _T2CON_2        BIT 0xca
+0000            214   _T2CON_3        BIT 0xcb
+0000            215   _T2CON_4        BIT 0xcc
+0000            216   _T2CON_5        BIT 0xcd
+0000            217   _T2CON_6        BIT 0xce
+0000            218   _T2CON_7        BIT 0xcf
+0000            219   _CP_RL2         BIT 0xc8
+0000            220   _C_T2           BIT 0xc9
+0000            221   _TR2            BIT 0xca
+0000            222   _EXEN2          BIT 0xcb
+0000            223   _TCLK           BIT 0xcc
+0000            224   _RCLK           BIT 0xcd
+0000            225   _EXF2           BIT 0xce
+0000            226   _TF2            BIT 0xcf
+0000            227   _LEDRA_0        BIT 0xe8
+0000            228   _LEDRA_1        BIT 0xe9
+0000            229   _LEDRA_2        BIT 0xea
+0000            230   _LEDRA_3        BIT 0xeb
+0000            231   _LEDRA_4        BIT 0xec
+0000            232   _LEDRA_5        BIT 0xed
+0000            233   _LEDRA_6        BIT 0xee
+0000            234   _LEDRA_7        BIT 0xef
+0000            235   _SWA_0          BIT 0xe8
+0000            236   _SWA_1          BIT 0xe9
+0000            237   _SWA_2          BIT 0xea
+0000            238   _SWA_3          BIT 0xeb
+0000            239   _SWA_4          BIT 0xec
+0000            240   _SWA_5          BIT 0xed
+0000            241   _SWA_6          BIT 0xee
+0000            242   _SWA_7          BIT 0xef
+0000            243   _KEY_0          BIT 0xf8
+0000            244   _KEY_1          BIT 0xf9
+0000            245   _KEY_2          BIT 0xfa
+0000            246   _KEY_3          BIT 0xfb
+0000            247   _LCD_RW         BIT 0xd8
+0000            248   _LCD_EN         BIT 0xd9
+0000            249   _LCD_RS         BIT 0xda
+0000            250   _LCD_ON         BIT 0xdb
+0000            251   _LCD_BLON       BIT 0xdc
+0000            252   _JRXRDY         BIT 0xc0
+0000            253   _JTXRDY         BIT 0xc1
+0000            254   _JRXEN          BIT 0xc2
+0000            255   _JTXEN          BIT 0xc3
+0000            256   _JTXFULL        BIT 0xc4
+0000            257   _JRXFULL        BIT 0xc5
+0000            258   _JTXEMPTY       BIT 0xc6
+0000            259   _JTDI           BIT 0xc7
+0000            260   _MY_MOSI        BIT 0xdf
+0000            261   _MY_MISO        BIT 0xdf
+0000            262   _MY_SCLK        BIT 0xde
+0000            263   _MY_CE          BIT 0xdd
+0000            264   _ASMI_ACC_GRANTED BIT 0xdc
+0000            265   _ASMI_ACC_REQUEST BIT 0xde
+0000            266   ;--------------------------------------------------------
+0000            267   ; overlayable register banks
+0000            268   ;--------------------------------------------------------
+0000            269            rbank0 segment data overlay
+0000            270   ;--------------------------------------------------------
+0000            271   ; internal ram data
+0000            272   ;--------------------------------------------------------
+0000            273            rseg R_DSEG
+0000            274   _getbyte_j_1_83:
+0000            275            ds 1
+0001            276   _FlashByte_PARM_2:
+0001            277            ds 1
+0002            278   _FlashBuff_PARM_2:
+0002            279            ds 3
+0005            280   _FlashBuff_PARM_3:
+0005            281            ds 1
+0006            282   _loadintelhex_address_1_103:
+0006            283            ds 2
+0008            284   _loadintelhex_j_1_103:
+0008            285            ds 1
+0009            286   _loadintelhex_k_1_103:
+0009            287            ds 1
+000A            288   _loadintelhex_size_1_103:
+000A            289            ds 1
+000B            290   _loadintelhex_type_1_103:
+000B            291            ds 1
+000C            292   _loadintelhex_checksum_1_103:
+000C            293            ds 1
+000D            294   _loadintelhex_n_1_103:
+000D            295            ds 1
+000E            296   _loadintelhex_echo_1_103:
+000E            297            ds 1
+000F            298   ;--------------------------------------------------------
+000F            299   ; overlayable items in internal ram 
+000F            300   ;--------------------------------------------------------
+0000            301            rseg    R_OSEG
+0000            302            rseg    R_OSEG
+0000            303            rseg    R_OSEG
+0000            304            rseg    R_OSEG
+0000            305   _Write_XRAM_PARM_2:
+0000            306            ds 1
+0001            307            rseg    R_OSEG
+0001            308            rseg    R_OSEG
+0001            309   _str2hex_sloc0_1_0:
+0001            310            ds 2
+0003            311   ;--------------------------------------------------------
+0003            312   ; indirectly addressable internal ram data
+0003            313   ;--------------------------------------------------------
+0000            314            rseg R_ISEG
+0000            315   _buff:
+0000            316            ds 64
+0040            317   ;--------------------------------------------------------
+0040            318   ; absolute internal ram data
+0040            319   ;--------------------------------------------------------
+0000            320            DSEG
+0000            321   ;--------------------------------------------------------
+0000            322   ; bit data
+0000            323   ;--------------------------------------------------------
+0000            324            rseg R_BSEG
+0000            325   _getchar_echo:
+0000            326            DBIT    1
+0001            327   ;--------------------------------------------------------
+0001            328   ; paged external ram data
+0001            329   ;--------------------------------------------------------
+0000            330            rseg R_PSEG
+0000            331   ;--------------------------------------------------------
+0000            332   ; external ram data
+0000            333   ;--------------------------------------------------------
+0000            334            rseg R_XSEG
+0000            335   ;--------------------------------------------------------
+0000            336   ; absolute external ram data
+0000            337   ;--------------------------------------------------------
+0000            338            XSEG
+0000            339   ;--------------------------------------------------------
+0000            340   ; external initialized ram data
+0000            341   ;--------------------------------------------------------
+0000            342            rseg R_IXSEG
+0000            343            rseg R_HOME
+0000            344            rseg R_GSINIT
+0000            345            rseg R_CSEG
+0000            346   ;--------------------------------------------------------
+0000            347   ; Reset entry point and interrupt vectors
+0000            348   ;--------------------------------------------------------
+F000            349            CSEG at 0xf000
+F000 020000     350            ljmp    _crt0
+F003            351   ;--------------------------------------------------------
+F003            352   ; global & static initialisations
+F003            353   ;--------------------------------------------------------
+0000            354            rseg R_HOME
+0000            355            rseg R_GSINIT
+0000            356            rseg R_GSINIT
+0000            357   ;--------------------------------------------------------
+0000            358   ; data variables initialization
+0000            359   ;--------------------------------------------------------
+0000            360            rseg R_DINIT
+0000            361   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:44: bit getchar_echo=0;
+0000 C2E8       362            clr     _getchar_echo
+0002            363            ; The linker places a 'ret' at the end of segment R_DINIT.
+0002            364   ;--------------------------------------------------------
+0002            365   ; code
+0002            366   ;--------------------------------------------------------
+0000            367            rseg R_CSEG
+0000            368   ;------------------------------------------------------------
+0000            369   ;Allocation info for local variables in function 'de2_8052_crt0'
+0000            370   ;------------------------------------------------------------
+0000            371   ;------------------------------------------------------------
+0000            372   ;        C:/Source/call51/Bin/../include/mcs51/CV_8052.h:303: void de2_8052_crt0 (void) _naked
+0000            373   ;        -----------------------------------------
+0000            374   ;         function de2_8052_crt0
+0000            375   ;        -----------------------------------------
+0000            376   _de2_8052_crt0:
+0000            377   ;        naked function: no prologue.
+0000            378   ;        C:/Source/call51/Bin/../include/mcs51/CV_8052.h:372: _endasm;
+0000            379            
+0000            380            
+0000            381             rseg R_GSINIT
+0000            382             public _crt0
+0000            383            _crt0:
+0000 7581FF     384             mov sp,#_stack_start-1
+0003 120000     385             lcall __c51_external_startup
+0006 E582       386             mov a,dpl
+0008 6000       387             jz __c51_init_data
+000A 020000     388             ljmp __c51_program_startup
+000D            389            __c51_init_data:
+000D            390            
+000D            391   ; Initialize xdata variables
+000D            392            
+000D 758200     393             mov dpl, #_R_XINIT_start
+0010 758300     394             mov dph, #(_R_XINIT_start>>8)
+0013 758400     395             mov _DPL1, #_R_IXSEG_start
+0016 758500     396             mov _DPH1, #(_R_IXSEG_start>>8)
+0019 7800       397             mov r0, #_R_IXSEG_size
+001B 7900       398             mov r1, #(_R_IXSEG_size>>8)
+001D            399            
+001D            400            XInitLoop?repeat?:
+001D E8         401             mov a, r0
+001E 49         402             orl a, r1
+001F 6000       403             jz XInitLoop?done?
+0021 E4         404             clr a
+0022 758600     405             mov _DPS, #0 ; Using dpl, dph
+0025 93         406             movc a,@a+dptr
+0026 A3         407             inc dptr
+0027 758601     408             mov _DPS, #1 ; Using DPL1, DPH1
+002A F0         409             movx @dptr, a
+002B A3         410             inc dptr
+002C 18         411             dec r0
+002D B8FF38     412             cjne r0, #0xff, XInitLoop?repeat?
+0030 19         413             dec r1
+0031 8000       414             sjmp XInitLoop?repeat?
+0033            415            
+0033            416            XInitLoop?done?:
+0033            417            
+0033            418   ; Clear xdata variables
+0033 758600     419             mov _DPS, #0 ; Make sure we are using dpl, dph
+0036 758200     420             mov dpl, #_R_XSEG_start
+0039 758300     421             mov dph, #(_R_XSEG_start>>8)
+003C 7C00       422             mov r4, #_R_XSEG_size
+003E 7D00       423             mov r5, #(_R_XSEG_size>>8)
+0040            424            
+0040            425            XClearLoop?repeat?:
+0040 EC         426             mov a, r4
+0041 4D         427             orl a, r5
+0042 6000       428             jz XClearLoop?done?
+0044 E4         429             clr a
+0045 F0         430             movx @dptr, a
+0046 A3         431             inc dptr
+0047 1C         432             dec r4
+0048 BCFF48     433             cjne r4, #0xff, XClearLoop?repeat?
+004B 1D         434             dec r5
+004C 8000       435             sjmp XClearLoop?repeat?
+004E            436            
+004E            437            XClearLoop?done?:
+004E 120000     438             lcall _R_DINIT_start ; Initialize data/idata variables
+0051            439            
+0051            440            __c51_program_startup:
+0051 120000     441             lcall _main
+0054            442            
+0054            443            forever?home?:
+0054 8000       444             sjmp forever?home?
+0056            445            
+0056            446             
+0056            447   ;        naked function: no epilogue.
+0056            448   ;------------------------------------------------------------
+0056            449   ;Allocation info for local variables in function 'DoSPI'
+0056            450   ;------------------------------------------------------------
+0056            451   ;value                     Allocated to registers 
+0056            452   ;------------------------------------------------------------
+0056            453   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:68: unsigned char DoSPI (unsigned char value)
+0056            454   ;        -----------------------------------------
+0056            455   ;         function DoSPI
+0056            456   ;        -----------------------------------------
+0056            457   _DoSPI:
+0056            458            using   0
+0056            459   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:96: _endasm;
+0056            460            
+0056 E582       461              mov a, dpl
+0058 C2DE       462              clr _MY_SCLK
+005A            463            
+                464   	  SPIBIT MAC
+                465         ; Send/Receive bit %0
+                466   	   rlc a
+                467   	   mov _MY_MOSI, c
+                468   	   setb _MY_SCLK
+                469   	   mov c, _MY_MISO
+                470   	   clr _MY_SCLK
+                471   	   mov acc.0, c
+                472   	  ENDMAC
+005A            473            
+005A            474         ; Send/Receive bit 7
+005A 33         474               rlc a
+005B 92DF       474               mov _MY_MOSI, c
+005D D2DE       474               setb _MY_SCLK
+005F A2DF       474               mov c, _MY_MISO
+0061 C2DE       474               clr _MY_SCLK
+0063 92E0       474               mov acc.0, c
+0065            475         ; Send/Receive bit 6
+0065 33         475               rlc a
+0066 92DF       475               mov _MY_MOSI, c
+0068 D2DE       475               setb _MY_SCLK
+006A A2DF       475               mov c, _MY_MISO
+006C C2DE       475               clr _MY_SCLK
+006E 92E0       475               mov acc.0, c
+0070            476         ; Send/Receive bit 5
+0070 33         476               rlc a
+0071 92DF       476               mov _MY_MOSI, c
+0073 D2DE       476               setb _MY_SCLK
+0075 A2DF       476               mov c, _MY_MISO
+0077 C2DE       476               clr _MY_SCLK
+0079 92E0       476               mov acc.0, c
+007B            477         ; Send/Receive bit 4
+007B 33         477               rlc a
+007C 92DF       477               mov _MY_MOSI, c
+007E D2DE       477               setb _MY_SCLK
+0080 A2DF       477               mov c, _MY_MISO
+0082 C2DE       477               clr _MY_SCLK
+0084 92E0       477               mov acc.0, c
+0086            478         ; Send/Receive bit 3
+0086 33         478               rlc a
+0087 92DF       478               mov _MY_MOSI, c
+0089 D2DE       478               setb _MY_SCLK
+008B A2DF       478               mov c, _MY_MISO
+008D C2DE       478               clr _MY_SCLK
+008F 92E0       478               mov acc.0, c
+0091            479         ; Send/Receive bit 2
+0091 33         479               rlc a
+0092 92DF       479               mov _MY_MOSI, c
+0094 D2DE       479               setb _MY_SCLK
+0096 A2DF       479               mov c, _MY_MISO
+0098 C2DE       479               clr _MY_SCLK
+009A 92E0       479               mov acc.0, c
+009C            480         ; Send/Receive bit 1
+009C 33         480               rlc a
+009D 92DF       480               mov _MY_MOSI, c
+009F D2DE       480               setb _MY_SCLK
+00A1 A2DF       480               mov c, _MY_MISO
+00A3 C2DE       480               clr _MY_SCLK
+00A5 92E0       480               mov acc.0, c
+00A7            481         ; Send/Receive bit 0
+00A7 33         481               rlc a
+00A8 92DF       481               mov _MY_MOSI, c
+00AA D2DE       481               setb _MY_SCLK
+00AC A2DF       481               mov c, _MY_MISO
+00AE C2DE       481               clr _MY_SCLK
+00B0 92E0       481               mov acc.0, c
+00B2            482            
+00B2 F582       483              mov dpl, a
+00B4 22         484              ret
+00B5            485             
+00B5            486   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:98: return 0;
+00B5 758200     487            mov     dpl,#0x00
+00B8 22         488            ret
+00B9            489   ;------------------------------------------------------------
+00B9            490   ;Allocation info for local variables in function 'Check_WIP'
+00B9            491   ;------------------------------------------------------------
+00B9            492   ;status                    Allocated to registers 
+00B9            493   ;------------------------------------------------------------
+00B9            494   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:101: void Check_WIP (void)
+00B9            495   ;        -----------------------------------------
+00B9            496   ;         function Check_WIP
+00B9            497   ;        -----------------------------------------
+00B9            498   _Check_WIP:
+00B9            499   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:105: MY_CE=0;
+00B9 C2DD       500            clr     _MY_CE
+00BB            501   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:106: DoSPI(READ_STATUS);
+00BB 758205     502            mov     dpl,#0x05
+00BE 120000     503            lcall   _DoSPI
+00C1            504   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:107: do {
+00C1            505   L004001?:
+00C1            506   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:108: status=DoSPI(0x55);
+00C1 758255     507            mov     dpl,#0x55
+00C4 120000     508            lcall   _DoSPI
+00C7 E582       509            mov     a,dpl
+00C9            510   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:109: } while (status&0b0000_0001); // Check the Write in Progress bit
+00C9 20E030     511            jb      acc.0,L004001?
+00CC            512   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:110: MY_CE=1;
+00CC D2DD       513            setb    _MY_CE
+00CE 22         514            ret
+00CF            515   ;------------------------------------------------------------
+00CF            516   ;Allocation info for local variables in function 'inituart'
+00CF            517   ;------------------------------------------------------------
+00CF            518   ;------------------------------------------------------------
+00CF            519   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:113: void inituart (void)
+00CF            520   ;        -----------------------------------------
+00CF            521   ;         function inituart
+00CF            522   ;        -----------------------------------------
+00CF            523   _inituart:
+00CF            524   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:115: RCAP2H=HIGH(TIMER_2_RELOAD);
+00CF 75CBFF     525            mov     _RCAP2H,#0xFF
+00D2            526   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:116: RCAP2L=LOW(TIMER_2_RELOAD);
+00D2 75CAF7     527            mov     _RCAP2L,#0xF7
+00D5            528   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:117: T2CON=0x34; // #00110100B
+00D5 75C834     529            mov     _T2CON,#0x34
+00D8            530   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:118: SCON=0x52; // Serial port in mode 1, ren, txrdy, rxempty
+00D8 759852     531            mov     _SCON,#0x52
+00DB 22         532            ret
+00DC            533   ;------------------------------------------------------------
+00DC            534   ;Allocation info for local variables in function 'putchar'
+00DC            535   ;------------------------------------------------------------
+00DC            536   ;c                         Allocated to registers r2 
+00DC            537   ;------------------------------------------------------------
+00DC            538   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:121: void putchar (char c)
+00DC            539   ;        -----------------------------------------
+00DC            540   ;         function putchar
+00DC            541   ;        -----------------------------------------
+00DC            542   _putchar:
+00DC AA82       543            mov     r2,dpl
+00DE            544   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:123: if (c=='\n')
+00DE BA0A70     545            cjne    r2,#0x0A,L006006?
+00E1            546   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:125: while (!TI);
+00E1            547   L006001?:
+00E1            548   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:126: TI=0;
+00E1 109930     549            jbc     _TI,L006017?
+00E4 8000       550            sjmp    L006001?
+00E6            551   L006017?:
+00E6            552   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:127: SBUF='\r';
+00E6 75990D     553            mov     _SBUF,#0x0D
+00E9            554   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:129: while (!TI);
+00E9            555   L006006?:
+00E9            556   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:130: TI=0;
+00E9 109970     557            jbc     _TI,L006018?
+00EC 8000       558            sjmp    L006006?
+00EE            559   L006018?:
+00EE            560   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:131: SBUF=c;
+00EE 8A99       561            mov     _SBUF,r2
+00F0 22         562            ret
+00F1            563   ;------------------------------------------------------------
+00F1            564   ;Allocation info for local variables in function 'getchar'
+00F1            565   ;------------------------------------------------------------
+00F1            566   ;c                         Allocated to registers r2 
+00F1            567   ;------------------------------------------------------------
+00F1            568   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:134: char getchar (void)
+00F1            569   ;        -----------------------------------------
+00F1            570   ;         function getchar
+00F1            571   ;        -----------------------------------------
+00F1            572   _getchar:
+00F1            573   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:138: while (!RI);
+00F1            574   L007001?:
+00F1            575   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:139: RI=0;
+00F1 1098F0     576            jbc     _RI,L007011?
+00F4 8000       577            sjmp    L007001?
+00F6            578   L007011?:
+00F6            579   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:140: c=SBUF;
+00F6 AA99       580            mov     r2,_SBUF
+00F8            581   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:141: if (getchar_echo==1) putchar(c);
+00F8 30E830     582            jnb     _getchar_echo,L007005?
+00FB 8A82       583            mov     dpl,r2
+00FD C002       584            push    ar2
+00FF 120000     585            lcall   _putchar
+0102 D002       586            pop     ar2
+0104            587   L007005?:
+0104            588   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:143: return c;
+0104 8A82       589            mov     dpl,r2
+0106 22         590            ret
+0107            591   ;------------------------------------------------------------
+0107            592   ;Allocation info for local variables in function 'getchare'
+0107            593   ;------------------------------------------------------------
+0107            594   ;c                         Allocated to registers r2 
+0107            595   ;------------------------------------------------------------
+0107            596   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:146: char getchare (void)
+0107            597   ;        -----------------------------------------
+0107            598   ;         function getchare
+0107            599   ;        -----------------------------------------
+0107            600   _getchare:
+0107            601   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:150: c=getchar();
+0107 120000     602            lcall   _getchar
+010A            603   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:151: putchar(c);
+010A AA82       604            mov  r2,dpl
+010C C002       605            push    ar2
+010E 120000     606            lcall   _putchar
+0111 D002       607            pop     ar2
+0113            608   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:152: return c;
+0113 8A82       609            mov     dpl,r2
+0115 22         610            ret
+0116            611   ;------------------------------------------------------------
+0116            612   ;Allocation info for local variables in function 'sends'
+0116            613   ;------------------------------------------------------------
+0116            614   ;c                         Allocated to registers r2 r3 r4 
+0116            615   ;n                         Allocated to registers r6 
+0116            616   ;------------------------------------------------------------
+0116            617   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:155: void sends (unsigned char * c)
+0116            618   ;        -----------------------------------------
+0116            619   ;         function sends
+0116            620   ;        -----------------------------------------
+0116            621   _sends:
+0116 AA82       622            mov     r2,dpl
+0118 AB83       623            mov     r3,dph
+011A ACF0       624            mov     r4,b
+011C            625   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:158: while(n=*c)
+011C            626   L009001?:
+011C 8A82       627            mov     dpl,r2
+011E 8B83       628            mov     dph,r3
+0120 8CF0       629            mov     b,r4
+0122 120000     630            lcall   __gptrget
+0125 FD         631            mov     r5,a
+0126 FE         632            mov     r6,a
+0127 6000       633            jz      L009004?
+0129            634   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:160: putchar(n);
+0129 8E82       635            mov     dpl,r6
+012B C002       636            push    ar2
+012D C003       637            push    ar3
+012F C004       638            push    ar4
+0131 120000     639            lcall   _putchar
+0134 D004       640            pop     ar4
+0136 D003       641            pop     ar3
+0138 D002       642            pop     ar2
+013A            643   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:161: c++;
+013A 0A         644            inc     r2
+013B BA00B0     645            cjne    r2,#0x00,L009001?
+013E 0B         646            inc     r3
+013F 8000       647            sjmp    L009001?
+0141            648   L009004?:
+0141 22         649            ret
+0142            650   ;------------------------------------------------------------
+0142            651   ;Allocation info for local variables in function 'chartohex'
+0142            652   ;------------------------------------------------------------
+0142            653   ;c                         Allocated to registers r2 
+0142            654   ;------------------------------------------------------------
+0142            655   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:165: unsigned char chartohex(char c)
+0142            656   ;        -----------------------------------------
+0142            657   ;         function chartohex
+0142            658   ;        -----------------------------------------
+0142            659   _chartohex:
+0142            660   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:167: if(c & 0x40) c+=9; //  a to f or A to F
+0142 E582       661            mov     a,dpl
+0144 FA         662            mov     r2,a
+0145 30E670     663            jnb     acc.6,L010002?
+0148 7409       664            mov     a,#0x09
+014A 2A         665            add     a,r2
+014B FA         666            mov     r2,a
+014C            667   L010002?:
+014C            668   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:168: return (c & 0xf);
+014C 740F       669            mov     a,#0x0F
+014E 5A         670            anl     a,r2
+014F F582       671            mov     dpl,a
+0151 22         672            ret
+0152            673   ;------------------------------------------------------------
+0152            674   ;Allocation info for local variables in function 'getbyte'
+0152            675   ;------------------------------------------------------------
+0152            676   ;j                         Allocated with name '_getbyte_j_1_83'
+0152            677   ;------------------------------------------------------------
+0152            678   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:172: unsigned char getbyte (void)
+0152            679   ;        -----------------------------------------
+0152            680   ;         function getbyte
+0152            681   ;        -----------------------------------------
+0152            682   _getbyte:
+0152            683   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:176: j=chartohex(getchare())*0x10;
+0152 120000     684            lcall   _getchare
+0155 120000     685            lcall   _chartohex
+0158 E582       686            mov     a,dpl
+015A C4         687            swap    a
+015B 54F0       688            anl     a,#0xf0
+015D F538       689            mov     _getbyte_j_1_83,a
+015F            690   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:177: j|=chartohex(getchare());
+015F 120000     691            lcall   _getchare
+0162 120000     692            lcall   _chartohex
+0165 E582       693            mov     a,dpl
+0167 4238       694            orl     _getbyte_j_1_83,a
+0169            695   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:179: return j;
+0169 853882     696            mov     dpl,_getbyte_j_1_83
+016C 22         697            ret
+016D            698   ;------------------------------------------------------------
+016D            699   ;Allocation info for local variables in function 'In_Byte_Flash'
+016D            700   ;------------------------------------------------------------
+016D            701   ;address                   Allocated to registers r2 r3 
+016D            702   ;j                         Allocated to registers 
+016D            703   ;------------------------------------------------------------
+016D            704   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:182: unsigned char In_Byte_Flash (unsigned int address)
+016D            705   ;        -----------------------------------------
+016D            706   ;         function In_Byte_Flash
+016D            707   ;        -----------------------------------------
+016D            708   _In_Byte_Flash:
+016D AA82       709            mov     r2,dpl
+016F AB83       710            mov     r3,dph
+0171            711   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:186: MY_CE=0;
+0171 C2DD       712            clr     _MY_CE
+0173            713   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:187: DoSPI(READ_BYTES);
+0173 758203     714            mov     dpl,#0x03
+0176 C002       715            push    ar2
+0178 C003       716            push    ar3
+017A 120000     717            lcall   _DoSPI
+017D            718   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:188: DoSPI(FLASHSECTOR);
+017D 758232     719            mov     dpl,#0x32
+0180 120000     720            lcall   _DoSPI
+0183 D003       721            pop     ar3
+0185            722   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:189: DoSPI(address/0x100);
+0185 8B04       723            mov     ar4,r3
+0187 8C82       724            mov     dpl,r4
+0189 C003       725            push    ar3
+018B 120000     726            lcall   _DoSPI
+018E D003       727            pop     ar3
+0190 D002       728            pop     ar2
+0192            729   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:190: DoSPI(address%0x100);
+0192 8A82       730            mov     dpl,r2
+0194 120000     731            lcall   _DoSPI
+0197            732   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:191: j=DoSPI(0x55);
+0197 758255     733            mov     dpl,#0x55
+019A 120000     734            lcall   _DoSPI
+019D            735   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:192: MY_CE=1;
+019D D2DD       736            setb    _MY_CE
+019F            737   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:194: return j;
+019F 22         738            ret
+01A0            739   ;------------------------------------------------------------
+01A0            740   ;Allocation info for local variables in function 'EraseSector'
+01A0            741   ;------------------------------------------------------------
+01A0            742   ;------------------------------------------------------------
+01A0            743   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:197: void EraseSector (void)
+01A0            744   ;        -----------------------------------------
+01A0            745   ;         function EraseSector
+01A0            746   ;        -----------------------------------------
+01A0            747   _EraseSector:
+01A0            748   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:199: MY_CE=0; DoSPI(WRITE_ENABLE); MY_CE=1;
+01A0 C2DD       749            clr     _MY_CE
+01A2 758206     750            mov     dpl,#0x06
+01A5 120000     751            lcall   _DoSPI
+01A8 D2DD       752            setb    _MY_CE
+01AA            753   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:201: MY_CE=0;
+01AA C2DD       754            clr     _MY_CE
+01AC            755   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:202: DoSPI(ERASE_SECTOR);
+01AC 7582D8     756            mov     dpl,#0xD8
+01AF 120000     757            lcall   _DoSPI
+01B2            758   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:203: DoSPI(FLASHSECTOR);
+01B2 758232     759            mov     dpl,#0x32
+01B5 120000     760            lcall   _DoSPI
+01B8            761   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:204: DoSPI(0x00);
+01B8 758200     762            mov     dpl,#0x00
+01BB 120000     763            lcall   _DoSPI
+01BE            764   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:205: DoSPI(0x00);
+01BE 758200     765            mov     dpl,#0x00
+01C1 120000     766            lcall   _DoSPI
+01C4            767   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:206: MY_CE=1;
+01C4 D2DD       768            setb    _MY_CE
+01C6            769   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:208: Check_WIP();
+01C6 020000     770            ljmp    _Check_WIP
+01C9            771   ;------------------------------------------------------------
+01C9            772   ;Allocation info for local variables in function 'Write_XRAM'
+01C9            773   ;------------------------------------------------------------
+01C9            774   ;Value                     Allocated with name '_Write_XRAM_PARM_2'
+01C9            775   ;Address                   Allocated to registers r2 r3 
+01C9            776   ;------------------------------------------------------------
+01C9            777   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:211: void Write_XRAM (unsigned int Address, unsigned char Value)
+01C9            778   ;        -----------------------------------------
+01C9            779   ;         function Write_XRAM
+01C9            780   ;        -----------------------------------------
+01C9            781   _Write_XRAM:
+01C9            782   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:213: *((unsigned char xdata *) Address)=Value;
+01C9 E568       783            mov     a,_Write_XRAM_PARM_2
+01CB F0         784            movx    @dptr,a
+01CC 22         785            ret
+01CD            786   ;------------------------------------------------------------
+01CD            787   ;Allocation info for local variables in function 'Read_XRAM'
+01CD            788   ;------------------------------------------------------------
+01CD            789   ;Address                   Allocated to registers r2 r3 
+01CD            790   ;------------------------------------------------------------
+01CD            791   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:216: unsigned char Read_XRAM (unsigned int Address)
+01CD            792   ;        -----------------------------------------
+01CD            793   ;         function Read_XRAM
+01CD            794   ;        -----------------------------------------
+01CD            795   _Read_XRAM:
+01CD            796   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:218: return *((unsigned char xdata *) Address);
+01CD E0         797            movx    a,@dptr
+01CE F582       798            mov     dpl,a
+01D0 22         799            ret
+01D1            800   ;------------------------------------------------------------
+01D1            801   ;Allocation info for local variables in function 'FlashByte'
+01D1            802   ;------------------------------------------------------------
+01D1            803   ;val                       Allocated with name '_FlashByte_PARM_2'
+01D1            804   ;address                   Allocated to registers r2 r3 
+01D1            805   ;------------------------------------------------------------
+01D1            806   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:221: void FlashByte (unsigned int address, unsigned char val)
+01D1            807   ;        -----------------------------------------
+01D1            808   ;         function FlashByte
+01D1            809   ;        -----------------------------------------
+01D1            810   _FlashByte:
+01D1 AA82       811            mov     r2,dpl
+01D3 AB83       812            mov     r3,dph
+01D5            813   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:223: MY_CE=0; DoSPI(WRITE_ENABLE);  MY_CE=1;
+01D5 C2DD       814            clr     _MY_CE
+01D7 758206     815            mov     dpl,#0x06
+01DA C002       816            push    ar2
+01DC C003       817            push    ar3
+01DE 120000     818            lcall   _DoSPI
+01E1 D2DD       819            setb    _MY_CE
+01E3            820   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:225: MY_CE=0;
+01E3 C2DD       821            clr     _MY_CE
+01E5            822   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:226: DoSPI(WRITE_BYTES);
+01E5 758202     823            mov     dpl,#0x02
+01E8 120000     824            lcall   _DoSPI
+01EB            825   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:227: DoSPI(FLASHSECTOR);
+01EB 758232     826            mov     dpl,#0x32
+01EE 120000     827            lcall   _DoSPI
+01F1 D003       828            pop     ar3
+01F3            829   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:228: DoSPI(address/0x100);
+01F3 8B04       830            mov     ar4,r3
+01F5 8C82       831            mov     dpl,r4
+01F7 C003       832            push    ar3
+01F9 120000     833            lcall   _DoSPI
+01FC D003       834            pop     ar3
+01FE D002       835            pop     ar2
+0200            836   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:229: DoSPI(address%0x100);
+0200 8A82       837            mov     dpl,r2
+0202 120000     838            lcall   _DoSPI
+0205            839   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:230: DoSPI(val);
+0205 851882     840            mov     dpl,_FlashByte_PARM_2
+0208 120000     841            lcall   _DoSPI
+020B            842   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:231: MY_CE=1;
+020B D2DD       843            setb    _MY_CE
+020D            844   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:233: Check_WIP();
+020D 020000     845            ljmp    _Check_WIP
+0210            846   ;------------------------------------------------------------
+0210            847   ;Allocation info for local variables in function 'FlashBuff'
+0210            848   ;------------------------------------------------------------
+0210            849   ;buff                      Allocated with name '_FlashBuff_PARM_2'
+0210            850   ;numb                      Allocated with name '_FlashBuff_PARM_3'
+0210            851   ;address                   Allocated to registers r2 r3 
+0210            852   ;j                         Allocated to registers r2 
+0210            853   ;------------------------------------------------------------
+0210            854   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:237: void FlashBuff (unsigned int address, unsigned char * buff, unsigned char numb)
+0210            855   ;        -----------------------------------------
+0210            856   ;         function FlashBuff
+0210            857   ;        -----------------------------------------
+0210            858   _FlashBuff:
+0210 AA82       859            mov     r2,dpl
+0212 AB83       860            mov     r3,dph
+0214            861   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:241: MY_CE=0; DoSPI(WRITE_ENABLE);  MY_CE=1;
+0214 C2DD       862            clr     _MY_CE
+0216 758206     863            mov     dpl,#0x06
+0219 C002       864            push    ar2
+021B C003       865            push    ar3
+021D 120000     866            lcall   _DoSPI
+0220 D2DD       867            setb    _MY_CE
+0222            868   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:242: MY_CE=0;
+0222 C2DD       869            clr     _MY_CE
+0224            870   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:243: DoSPI(WRITE_BYTES);
+0224 758202     871            mov     dpl,#0x02
+0227 120000     872            lcall   _DoSPI
+022A            873   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:244: DoSPI(FLASHSECTOR);
+022A 758232     874            mov     dpl,#0x32
+022D 120000     875            lcall   _DoSPI
+0230 D003       876            pop     ar3
+0232            877   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:245: DoSPI(address/0x100);
+0232 8B04       878            mov     ar4,r3
+0234 8C82       879            mov     dpl,r4
+0236 C003       880            push    ar3
+0238 120000     881            lcall   _DoSPI
+023B D003       882            pop     ar3
+023D D002       883            pop     ar2
+023F            884   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:246: DoSPI(address%0x100);
+023F 8A82       885            mov     dpl,r2
+0241 120000     886            lcall   _DoSPI
+0244            887   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:247: for(j=0; j<numb; j++) DoSPI(buff[j]);
+0244 7A00       888            mov     r2,#0x00
+0246            889   L017001?:
+0246 C3         890            clr     c
+0247 EA         891            mov     a,r2
+0248 9578       892            subb    a,_FlashBuff_PARM_3
+024A 5000       893            jnc     L017004?
+024C EA         894            mov     a,r2
+024D 25C8       895            add     a,_FlashBuff_PARM_2
+024F FB         896            mov     r3,a
+0250 E4         897            clr     a
+0251 35C9       898            addc    a,(_FlashBuff_PARM_2 + 1)
+0253 FC         899            mov     r4,a
+0254 ADCA       900            mov     r5,(_FlashBuff_PARM_2 + 2)
+0256 8B82       901            mov     dpl,r3
+0258 8C83       902            mov     dph,r4
+025A 8DF0       903            mov     b,r5
+025C 120000     904            lcall   __gptrget
+025F F582       905            mov     dpl,a
+0261 C002       906            push    ar2
+0263 120000     907            lcall   _DoSPI
+0266 D002       908            pop     ar2
+0268 0A         909            inc     r2
+0269 8000       910            sjmp    L017001?
+026B            911   L017004?:
+026B            912   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:248: MY_CE=1;
+026B D2DD       913            setb    _MY_CE
+026D            914   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:250: Check_WIP();
+026D 020000     915            ljmp    _Check_WIP
+0270            916   ;------------------------------------------------------------
+0270            917   ;Allocation info for local variables in function 'Copy_Flash_to_RAM'
+0270            918   ;------------------------------------------------------------
+0270            919   ;------------------------------------------------------------
+0270            920   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:253: void Copy_Flash_to_RAM (void)
+0270            921   ;        -----------------------------------------
+0270            922   ;         function Copy_Flash_to_RAM
+0270            923   ;        -----------------------------------------
+0270            924   _Copy_Flash_to_RAM:
+0270            925   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:255: XRAMUSEDAS=0x01; // 32k RAM accessed as xdata
+0270 75C301     926            mov     _XRAMUSEDAS,#0x01
+0273            927   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:257: MY_CE=0;
+0273 C2DD       928            clr     _MY_CE
+0275            929   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:258: DoSPI(READ_BYTES);
+0275 758203     930            mov     dpl,#0x03
+0278 120000     931            lcall   _DoSPI
+027B            932   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:259: DoSPI(FLASHSECTOR);
+027B 758232     933            mov     dpl,#0x32
+027E 120000     934            lcall   _DoSPI
+0281            935   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:260: DoSPI(0);
+0281 758200     936            mov     dpl,#0x00
+0284 120000     937            lcall   _DoSPI
+0287            938   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:261: DoSPI(0);
+0287 758200     939            mov     dpl,#0x00
+028A 120000     940            lcall   _DoSPI
+028D            941   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:313: _endasm;
+028D            942            
+028D 900000     943                 mov dptr, #0
+0290            944             load_next_byte:
+0290            945        ; Bit 7
+0290 C2DE       946              clr _MY_SCLK
+0292 A2DF       947              mov c, _MY_MISO
+0294 D2DE       948              setb _MY_SCLK
+0296 33         949              rlc a
+0297            950        ; Bit 6
+0297 C2DE       951              clr _MY_SCLK
+0299 A2DF       952              mov c, _MY_MISO
+029B D2DE       953              setb _MY_SCLK
+029D 33         954              rlc a
+029E            955        ; Bit 5
+029E C2DE       956              clr _MY_SCLK
+02A0 A2DF       957              mov c, _MY_MISO
+02A2 D2DE       958              setb _MY_SCLK
+02A4 33         959              rlc a
+02A5            960        ; Bit 4
+02A5 C2DE       961              clr _MY_SCLK
+02A7 A2DF       962              mov c, _MY_MISO
+02A9 D2DE       963              setb _MY_SCLK
+02AB 33         964              rlc a
+02AC            965        ; Bit 3
+02AC C2DE       966              clr _MY_SCLK
+02AE A2DF       967              mov c, _MY_MISO
+02B0 D2DE       968              setb _MY_SCLK
+02B2 33         969              rlc a
+02B3            970        ; Bit 2
+02B3 C2DE       971              clr _MY_SCLK
+02B5 A2DF       972              mov c, _MY_MISO
+02B7 D2DE       973              setb _MY_SCLK
+02B9 33         974              rlc a
+02BA            975        ; Bit 1
+02BA C2DE       976              clr _MY_SCLK
+02BC A2DF       977              mov c, _MY_MISO
+02BE D2DE       978              setb _MY_SCLK
+02C0 33         979              rlc a
+02C1            980        ; Bit 0
+02C1 C2DE       981              clr _MY_SCLK
+02C3 A2DF       982              mov c, _MY_MISO
+02C5 D2DE       983              setb _MY_SCLK
+02C7 33         984              rlc a
+02C8            985     ; Move to xram
+02C8 F0         986              movx @dptr, a
+02C9 A3         987              inc dptr
+02CA            988     ; Check for number of bytes
+02CA E583       989              mov a, dph
+02CC 30E730     990              jnb acc.7, load_next_byte
+02CF            991                
+02CF            992   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:315: MY_CE=1;
+02CF D2DD       993            setb    _MY_CE
+02D1 22         994            ret
+02D2            995   ;------------------------------------------------------------
+02D2            996   ;Allocation info for local variables in function 'Load_Ram_Fast_and_Run'
+02D2            997   ;------------------------------------------------------------
+02D2            998   ;------------------------------------------------------------
+02D2            999   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:318: void Load_Ram_Fast_and_Run (void)
+02D2           1000   ;        -----------------------------------------
+02D2           1001   ;         function Load_Ram_Fast_and_Run
+02D2           1002   ;        -----------------------------------------
+02D2           1003   _Load_Ram_Fast_and_Run:
+02D2           1004   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:322: T2CON=0;
+02D2 75C800    1005            mov     _T2CON,#0x00
+02D5           1006   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:323: SCON=0;
+02D5 759800    1007            mov     _SCON,#0x00
+02D8           1008   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:324: RCAP2H=0;
+02D8 75CB00    1009            mov     _RCAP2H,#0x00
+02DB           1010   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:325: RCAP2L=0;
+02DB 75CA00    1011            mov     _RCAP2L,#0x00
+02DE           1012   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:332: _endasm;
+02DE           1013            
+02DE 75C300    1014              mov _XRAMUSEDAS, #0 ; 32k RAM accessed as code
+02E1           1015     ; RAM is loaded with user code. Run it.
+02E1 758107    1016              mov sp, #7
+02E4 020000    1017              ljmp 0x0000
+02E7           1018             
+02E7 22        1019            ret
+02E8           1020   ;------------------------------------------------------------
+02E8           1021   ;Allocation info for local variables in function 'Load_Ram_Fast_and_Run_Debugger'
+02E8           1022   ;------------------------------------------------------------
+02E8           1023   ;------------------------------------------------------------
+02E8           1024   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:335: void Load_Ram_Fast_and_Run_Debugger (void)
+02E8           1025   ;        -----------------------------------------
+02E8           1026   ;         function Load_Ram_Fast_and_Run_Debugger
+02E8           1027   ;        -----------------------------------------
+02E8           1028   _Load_Ram_Fast_and_Run_Debugger:
+02E8           1029   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:339: T2CON=0;
+02E8 75C800    1030            mov     _T2CON,#0x00
+02EB           1031   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:340: SCON=0;
+02EB 759800    1032            mov     _SCON,#0x00
+02EE           1033   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:341: RCAP2H=0;
+02EE 75CB00    1034            mov     _RCAP2H,#0x00
+02F1           1035   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:342: RCAP2L=0;
+02F1 75CA00    1036            mov     _RCAP2L,#0x00
+02F4           1037   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:343: LEDRA=0xff;
+02F4 75E8FF    1038            mov     _LEDRA,#0xFF
+02F7           1039   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:344: LEDRB=0xff;
+02F7 7595FF    1040            mov     _LEDRB,#0xFF
+02FA           1041   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:352: _endasm;
+02FA           1042            
+02FA 75C300    1043              mov _XRAMUSEDAS, #0 ; 32k RAM accessed as code
+02FD 758107    1044              mov sp, #7
+0300           1045            
+0300           1046     ; RAM is loaded with user code. Run the debugger now.
+0300 02C000    1047              ljmp 0xc000
+0303           1048             
+0303 22        1049            ret
+0304           1050   ;------------------------------------------------------------
+0304           1051   ;Allocation info for local variables in function 'loadintelhex'
+0304           1052   ;------------------------------------------------------------
+0304           1053   ;address                   Allocated with name '_loadintelhex_address_1_103'
+0304           1054   ;j                         Allocated with name '_loadintelhex_j_1_103'
+0304           1055   ;k                         Allocated with name '_loadintelhex_k_1_103'
+0304           1056   ;size                      Allocated with name '_loadintelhex_size_1_103'
+0304           1057   ;type                      Allocated with name '_loadintelhex_type_1_103'
+0304           1058   ;checksum                  Allocated with name '_loadintelhex_checksum_1_103'
+0304           1059   ;n                         Allocated with name '_loadintelhex_n_1_103'
+0304           1060   ;echo                      Allocated with name '_loadintelhex_echo_1_103'
+0304           1061   ;savedcs                   Allocated to registers r2 
+0304           1062   ;------------------------------------------------------------
+0304           1063   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:355: void loadintelhex (void)
+0304           1064   ;        -----------------------------------------
+0304           1065   ;         function loadintelhex
+0304           1066   ;        -----------------------------------------
+0304           1067   _loadintelhex:
+0304           1068   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:362: while(1)
+0304           1069   L021020?:
+0304           1070   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:364: n=getchare();
+0304 120000    1071            lcall   _getchare
+0307 858268    1072            mov     _loadintelhex_n_1_103,dpl
+030A           1073   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:366: if(n==(unsigned char)':')
+030A 743A      1074            mov     a,#0x3A
+030C B568B0    1075            cjne    a,_loadintelhex_n_1_103,L021052?
+030F 8000      1076            sjmp    L021053?
+0311           1077   L021052?:
+0311 020000    1078            ljmp    L021017?
+0314           1079   L021053?:
+0314           1080   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:368: echo='.'; // If everything works ok, send a period...
+0314 75B82E    1081            mov     _loadintelhex_echo_1_103,#0x2E
+0317           1082   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:369: size=getbyte();
+0317 120000    1083            lcall   _getbyte
+031A 858278    1084            mov     _loadintelhex_size_1_103,dpl
+031D           1085   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:370: checksum=size;
+031D 857818    1086            mov     _loadintelhex_checksum_1_103,_loadintelhex_size_1_103
+0320           1087   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:372: address=getbyte();
+0320 120000    1088            lcall   _getbyte
+0323 AA82      1089            mov     r2,dpl
+0325 8A88      1090            mov     _loadintelhex_address_1_103,r2
+0327 758900    1091            mov     (_loadintelhex_address_1_103 + 1),#0x00
+032A           1092   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:373: checksum+=address;
+032A AA88      1093            mov     r2,_loadintelhex_address_1_103
+032C EA        1094            mov     a,r2
+032D 2518      1095            add     a,_loadintelhex_checksum_1_103
+032F F518      1096            mov     _loadintelhex_checksum_1_103,a
+0331           1097   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:374: address*=0x100;
+0331 858889    1098            mov     (_loadintelhex_address_1_103 + 1),_loadintelhex_address_1_103
+0334 758800    1099            mov     _loadintelhex_address_1_103,#0x00
+0337           1100   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:375: n=getbyte();
+0337 120000    1101            lcall   _getbyte
+033A 858268    1102            mov     _loadintelhex_n_1_103,dpl
+033D           1103   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:376: checksum+=n;
+033D E568      1104            mov     a,_loadintelhex_n_1_103
+033F 2518      1105            add     a,_loadintelhex_checksum_1_103
+0341 F518      1106            mov     _loadintelhex_checksum_1_103,a
+0343           1107   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:377: address+=n;
+0343 AA68      1108            mov     r2,_loadintelhex_n_1_103
+0345 7B00      1109            mov     r3,#0x00
+0347 EA        1110            mov     a,r2
+0348 2588      1111            add     a,_loadintelhex_address_1_103
+034A F588      1112            mov     _loadintelhex_address_1_103,a
+034C EB        1113            mov     a,r3
+034D 3589      1114            addc    a,(_loadintelhex_address_1_103 + 1)
+034F F589      1115            mov     (_loadintelhex_address_1_103 + 1),a
+0351           1116   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:379: type=getbyte();
+0351 120000    1117            lcall   _getbyte
+0354 8582C8    1118            mov     _loadintelhex_type_1_103,dpl
+0357           1119   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:380: checksum+=type;
+0357 E5C8      1120            mov     a,_loadintelhex_type_1_103
+0359 2518      1121            add     a,_loadintelhex_checksum_1_103
+035B F518      1122            mov     _loadintelhex_checksum_1_103,a
+035D           1123   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:382: for(j=0; j<size; j++)
+035D 75D800    1124            mov     _loadintelhex_j_1_103,#0x00
+0360           1125   L021022?:
+0360 C3        1126            clr     c
+0361 E5D8      1127            mov     a,_loadintelhex_j_1_103
+0363 9578      1128            subb    a,_loadintelhex_size_1_103
+0365 5000      1129            jnc     L021025?
+0367           1130   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:384: n=getbyte();
+0367 120000    1131            lcall   _getbyte
+036A 858268    1132            mov     _loadintelhex_n_1_103,dpl
+036D           1133   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:385: if(j<MAXBUFF) buff[j]=n; // Don't overrun the buffer
+036D 74C0      1134            mov     a,#0x100 - 0x40
+036F 25D8      1135            add     a,_loadintelhex_j_1_103
+0371 4000      1136            jc      L021002?
+0373 E5D8      1137            mov     a,_loadintelhex_j_1_103
+0375 2428      1138            add     a,#_buff
+0377 F8        1139            mov     r0,a
+0378 A668      1140            mov     @r0,_loadintelhex_n_1_103
+037A           1141   L021002?:
+037A           1142   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:386: checksum+=n;
+037A E568      1143            mov     a,_loadintelhex_n_1_103
+037C 2518      1144            add     a,_loadintelhex_checksum_1_103
+037E F518      1145            mov     _loadintelhex_checksum_1_103,a
+0380           1146   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:382: for(j=0; j<size; j++)
+0380 05D8      1147            inc     _loadintelhex_j_1_103
+0382 8000      1148            sjmp    L021022?
+0384           1149   L021025?:
+0384           1150   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:389: savedcs=getbyte();
+0384 120000    1151            lcall   _getbyte
+0387           1152   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:390: checksum+=savedcs;
+0387 E582      1153            mov     a,dpl
+0389 FA        1154            mov     r2,a
+038A 2518      1155            add     a,_loadintelhex_checksum_1_103
+038C F518      1156            mov     _loadintelhex_checksum_1_103,a
+038E           1157   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:391: if(size>MAXBUFF) checksum=1; // Force a checksum error
+038E E578      1158            mov     a,_loadintelhex_size_1_103
+0390 24BF      1159            add     a,#0xff - 0x40
+0392 5000      1160            jnc     L021004?
+0394 751801    1161            mov     _loadintelhex_checksum_1_103,#0x01
+0397           1162   L021004?:
+0397           1163   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:393: if(checksum==0) switch(type)
+0397 E518      1164            mov     a,_loadintelhex_checksum_1_103
+0399 6000      1165            jz      L021057?
+039B 020000    1166            ljmp    L021012?
+039E           1167   L021057?:
+039E AAC8      1168            mov     r2,_loadintelhex_type_1_103
+03A0 BA00F0    1169            cjne    r2,#0x00,L021058?
+03A3 8000      1170            sjmp    L021006?
+03A5           1171   L021058?:
+03A5 BA0170    1172            cjne    r2,#0x01,L021059?
+03A8 8000      1173            sjmp    L021008?
+03AA           1174   L021059?:
+03AA BA03F0    1175            cjne    r2,#0x03,L021060?
+03AD 8000      1176            sjmp    L021007?
+03AF           1177   L021060?:
+03AF BA0470    1178            cjne    r2,#0x04,L021009?
+03B2           1179   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:398: for(address=0; address<0x7fff; address++)
+03B2 E4        1180            clr     a
+03B3 F588      1181            mov     _loadintelhex_address_1_103,a
+03B5 F589      1182            mov     (_loadintelhex_address_1_103 + 1),a
+03B7           1183   L021026?:
+03B7 C3        1184            clr     c
+03B8 E588      1185            mov     a,_loadintelhex_address_1_103
+03BA 94FF      1186            subb    a,#0xFF
+03BC E589      1187            mov     a,(_loadintelhex_address_1_103 + 1)
+03BE 947F      1188            subb    a,#0x7F
+03C0 5000      1189            jnc     L021029?
+03C2           1190   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:400: Write_XRAM (address, 0Xff);
+03C2 7568FF    1191            mov     _Write_XRAM_PARM_2,#0xFF
+03C5 858882    1192            mov     dpl,_loadintelhex_address_1_103
+03C8 858983    1193            mov     dph,(_loadintelhex_address_1_103 + 1)
+03CB 120000    1194            lcall   _Write_XRAM
+03CE           1195   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:398: for(address=0; address<0x7fff; address++)
+03CE 7401      1196            mov     a,#0x01
+03D0 2588      1197            add     a,_loadintelhex_address_1_103
+03D2 F588      1198            mov     _loadintelhex_address_1_103,a
+03D4 E4        1199            clr     a
+03D5 3589      1200            addc    a,(_loadintelhex_address_1_103 + 1)
+03D7 F589      1201            mov     (_loadintelhex_address_1_103 + 1),a
+03D9 8000      1202            sjmp    L021026?
+03DB           1203   L021029?:
+03DB           1204   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:402: LEDRA_1=1; // Flash erased
+03DB D2E9      1205            setb    _LEDRA_1
+03DD           1206   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:403: break;
+03DD           1207   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:405: case 0: // Write to flash command.
+03DD 8000      1208            sjmp    L021013?
+03DF           1209   L021006?:
+03DF           1210   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:408: for (k=0; k<j; k++)
+03DF 752800    1211            mov     _loadintelhex_k_1_103,#0x00
+03E2           1212   L021030?:
+03E2 C3        1213            clr     c
+03E3 E528      1214            mov     a,_loadintelhex_k_1_103
+03E5 95D8      1215            subb    a,_loadintelhex_j_1_103
+03E7 5000      1216            jnc     L021013?
+03E9           1217   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:410: Write_XRAM (address, buff[k]);
+03E9 E528      1218            mov     a,_loadintelhex_k_1_103
+03EB 2428      1219            add     a,#_buff
+03ED F8        1220            mov     r0,a
+03EE 8668      1221            mov     _Write_XRAM_PARM_2,@r0
+03F0 858882    1222            mov     dpl,_loadintelhex_address_1_103
+03F3 858983    1223            mov     dph,(_loadintelhex_address_1_103 + 1)
+03F6 120000    1224            lcall   _Write_XRAM
+03F9           1225   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:411: address++;
+03F9 7401      1226            mov     a,#0x01
+03FB 2588      1227            add     a,_loadintelhex_address_1_103
+03FD F588      1228            mov     _loadintelhex_address_1_103,a
+03FF E4        1229            clr     a
+0400 3589      1230            addc    a,(_loadintelhex_address_1_103 + 1)
+0402 F589      1231            mov     (_loadintelhex_address_1_103 + 1),a
+0404           1232   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:408: for (k=0; k<j; k++)
+0404 0528      1233            inc     _loadintelhex_k_1_103
+0406           1234   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:428: case 3: // Send ID number command.
+0406 8000      1235            sjmp    L021030?
+0408           1236   L021007?:
+0408           1237   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:429: sends("DE1");
+0408 9096B0    1238            mov     dptr,#__str_0
+040B 75F080    1239            mov     b,#0x80
+040E 120000    1240            lcall   _sends
+0411           1241   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:430: break;
+0411           1242   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:432: case 1: // End record
+0411 8000      1243            sjmp    L021013?
+0413           1244   L021008?:
+0413           1245   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:433: LEDRA_2=1; // Flash loaded
+0413 D2EA      1246            setb    _LEDRA_2
+0415           1247   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:434: break;
+0415           1248   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:436: default: // Unknown command;
+0415 8000      1249            sjmp    L021013?
+0417           1250   L021009?:
+0417           1251   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:437: echo='?';
+0417 75B83F    1252            mov     _loadintelhex_echo_1_103,#0x3F
+041A           1253   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:438: LEDRA_2=1;
+041A D2EA      1254            setb    _LEDRA_2
+041C           1255   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:440: }
+041C 8000      1256            sjmp    L021013?
+041E           1257   L021012?:
+041E           1258   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:443: echo='X'; // Checksum error
+041E 75B858    1259            mov     _loadintelhex_echo_1_103,#0x58
+0421           1260   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:444: LEDRA_1=1;
+0421 D2E9      1261            setb    _LEDRA_1
+0423           1262   L021013?:
+0423           1263   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:446: putchar(echo);
+0423 85B882    1264            mov     dpl,_loadintelhex_echo_1_103
+0426 120000    1265            lcall   _putchar
+0429 020000    1266            ljmp    L021020?
+042C           1267   L021017?:
+042C           1268   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:448: else if(n==(unsigned char)'U')
+042C 7455      1269            mov     a,#0x55
+042E B568F0    1270            cjne    a,_loadintelhex_n_1_103,L021065?
+0431 8000      1271            sjmp    L021066?
+0433           1272   L021065?:
+0433 020000    1273            ljmp    L021020?
+0436           1274   L021066?:
+0436           1275   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:450: LEDRA=0;
+0436 75E800    1276            mov     _LEDRA,#0x00
+0439           1277   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:451: LEDRB=0;
+0439 759500    1278            mov     _LEDRB,#0x00
+043C           1279   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:452: LEDRA=1; // Bootloader running
+043C 75E801    1280            mov     _LEDRA,#0x01
+043F 020000    1281            ljmp    L021020?
+0442           1282   ;------------------------------------------------------------
+0442           1283   ;Allocation info for local variables in function 'str2hex'
+0442           1284   ;------------------------------------------------------------
+0442           1285   ;s                         Allocated to registers r2 r3 r4 
+0442           1286   ;x                         Allocated to registers r5 r6 
+0442           1287   ;i                         Allocated to registers r7 
+0442           1288   ;sloc0                     Allocated with name '_str2hex_sloc0_1_0'
+0442           1289   ;------------------------------------------------------------
+0442           1290   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:457: unsigned int str2hex (char * s)
+0442           1291   ;        -----------------------------------------
+0442           1292   ;         function str2hex
+0442           1293   ;        -----------------------------------------
+0442           1294   _str2hex:
+0442 AA82      1295            mov     r2,dpl
+0444 AB83      1296            mov     r3,dph
+0446 ACF0      1297            mov     r4,b
+0448           1298   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:459: unsigned int x=0;
+0448 7D00      1299            mov     r5,#0x00
+044A 7E00      1300            mov     r6,#0x00
+044C           1301   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:461: while(*s)
+044C           1302   L022013?:
+044C 8A82      1303            mov     dpl,r2
+044E 8B83      1304            mov     dph,r3
+0450 8CF0      1305            mov     b,r4
+0452 120000    1306            lcall   __gptrget
+0455 FF        1307            mov     r7,a
+0456 7000      1308            jnz     L022027?
+0458 020000    1309            ljmp    L022015?
+045B           1310   L022027?:
+045B           1311   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:463: if((*s>='0')&&(*s<='9')) i=*s-'0';
+045B C3        1312            clr     c
+045C EF        1313            mov     a,r7
+045D 6480      1314            xrl     a,#0x80
+045F 94B0      1315            subb    a,#0xb0
+0461 4000      1316            jc      L022010?
+0463 74B9      1317            mov     a,#(0x39 ^ 0x80)
+0465 8FF0      1318            mov     b,r7
+0467 63F080    1319            xrl     b,#0x80
+046A 95F0      1320            subb    a,b
+046C 4000      1321            jc      L022010?
+046E EF        1322            mov     a,r7
+046F 24D0      1323            add     a,#0xd0
+0471 FF        1324            mov     r7,a
+0472 8000      1325            sjmp    L022011?
+0474           1326   L022010?:
+0474           1327   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:464: else if ( (*s>='A') && (*s<='F') ) i=*s-'A'+10;
+0474 8A82      1328            mov     dpl,r2
+0476 8B83      1329            mov     dph,r3
+0478 8CF0      1330            mov     b,r4
+047A 120000    1331            lcall   __gptrget
+047D F8        1332            mov     r0,a
+047E C3        1333            clr     c
+047F 6480      1334            xrl     a,#0x80
+0481 94C1      1335            subb    a,#0xc1
+0483 4000      1336            jc      L022006?
+0485 74C6      1337            mov     a,#(0x46 ^ 0x80)
+0487 88F0      1338            mov     b,r0
+0489 63F080    1339            xrl     b,#0x80
+048C 95F0      1340            subb    a,b
+048E 4000      1341            jc      L022006?
+0490 74C9      1342            mov     a,#0xC9
+0492 28        1343            add     a,r0
+0493 FF        1344            mov     r7,a
+0494 8000      1345            sjmp    L022011?
+0496           1346   L022006?:
+0496           1347   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:465: else if ( (*s>='a') && (*s<='f') ) i=*s-'a'+10;
+0496 C3        1348            clr     c
+0497 E8        1349            mov     a,r0
+0498 6480      1350            xrl     a,#0x80
+049A 94E1      1351            subb    a,#0xe1
+049C 4000      1352            jc      L022015?
+049E 74E6      1353            mov     a,#(0x66 ^ 0x80)
+04A0 88F0      1354            mov     b,r0
+04A2 63F080    1355            xrl     b,#0x80
+04A5 95F0      1356            subb    a,b
+04A7 4000      1357            jc      L022015?
+04A9 74A9      1358            mov     a,#0xA9
+04AB 28        1359            add     a,r0
+04AC FF        1360            mov     r7,a
+04AD           1361   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:466: else break;
+04AD           1362   L022011?:
+04AD           1363   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:467: x=(x*0x10)+i;
+04AD 8D08      1364            mov     _str2hex_sloc0_1_0,r5
+04AF EE        1365            mov     a,r6
+04B0 C4        1366            swap    a
+04B1 54F0      1367            anl     a,#0xf0
+04B3 C508      1368            xch     a,_str2hex_sloc0_1_0
+04B5 C4        1369            swap    a
+04B6 C508      1370            xch     a,_str2hex_sloc0_1_0
+04B8 6508      1371            xrl     a,_str2hex_sloc0_1_0
+04BA C508      1372            xch     a,_str2hex_sloc0_1_0
+04BC 54F0      1373            anl     a,#0xf0
+04BE C508      1374            xch     a,_str2hex_sloc0_1_0
+04C0 6508      1375            xrl     a,_str2hex_sloc0_1_0
+04C2 F509      1376            mov     (_str2hex_sloc0_1_0 + 1),a
+04C4 7800      1377            mov     r0,#0x00
+04C6 EF        1378            mov     a,r7
+04C7 2508      1379            add     a,_str2hex_sloc0_1_0
+04C9 FD        1380            mov     r5,a
+04CA E8        1381            mov     a,r0
+04CB 3509      1382            addc    a,(_str2hex_sloc0_1_0 + 1)
+04CD FE        1383            mov     r6,a
+04CE           1384   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:468: s++;
+04CE 0A        1385            inc     r2
+04CF BA00F0    1386            cjne    r2,#0x00,L022034?
+04D2 0B        1387            inc     r3
+04D3           1388   L022034?:
+04D3 020000    1389            ljmp    L022013?
+04D6           1390   L022015?:
+04D6           1391   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:470: return x;
+04D6 8D82      1392            mov     dpl,r5
+04D8 8E83      1393            mov     dph,r6
+04DA 22        1394            ret
+04DB           1395   ;------------------------------------------------------------
+04DB           1396   ;Allocation info for local variables in function 'OutByte'
+04DB           1397   ;------------------------------------------------------------
+04DB           1398   ;x                         Allocated to registers r2 
+04DB           1399   ;------------------------------------------------------------
+04DB           1400   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:473: void OutByte (unsigned char x)
+04DB           1401   ;        -----------------------------------------
+04DB           1402   ;         function OutByte
+04DB           1403   ;        -----------------------------------------
+04DB           1404   _OutByte:
+04DB           1405   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:475: putchar(hexval[x/0x10]);
+04DB E582      1406            mov     a,dpl
+04DD FA        1407            mov     r2,a
+04DE C4        1408            swap    a
+04DF 540F      1409            anl     a,#0x0f
+04E1 9019E8    1410            mov     dptr,#_hexval
+04E4 93        1411            movc    a,@a+dptr
+04E5 F582      1412            mov     dpl,a
+04E7 C002      1413            push    ar2
+04E9 120000    1414            lcall   _putchar
+04EC D002      1415            pop     ar2
+04EE           1416   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:476: putchar(hexval[x%0x10]);
+04EE 740F      1417            mov     a,#0x0F
+04F0 5A        1418            anl     a,r2
+04F1 9019E8    1419            mov     dptr,#_hexval
+04F4 93        1420            movc    a,@a+dptr
+04F5 F582      1421            mov     dpl,a
+04F7 020000    1422            ljmp    _putchar
+04FA           1423   ;------------------------------------------------------------
+04FA           1424   ;Allocation info for local variables in function 'OutWord'
+04FA           1425   ;------------------------------------------------------------
+04FA           1426   ;x                         Allocated to registers r2 r3 
+04FA           1427   ;------------------------------------------------------------
+04FA           1428   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:479: void OutWord (unsigned int x)
+04FA           1429   ;        -----------------------------------------
+04FA           1430   ;         function OutWord
+04FA           1431   ;        -----------------------------------------
+04FA           1432   _OutWord:
+04FA AA82      1433            mov     r2,dpl
+04FC AB83      1434            mov     r3,dph
+04FE           1435   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:481: OutByte(x/0x100);
+04FE 8B04      1436            mov     ar4,r3
+0500 8C82      1437            mov     dpl,r4
+0502 C002      1438            push    ar2
+0504 C003      1439            push    ar3
+0506 120000    1440            lcall   _OutByte
+0509 D003      1441            pop     ar3
+050B D002      1442            pop     ar2
+050D           1443   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:482: OutByte(x%0x100);
+050D 8A82      1444            mov     dpl,r2
+050F 020000    1445            ljmp    _OutByte
+0512           1446   ;------------------------------------------------------------
+0512           1447   ;Allocation info for local variables in function 'Manual_Load'
+0512           1448   ;------------------------------------------------------------
+0512           1449   ;add                       Allocated to registers r2 r3 
+0512           1450   ;j                         Allocated to registers r4 r5 
+0512           1451   ;val                       Allocated to registers r4 
+0512           1452   ;h_add                     Allocated to registers r4 
+0512           1453   ;l_add                     Allocated to registers r5 
+0512           1454   ;------------------------------------------------------------
+0512           1455   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:488: void Manual_Load (void)
+0512           1456   ;        -----------------------------------------
+0512           1457   ;         function Manual_Load
+0512           1458   ;        -----------------------------------------
+0512           1459   _Manual_Load:
+0512           1460   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:496: LEDRA=0;
+0512 75E800    1461            mov     _LEDRA,#0x00
+0515           1462   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:497: LEDRB=0;
+0515 759500    1463            mov     _LEDRB,#0x00
+0518           1464   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:499: add=0;
+0518 7A00      1465            mov     r2,#0x00
+051A 7B00      1466            mov     r3,#0x00
+051C           1467   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:501: while(1)
+051C           1468   L025040?:
+051C           1469   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:504: h_add=add/0x100;
+051C 8B04      1470            mov     ar4,r3
+051E           1471   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:505: l_add=add%0x100;
+051E 8A05      1472            mov     ar5,r2
+0520           1473   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:506: HEX5=seven_seg[h_add/0x10];
+0520 EC        1474            mov     a,r4
+0521 C4        1475            swap    a
+0522 540F      1476            anl     a,#0x0f
+0524 9019A8    1477            mov     dptr,#_seven_seg
+0527 93        1478            movc    a,@a+dptr
+0528 F58F      1479            mov     _HEX5,a
+052A           1480   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:507: HEX4=seven_seg[h_add%0x10];
+052A 740F      1481            mov     a,#0x0F
+052C 5C        1482            anl     a,r4
+052D 9019A8    1483            mov     dptr,#_seven_seg
+0530 93        1484            movc    a,@a+dptr
+0531 F58E      1485            mov     _HEX4,a
+0533           1486   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:508: HEX3=seven_seg[l_add/0x10];
+0533 ED        1487            mov     a,r5
+0534 C4        1488            swap    a
+0535 540F      1489            anl     a,#0x0f
+0537 9019A8    1490            mov     dptr,#_seven_seg
+053A 93        1491            movc    a,@a+dptr
+053B F594      1492            mov     _HEX3,a
+053D           1493   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:509: HEX2=seven_seg[l_add%0x10];
+053D 740F      1494            mov     a,#0x0F
+053F 5D        1495            anl     a,r5
+0540 9019A8    1496            mov     dptr,#_seven_seg
+0543 93        1497            movc    a,@a+dptr
+0544 F593      1498            mov     _HEX2,a
+0546           1499   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:511: val=Read_XRAM(add);
+0546 8A82      1500            mov     dpl,r2
+0548 8B83      1501            mov     dph,r3
+054A C002      1502            push    ar2
+054C C003      1503            push    ar3
+054E 120000    1504            lcall   _Read_XRAM
+0551 AC82      1505            mov     r4,dpl
+0553 D003      1506            pop     ar3
+0555 D002      1507            pop     ar2
+0557           1508   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:512: HEX1=seven_seg[val/0x10];
+0557 EC        1509            mov     a,r4
+0558 C4        1510            swap    a
+0559 540F      1511            anl     a,#0x0f
+055B FD        1512            mov     r5,a
+055C 9019A8    1513            mov     dptr,#_seven_seg
+055F 93        1514            movc    a,@a+dptr
+0560 F592      1515            mov     _HEX1,a
+0562           1516   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:513: HEX0=seven_seg[val%0x10];
+0562 740F      1517            mov     a,#0x0F
+0564 5C        1518            anl     a,r4
+0565 9019A8    1519            mov     dptr,#_seven_seg
+0568 93        1520            movc    a,@a+dptr
+0569 F591      1521            mov     _HEX0,a
+056B           1522   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:515: if((KEY_1==0) && (KEY_0==1))
+056B 20F970    1523            jb      _KEY_1,L025036?
+056E 30F870    1524            jnb     _KEY_0,L025036?
+0571           1525   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:517: while (KEY_1==0); // Wait for key release
+0571           1526   L025001?:
+0571 30F9B0    1527            jnb     _KEY_1,L025001?
+0574           1528   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:518: if((SWB&0x01)==0x01) // Reading address low
+0574 7401      1529            mov     a,#0x01
+0576 5595      1530            anl     a,_SWB
+0578 FC        1531            mov     r4,a
+0579 BC01F0    1532            cjne    r4,#0x01,L025010?
+057C           1533   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:520: add&=0x7f00;
+057C 7A00      1534            mov     r2,#0x00
+057E 53037F    1535            anl     ar3,#0x7F
+0581           1536   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:521: add|=SWA;  
+0581 ACE8      1537            mov     r4,_SWA
+0583 7D00      1538            mov     r5,#0x00
+0585 EC        1539            mov     a,r4
+0586 4202      1540            orl     ar2,a
+0588 ED        1541            mov     a,r5
+0589 4203      1542            orl     ar3,a
+058B 020000    1543            ljmp    L025040?
+058E           1544   L025010?:
+058E           1545   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:523: else if((SWB&0x02)==0x02) // Reading address high
+058E 7402      1546            mov     a,#0x02
+0590 5595      1547            anl     a,_SWB
+0592 FC        1548            mov     r4,a
+0593 BC0230    1549            cjne    r4,#0x02,L025007?
+0596           1550   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:525: add&=0x00ff;
+0596 7B00      1551            mov     r3,#0x00
+0598           1552   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:526: add|=(SWA*0x100);  
+0598 ACE8      1553            mov     r4,_SWA
+059A 8C05      1554            mov     ar5,r4
+059C E4        1555            clr     a
+059D FC        1556            mov     r4,a
+059E 4202      1557            orl     ar2,a
+05A0 ED        1558            mov     a,r5
+05A1 4203      1559            orl     ar3,a
+05A3 020000    1560            ljmp    L025040?
+05A6           1561   L025007?:
+05A6           1562   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:528: else if ((SWB&0x03)==0) // Reading data
+05A6 E595      1563            mov     a,_SWB
+05A8 5403      1564            anl     a,#0x03
+05AA 6000      1565            jz      L025075?
+05AC 020000    1566            ljmp    L025040?
+05AF           1567   L025075?:
+05AF           1568   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:530: val=SWA;
+05AF 85E868    1569            mov     _Write_XRAM_PARM_2,_SWA
+05B2           1570   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:531: Write_XRAM(add, val);
+05B2 8A82      1571            mov     dpl,r2
+05B4 8B83      1572            mov     dph,r3
+05B6 C002      1573            push    ar2
+05B8 C003      1574            push    ar3
+05BA 120000    1575            lcall   _Write_XRAM
+05BD D003      1576            pop     ar3
+05BF D002      1577            pop     ar2
+05C1 020000    1578            ljmp    L025040?
+05C4           1579   L025036?:
+05C4           1580   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:535: else if(KEY_3==0) // Increment address
+05C4 20FBB0    1581            jb      _KEY_3,L025033?
+05C7           1582   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:537: while(KEY_3==0); // Wait for key release
+05C7           1583   L025012?:
+05C7 30FBF0    1584            jnb     _KEY_3,L025012?
+05CA           1585   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:538: LEDRA_1=0;
+05CA C2E9      1586            clr     _LEDRA_1
+05CC           1587   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:539: LEDRA_2=0;
+05CC C2EA      1588            clr     _LEDRA_2
+05CE           1589   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:540: add++;
+05CE 0A        1590            inc     r2
+05CF BA0030    1591            cjne    r2,#0x00,L025078?
+05D2 0B        1592            inc     r3
+05D3           1593   L025078?:
+05D3           1594   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:541: if (add>0x7fff) add=0;
+05D3 C3        1595            clr     c
+05D4 74FF      1596            mov     a,#0xFF
+05D6 9A        1597            subb    a,r2
+05D7 747F      1598            mov     a,#0x7F
+05D9 9B        1599            subb    a,r3
+05DA 4000      1600            jc      L025079?
+05DC 020000    1601            ljmp    L025040?
+05DF           1602   L025079?:
+05DF 7A00      1603            mov     r2,#0x00
+05E1 7B00      1604            mov     r3,#0x00
+05E3 020000    1605            ljmp    L025040?
+05E6           1606   L025033?:
+05E6           1607   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:543: else if (KEY_2==0) // Decrement address
+05E6 20FAB0    1608            jb      _KEY_2,L025030?
+05E9           1609   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:545: while(KEY_2==0); // Wait for key release
+05E9           1610   L025017?:
+05E9 30FAF0    1611            jnb     _KEY_2,L025017?
+05EC           1612   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:546: LEDRA_1=0;
+05EC C2E9      1613            clr     _LEDRA_1
+05EE           1614   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:547: LEDRA_2=0;
+05EE C2EA      1615            clr     _LEDRA_2
+05F0           1616   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:548: add--;
+05F0 1A        1617            dec     r2
+05F1 BAFF30    1618            cjne    r2,#0xff,L025082?
+05F4 1B        1619            dec     r3
+05F5           1620   L025082?:
+05F5           1621   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:549: if (add>0x7fff) add=0x7fff;
+05F5 C3        1622            clr     c
+05F6 74FF      1623            mov     a,#0xFF
+05F8 9A        1624            subb    a,r2
+05F9 747F      1625            mov     a,#0x7F
+05FB 9B        1626            subb    a,r3
+05FC 4000      1627            jc      L025083?
+05FE 020000    1628            ljmp    L025040?
+0601           1629   L025083?:
+0601 7AFF      1630            mov     r2,#0xFF
+0603 7B7F      1631            mov     r3,#0x7F
+0605 020000    1632            ljmp    L025040?
+0608           1633   L025030?:
+0608           1634   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:551: else if ( (KEY_1==0) && (KEY_0==0) ) // Save RAM to flash
+0608 30F9B0    1635            jnb     _KEY_1,L025084?
+060B 020000    1636            ljmp    L025040?
+060E           1637   L025084?:
+060E 30F8F0    1638            jnb     _KEY_0,L025085?
+0611 020000    1639            ljmp    L025040?
+0614           1640   L025085?:
+0614           1641   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:553: while( (KEY_1==0) && (KEY_0==0) ); // Wait for key release
+0614           1642   L025023?:
+0614 20F970    1643            jb      _KEY_1,L025025?
+0617 30F830    1644            jnb     _KEY_0,L025023?
+061A           1645   L025025?:
+061A           1646   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:554: EraseSector();
+061A C002      1647            push    ar2
+061C C003      1648            push    ar3
+061E 120000    1649            lcall   _EraseSector
+0621 D003      1650            pop     ar3
+0623 D002      1651            pop     ar2
+0625           1652   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:555: LEDRA_1=1;
+0625 D2E9      1653            setb    _LEDRA_1
+0627           1654   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:556: for(j=0; j<0x8000; j+=PAGE_SIZE)
+0627 7C00      1655            mov     r4,#0x00
+0629 7D00      1656            mov     r5,#0x00
+062B           1657   L025042?:
+062B 7480      1658            mov     a,#0x100 - 0x80
+062D 2D        1659            add     a,r5
+062E 4000      1660            jc      L025045?
+0630           1661   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:558: FlashBuff(j, (unsigned char xdata *)j, PAGE_SIZE);
+0630 8C06      1662            mov     ar6,r4
+0632 8D07      1663            mov     ar7,r5
+0634 8EC8      1664            mov     _FlashBuff_PARM_2,r6
+0636 8FC9      1665            mov     (_FlashBuff_PARM_2 + 1),r7
+0638 75CA00    1666            mov     (_FlashBuff_PARM_2 + 2),#0x00
+063B 757840    1667            mov     _FlashBuff_PARM_3,#0x40
+063E 8C82      1668            mov     dpl,r4
+0640 8D83      1669            mov     dph,r5
+0642 C002      1670            push    ar2
+0644 C003      1671            push    ar3
+0646 C004      1672            push    ar4
+0648 C005      1673            push    ar5
+064A 120000    1674            lcall   _FlashBuff
+064D D005      1675            pop     ar5
+064F D004      1676            pop     ar4
+0651 D003      1677            pop     ar3
+0653 D002      1678            pop     ar2
+0655           1679   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:556: for(j=0; j<0x8000; j+=PAGE_SIZE)
+0655 7440      1680            mov     a,#0x40
+0657 2C        1681            add     a,r4
+0658 FC        1682            mov     r4,a
+0659 E4        1683            clr     a
+065A 3D        1684            addc    a,r5
+065B FD        1685            mov     r5,a
+065C 8000      1686            sjmp    L025042?
+065E           1687   L025045?:
+065E           1688   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:560: LEDRA_2=1;
+065E D2EA      1689            setb    _LEDRA_2
+0660 020000    1690            ljmp    L025040?
+0663           1691   ;------------------------------------------------------------
+0663           1692   ;Allocation info for local variables in function 'main'
+0663           1693   ;------------------------------------------------------------
+0663           1694   ;d                         Allocated to registers r2 
+0663           1695   ;j                         Allocated to registers r2 r3 
+0663           1696   ;------------------------------------------------------------
+0663           1697   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:574: void main (void)
+0663           1698   ;        -----------------------------------------
+0663           1699   ;         function main
+0663           1700   ;        -----------------------------------------
+0663           1701   _main:
+0663           1702   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:581: if( (KEY_0==1) && (KEY_2==1) && (KEY_3==1) ) Load_Ram_Fast_and_Run();
+0663 30F830    1703            jnb     _KEY_0,L026002?
+0666 30FA30    1704            jnb     _KEY_2,L026002?
+0669 30FB30    1705            jnb     _KEY_3,L026002?
+066C 120000    1706            lcall   _Load_Ram_Fast_and_Run
+066F           1707   L026002?:
+066F           1708   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:583: if (KEY_3==0) // Run debugger?
+066F 20FB70    1709            jb      _KEY_3,L026009?
+0672           1710   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:585: HEX5=LetterD;
+0672 758FA1    1711            mov     _HEX5,#0xA1
+0675           1712   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:586: HEX4=LetterE;
+0675 758E86    1713            mov     _HEX4,#0x86
+0678           1714   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:587: HEX3=LetterB;
+0678 759483    1715            mov     _HEX3,#0x83
+067B           1716   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:588: HEX2=LetterU;
+067B 7593C1    1717            mov     _HEX2,#0xC1
+067E           1718   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:589: HEX1=LetterG;
+067E 7592C2    1719            mov     _HEX1,#0xC2
+0681           1720   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:590: HEX0=LetterG;
+0681 7591C2    1721            mov     _HEX0,#0xC2
+0684           1722   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:593: while(KEY_3==0);
+0684           1723   L026005?:
+0684 30FBB0    1724            jnb     _KEY_3,L026005?
+0687           1725   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:595: HEX0=0xff;
+0687 7591FF    1726            mov     _HEX0,#0xFF
+068A           1727   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:596: HEX1=0xff;
+068A 7592FF    1728            mov     _HEX1,#0xFF
+068D           1729   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:597: HEX2=0xff;
+068D 7593FF    1730            mov     _HEX2,#0xFF
+0690           1731   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:598: HEX3=0xff;
+0690 7594FF    1732            mov     _HEX3,#0xFF
+0693           1733   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:599: HEX4=0xff;
+0693 758EFF    1734            mov     _HEX4,#0xFF
+0696           1735   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:600: HEX5=0xff;
+0696 758FFF    1736            mov     _HEX5,#0xFF
+0699           1737   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:602: Load_Ram_Fast_and_Run_Debugger();
+0699 120000    1738            lcall   _Load_Ram_Fast_and_Run_Debugger
+069C           1739   L026009?:
+069C           1740   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:605: if (KEY_2==0)
+069C 20FAF0    1741            jb      _KEY_2,L026014?
+069F           1742   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:607: HEX5=Dash;
+069F 758FBF    1743            mov     _HEX5,#0xBF
+06A2           1744   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:608: HEX4=Dash;
+06A2 758EBF    1745            mov     _HEX4,#0xBF
+06A5           1746   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:609: HEX3=Dash;
+06A5 7594BF    1747            mov     _HEX3,#0xBF
+06A8           1748   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:610: HEX2=Dash;
+06A8 7593BF    1749            mov     _HEX2,#0xBF
+06AB           1750   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:611: HEX1=Dash;
+06AB 7592BF    1751            mov     _HEX1,#0xBF
+06AE           1752   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:612: HEX0=Dash;
+06AE 7591BF    1753            mov     _HEX0,#0xBF
+06B1           1754   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:614: while(KEY_2==0);
+06B1           1755   L026010?:
+06B1 30FA30    1756            jnb     _KEY_2,L026010?
+06B4           1757   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:616: Manual_Load();
+06B4 120000    1758            lcall   _Manual_Load
+06B7           1759   L026014?:
+06B7           1760   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:619: XRAMUSEDAS=1; // 32k RAM accessed as xdata
+06B7 75C301    1761            mov     _XRAMUSEDAS,#0x01
+06BA           1762   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:621: HEX3=LetterB;
+06BA 759483    1763            mov     _HEX3,#0x83
+06BD           1764   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:622: HEX2=LetterO;
+06BD 7593A3    1765            mov     _HEX2,#0xA3
+06C0           1766   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:623: HEX1=LetterO;
+06C0 7592A3    1767            mov     _HEX1,#0xA3
+06C3           1768   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:624: HEX0=LetterT;
+06C3 759187    1769            mov     _HEX0,#0x87
+06C6           1770   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:626: while(KEY_0==0); // Wait for key release
+06C6           1771   L026015?:
+06C6 30F870    1772            jnb     _KEY_0,L026015?
+06C9           1773   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:628: LEDRA=1;// Bootloader running
+06C9 75E801    1774            mov     _LEDRA,#0x01
+06CC           1775   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:629: LEDRB=0;
+06CC 759500    1776            mov     _LEDRB,#0x00
+06CF           1777   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:631: HEX0=0xff;
+06CF 7591FF    1778            mov     _HEX0,#0xFF
+06D2           1779   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:632: HEX1=0xff;
+06D2 7592FF    1780            mov     _HEX1,#0xFF
+06D5           1781   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:633: HEX2=0xff;
+06D5 7593FF    1782            mov     _HEX2,#0xFF
+06D8           1783   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:634: HEX3=0xff;
+06D8 7594FF    1784            mov     _HEX3,#0xFF
+06DB           1785   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:635: HEX4=0xff;
+06DB 758EFF    1786            mov     _HEX4,#0xFF
+06DE           1787   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:636: HEX5=0xff;
+06DE 758FFF    1788            mov     _HEX5,#0xFF
+06E1           1789   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:638: inituart();
+06E1 120000    1790            lcall   _inituart
+06E4           1791   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:642: Write_XRAM(MEMORY_KEY, 0x00);
+06E4 756800    1792            mov     _Write_XRAM_PARM_2,#0x00
+06E7 907FFF    1793            mov     dptr,#0x7FFF
+06EA 120000    1794            lcall   _Write_XRAM
+06ED           1795   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:645: while(1)
+06ED           1796   L026025?:
+06ED           1797   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:647: if (RI==1)
+06ED 3098F0    1798            jnb     _RI,L026021?
+06F0           1799   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:649: d=SBUF;
+06F0 AA99      1800            mov     r2,_SBUF
+06F2           1801   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:650: RI=0;
+06F2 C298      1802            clr     _RI
+06F4           1803   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:651: if(d==(unsigned char)'U') break;
+06F4 BA5530    1804            cjne    r2,#0x55,L026060?
+06F7 8000      1805            sjmp    L026026?
+06F9           1806   L026060?:
+06F9           1807   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:652: TI=0; // Echo what was received
+06F9 C299      1808            clr     _TI
+06FB           1809   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:653: SBUF=d;
+06FB 8A99      1810            mov     _SBUF,r2
+06FD           1811   L026021?:
+06FD           1812   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:656: if(Read_XRAM(MEMORY_KEY)!=0x00)
+06FD 907FFF    1813            mov     dptr,#0x7FFF
+0700 120000    1814            lcall   _Read_XRAM
+0703 E582      1815            mov     a,dpl
+0705 6000      1816            jz      L026025?
+0707           1817   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:658: LEDRA_1=0;
+0707 C2E9      1818            clr     _LEDRA_1
+0709           1819   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:659: LEDRA_2=0;
+0709 C2EA      1820            clr     _LEDRA_2
+070B           1821   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:660: Write_XRAM(MEMORY_KEY, 0x00);
+070B 756800    1822            mov     _Write_XRAM_PARM_2,#0x00
+070E 907FFF    1823            mov     dptr,#0x7FFF
+0711 120000    1824            lcall   _Write_XRAM
+0714           1825   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:661: EraseSector();
+0714 120000    1826            lcall   _EraseSector
+0717           1827   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:662: LEDRA_1=1;
+0717 D2E9      1828            setb    _LEDRA_1
+0719           1829   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:663: for(j=0; j<0x8000; j+=PAGE_SIZE)
+0719 7A00      1830            mov     r2,#0x00
+071B 7B00      1831            mov     r3,#0x00
+071D           1832   L026027?:
+071D 7480      1833            mov     a,#0x100 - 0x80
+071F 2B        1834            add     a,r3
+0720 4000      1835            jc      L026030?
+0722           1836   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:665: FlashBuff(j, (unsigned char xdata *)j, PAGE_SIZE);
+0722 8A04      1837            mov     ar4,r2
+0724 8B05      1838            mov     ar5,r3
+0726 8CC8      1839            mov     _FlashBuff_PARM_2,r4
+0728 8DC9      1840            mov     (_FlashBuff_PARM_2 + 1),r5
+072A 75CA00    1841            mov     (_FlashBuff_PARM_2 + 2),#0x00
+072D 757840    1842            mov     _FlashBuff_PARM_3,#0x40
+0730 8A82      1843            mov     dpl,r2
+0732 8B83      1844            mov     dph,r3
+0734 C002      1845            push    ar2
+0736 C003      1846            push    ar3
+0738 120000    1847            lcall   _FlashBuff
+073B D003      1848            pop     ar3
+073D D002      1849            pop     ar2
+073F           1850   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:663: for(j=0; j<0x8000; j+=PAGE_SIZE)
+073F 7440      1851            mov     a,#0x40
+0741 2A        1852            add     a,r2
+0742 FA        1853            mov     r2,a
+0743 E4        1854            clr     a
+0744 3B        1855            addc    a,r3
+0745 FB        1856            mov     r3,a
+0746 8000      1857            sjmp    L026027?
+0748           1858   L026030?:
+0748           1859   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:667: LEDRA_2=1;
+0748 D2EA      1860            setb    _LEDRA_2
+074A 8000      1861            sjmp    L026025?
+074C           1862   L026026?:
+074C           1863   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:671: loadintelhex();
+074C 020000    1864            ljmp    _loadintelhex
+074F           1865   ;------------------------------------------------------------
+074F           1866   ;Allocation info for local variables in function 'dummy_switch'
+074F           1867   ;------------------------------------------------------------
+074F           1868   ;------------------------------------------------------------
+074F           1869   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:674: void dummy_switch(void) __naked
+074F           1870   ;        -----------------------------------------
+074F           1871   ;         function dummy_switch
+074F           1872   ;        -----------------------------------------
+074F           1873   _dummy_switch:
+074F           1874   ;        naked function: no prologue.
+074F           1875   ;        C:\Source\MAX10_8052\Boot\CV_Boot_SPI.c:686: _endasm;
+074F           1876            
+FFE0           1877              CSEG at 0xFFE0
+FFE0 75C300    1878              mov _XRAMUSEDAS, #0x00 ; 32k RAM accessed as code
+FFE3 00        1879              nop
+FFE4 22        1880              ret
+FFE5           1881            
+FFE8           1882              CSEG at 0xffE8
+FFE8 75C301    1883              mov _XRAMUSEDAS, #0x01 ; 32k RAM accessed as xdata
+FFEB 00        1884              nop
+FFEC 22        1885              ret
+FFED           1886             
+FFED           1887   ;        naked function: no epilogue.
+0000           1888            rseg R_CSEG
+0000           1889   
+0000           1890            rseg R_XINIT
+0000           1891   
+0000           1892            rseg R_CONST
+0000           1893   _hexval:
+0000 30313233  1894            db '0123456789ABCDEF'
+     34353637
+     38394142
+     43444546
+0010 00        1895            db 0x00
+0011           1896   __str_0:
+0011 444531    1897            db 'DE1'
+0014 00        1898            db 0x00
+0015           1899   _seven_seg:
+0015 C0        1900            db 0xc0         ; 192
+0016 F9        1901            db 0xf9         ; 249
+0017 A4        1902            db 0xa4         ; 164
+0018 B0        1903            db 0xb0         ; 176
+0019 99        1904            db 0x99         ; 153
+001A 92        1905            db 0x92         ; 146
+001B 82        1906            db 0x82         ; 130
+001C F8        1907            db 0xf8         ; 248
+001D 80        1908            db 0x80         ; 128
+001E 90        1909            db 0x90         ; 144
+001F 88        1910            db 0x88         ; 136
+0020 83        1911            db 0x83         ; 131
+0021 C6        1912            db 0xc6         ; 198
+0022 A1        1913            db 0xa1         ; 161
+0023 86        1914            db 0x86         ; 134
+0024 8E        1915            db 0x8e         ; 142
+0025           1916   
+FFED           1917            CSEG
+FFED           1918   
+FFED           1919   end
