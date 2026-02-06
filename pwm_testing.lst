@@ -1,0 +1,246 @@
+0000              1   ; pwm_testing.asm - pwm.inc Testing Program for DE10-Lite 
+0000              2   
+0000              3   ; 
+0000              4   ; HARDWARE CONNECTION used for testing PWM (series resistor and LED) 
+0000              5   ; JP2 Pin 36 (P3.7) ----[330 ohm]->        --->|---- JP2 Pin 30 (GND)
+0000              6   ;                       Resistor     LED
+0000              7   ; ================================================================
+0000              8   
+                 10   $LIST
+0000             12   
+0000             13   ; CONFIGURATION CONSTANTS
+0000             14   CLK              EQU 33333333    ; DE10-Lite CV-8052 = 33.333 MHz
+0000             15   TIMER2_RATE      EQU 2048        ; 2048 Hz for a 488 u-sec period/per tick
+0000             16   TIMER2_RELOAD    EQU ((65536-(CLK/(12*TIMER2_RATE))))
+0000             17   PWM_PERIOD_TICKS EQU 20          ; 20 ticks = 9.77ms period = 102 Hz PWM
+0000             18   
+0000             19   ;****TIMER 2 initiation/ISR functions are also in pwm.inc
+0000             20   
+0000             21   SSR_PIN          equ P3.7        ; PWM output pin
+0000             22   
+0030             23   dseg at 0x30
+0030             24       ; Timer variables
+0030             25       ticks_per_sec:    ds 2        ; Tick counter for seconds
+0032             26       
+0032             27       ; PWM variables
+0032             28       pwm_tick_counter: ds 1        ; PWM counter (0-19)
+0033             29       pwm_on_ticks:     ds 1        ; ON time in ticks (CALCULATED VALUE)
+0034             30       
+0034             31       ; USER VARIABLES
+0034             32       PWM:      ds 1        ; Input: Set this to 0-100
+0035             33                                     ; Then call Update_PWM to apply
+0035             34       
+0035             35       ; Decimal conversion variables
+0035             36       digit_100:    ds 1        ; Hundreds digit
+0036             37       digit_10:     ds 1        ; Tens digit
+0037             38       digit_1:      ds 1        ; Ones digit
+0038             39   
+0000             40   bseg
+0000             41       seconds_flag:     dbit 1      ; Set every second
+0001             42       oven_enabled:     dbit 1      ; PWM state
+0002             43   
+0000             44   cseg
+0000             45   org 0x0000
+0000 020117      46       ljmp main
+002B             47   org 0x002B
+002B 020047      48       ljmp Timer2_ISR
+002E             49   
+002E             50   
+                 52   $LIST
+00B0             54   
+00B0             55   
+00B0             56   
+00B0             57   ; ================================================================
+00B0             58   ;                        TESTING HELPER FUNCTIONS:
+00B0             59   ; ================================================================
+00B0             60   
+00B0             61   ; DISPLAY DECIMAL ON 7-SEGMENT
+00B0             62   ; Look-up table for the 7-seg displays
+00B0             63   T_7seg:
+00B0 C0F9A4B0    64       DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99        ; 0 TO 4
+     99
+00B5 9282F880    65       DB 0x92, 0x82, 0xF8, 0x80, 0x90        ; 5 TO 9
+     90
+00BA 8883C6A1    66       DB 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E  ; A to F
+     868E
+00C0             67   
+00C0             68   ; ================================================================
+00C0             69   ; Convert Binary to Decimal Digits
+00C0             70   ; Input: ACC contains binary value (0-100)
+00C0             71   ; Output: digit_100, digit_10, digit_1 contain decimal digits
+00C0             72   ; ================================================================
+00C0             73   Binary_to_Decimal:
+00C0 C0E0        74       push acc
+00C2 C0F0        75       push b
+00C4 C0D0        76       push psw
+00C6             77       
+00C6             78       ; Clear all digits
+00C6 753500      79       mov digit_100, #0
+00C9 753600      80       mov digit_10, #0
+00CC 753700      81       mov digit_1, #0
+00CF             82       
+00CF             83       ; Extract hundreds digit (0 or 1 for values 0-100)
+00CF 75F064      84       mov b, #100
+00D2 84          85       div AB                    ; A = quotient (hundreds), B = remainder
+00D3 F535        86       mov digit_100, a          ; Store hundreds digit (0 or 1)
+00D5 E5F0        87       mov a, b                  ; Get remainder
+00D7             88       
+00D7             89       ; Extract tens digit
+00D7 75F00A      90       mov b, #10
+00DA 84          91       div AB                    ; A = quotient (tens), B = remainder
+00DB F536        92       mov digit_10, a           ; Store tens digit
+00DD 85F037      93       mov digit_1, b            ; Store ones digit (remainder)
+00E0             94       
+00E0 D0D0        95       pop psw
+00E2 D0F0        96       pop b
+00E4 D0E0        97       pop acc
+00E6 22          98       ret
+00E7             99   
+00E7            100   ; ================================================================
+00E7            101   ; Display Decimal Value on HEX2-HEX0
+00E7            102   ; Converts PWM value to decimal and displays on 7-segment displays
+00E7            103   ; ================================================================
+00E7            104   Display_Decimal_7_Seg:
+00E7 C0E0       105       push acc
+00E9 C082       106       push DPL
+00EB C083       107       push DPH
+00ED            108       
+00ED            109       ; Convert PWM value to decimal digits
+00ED E534       110       mov a, pwm
+00EF 1200C0     111       lcall Binary_to_Decimal
+00F2            112       
+00F2 9000B0     113       mov dptr, #T_7seg
+00F5            114       
+00F5            115       ; Display hundreds digit on HEX2
+00F5 E535       116       mov a, digit_100
+00F7 93         117       movc a, @a+dptr
+00F8 F593       118       mov HEX2, a
+00FA            119       
+00FA            120       ; Display tens digit on HEX1
+00FA E536       121       mov a, digit_10
+00FC 93         122       movc a, @a+dptr
+00FD F592       123       mov HEX1, a
+00FF            124       
+00FF            125       ; Display ones digit on HEX0
+00FF E537       126       mov a, digit_1
+0101 93         127       movc a, @a+dptr
+0102 F591       128       mov HEX0, a
+0104            129       
+0104 D083       130       pop DPH
+0106 D082       131       pop DPL
+0108 D0E0       132       pop acc
+010A 22         133       ret
+010B            134   
+010B            135   
+010B            136   ; ================================================================
+010B            137   ; WAIT SECONDS FUNCTION
+010B            138   ; ================================================================
+010B            139   ; Waits for R2 seconds using the seconds_flag
+010B            140   ; Input: R2 = number of seconds to wait
+010B            141   ; ================================================================
+010B            142   Wait_Seconds:
+010B C0E0       143       push acc
+010D            144   Wait_Seconds_Loop:
+010D C200       145       clr seconds_flag
+010F            146   Wait_Seconds_Check:
+010F 3000FD     147       jnb seconds_flag, Wait_Seconds_Check
+0112 DAF9       148       djnz R2, Wait_Seconds_Loop
+0114 D0E0       149       pop acc
+0116 22         150       ret
+0117            151   
+0117            152   
+0117            153   
+0117            154   ; ================================================================
+0117            155   ; MAIN PROGRAM - Initialization and Demo
+0117            156   ; ================================================================
+0117            157   main:
+0117            158       ; Initialize system
+0117 75817F     159       mov SP, #0x7F
+011A 759D80     160       mov P3MOD, #10000000b         ; P3.7 = output
+011D 75E800     161       mov LEDRA, #0
+0120 759500     162       mov LEDRB, #0
+0123            163       
+0123            164       ; Initialize PWM variables
+0123 E4         165       clr a
+0124 F532       166       mov pwm_tick_counter, a
+0126 F533       167       mov pwm_on_ticks, a
+0128 753400     168       mov pwm, #0
+012B            169       
+012B            170       ; Start timer and enable interrupts
+012B 12002E     171       lcall Timer2_Init
+012E D2AF       172       setb EA
+0130            173       
+0130            174       ; Set initial 0% and apply
+0130 753400     175       mov pwm, #0
+0133 12009A     176       lcall Update_PWM              
+0136            177   
+0136            178   ;demo
+0136            179   
+0136            180   demo_loop:
+0136            181       ; ============================================================
+0136            182       ; Test 1: 30% for 5 seconds
+0136            183       ; ============================================================
+0136 75341E     184       mov pwm, #30          ; Set percentage
+0139 12009A     185       lcall Update_PWM              ; Apply new duty cycle
+013C 1200E7     186       lcall Display_Decimal_7_Seg   ; Display on 7-segment
+013F 7A05       187       mov R2, #5                    ; Wait 5 seconds
+0141 12010B     188       lcall Wait_Seconds
+0144            189       
+0144            190       ; ============================================================
+0144            191       ; Test 2: 90% for 5 seconds
+0144            192       ; ============================================================
+0144 75345A     193       mov pwm, #90              
+0147 12009A     194       lcall Update_PWM              
+014A 1200E7     195       lcall Display_Decimal_7_Seg
+014D 7A05       196       mov R2, #5
+014F 12010B     197       lcall Wait_Seconds
+0152            198       
+0152            199       ; ============================================================
+0152            200       ; Test 3: 10% for 3 seconds
+0152            201       ; ============================================================
+0152 75340A     202       mov pwm, #10
+0155 12009A     203       lcall Update_PWM
+0158 1200E7     204       lcall Display_Decimal_7_Seg
+015B 7A03       205       mov R2, #3
+015D 12010B     206       lcall Wait_Seconds
+0160            207       
+0160            208       ; ============================================================
+0160            209       ; Test 4: 50% for 3 seconds
+0160            210       ; ============================================================
+0160 753432     211       mov pwm, #50
+0163 12009A     212       lcall Update_PWM
+0166 1200E7     213       lcall Display_Decimal_7_Seg
+0169 7A03       214       mov R2, #3
+016B 12010B     215       lcall Wait_Seconds
+016E            216       
+016E            217       ; ============================================================
+016E            218       ; Test 5: 75% for 3 seconds
+016E            219       ; ============================================================
+016E 75344B     220       mov pwm, #75
+0171 12009A     221       lcall Update_PWM
+0174 1200E7     222       lcall Display_Decimal_7_Seg
+0177 7A03       223       mov R2, #3
+0179 12010B     224       lcall Wait_Seconds
+017C            225       
+017C            226       ; ============================================================
+017C            227       ; Test 6: 0% (off) for 2 seconds
+017C            228       ; ============================================================
+017C 753400     229       mov pwm, #0
+017F 12009A     230       lcall Update_PWM
+0182 1200E7     231       lcall Display_Decimal_7_Seg
+0185 7A02       232       mov R2, #2
+0187 12010B     233       lcall Wait_Seconds
+018A            234       
+018A            235       ; ============================================================
+018A            236       ; Test 7: 100% (full) for 3 seconds
+018A            237       ; ============================================================
+018A 753464     238       mov pwm, #100
+018D 12009A     239       lcall Update_PWM
+0190 1200E7     240       lcall Display_Decimal_7_Seg
+0193 7A03       241       mov R2, #3
+0195 12010B     242       lcall Wait_Seconds
+0198            243       
+0198            244       ; Repeat demo
+0198 020136     245       ljmp demo_loop
+019B            246   
+019B            247   END
