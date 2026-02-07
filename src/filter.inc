@@ -1,20 +1,21 @@
-; Author: Shadab Mizan - 02/02/2026
-
 $NOLIST
-; Depends on: math32 variables (x, y, bcd, mf) as well as a 4 byte tmp
+; Requires math32 variables
+; Requires $include(math32.inc)
+; 4 byte x, y in dseg
+; 5 byte bcd in dseg
+; 1 bit mf in bseg
+
+; Requires a 4 byte tmp variable in dseg
 
 CSEG
 
 ; Moving Avg LPF
 ; Inputs:
-; x = Raw Temperature at Hot Junction, in mC
-; y = Raw Temperature at Cold Junction, in mC
+; x = Raw Temperature difference between hot and cold junction, in mC
 ; Output: 
 ; x = Oven temperature, Filtered, in mC
 CalcOvenTemperature:
     ; Y[n] = X[n-1] + A*(X[n] - Y[n-1])
-    lcall sub32     ; x = Hot - Cold (X[n])
-    
     mov y+3, tmp+3
     mov y+2, tmp+2
     mov y+1, tmp+1
@@ -43,6 +44,7 @@ CalcOvenTemperature:
 
     lcall add32     ; x = Y[n-1] + A*(X[n] - Y[n-1])
     
+    ; x = tmp = filtered temperature
     ret
 
 $NOLIST
