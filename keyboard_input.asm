@@ -28,6 +28,27 @@ cseg
 	;Interrupt on keypress at address 0003h
 	org 0003h
 	ljmp PS2_Interrupt
+	
+	;Scancode to ASCII lookup table
+	org 0100h
+ASCII_TABLE:
+	DB 0, 0, 0, 0, 0, 0, 0, 0        ; 00-07
+	DB 0, 0, 0, 0, 0, 0, '`', 0      ; 08-0F
+	DB 0, 0, 0, 0, 0, 'q', '1', 0    ; 10-17
+	DB 0, 0, 'z', 's', 'a', 'w', '2', 0  ; 18-1F
+	DB 0, 'c', 'x', 'd', 'e', '4', '3', 0  ; 20-27
+	DB 0, ' ', 'v', 'f', 't', 'r', '5', 0  ; 28-2F
+	DB 0, 'n', 'b', 'h', 'g', 'y', '6', 0  ; 30-37
+	DB 0, 0, 'm', 'j', 'u', '7', '8', 0    ; 38-3F
+	DB 0, ',', 'k', 'i', 'o', '0', '9', 0  ; 40-47
+	DB 0, '.', '/', 'l', ';', 'p', '-', 0  ; 48-4F
+	DB 0, 0, 27h, 0, '[', '=', 0, 0        ; 50-57 (27h = apostrophe)
+	DB 0, 0, 0, ']', 0, 5Ch, 0, 0          ; 58-5F (5Ch = backslash)
+	DB 0, 0, 0, 0, 0, 0, 0, 0              ; 60-67
+	DB 0, 0, 0, 0, 0, 0, 0, 0              ; 68-6F
+	DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
+	DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
+
 Initialize_PS2:
 	; Configure serial protocol for PS/2
 	setb PS2_DAT
@@ -38,6 +59,14 @@ Initialize_PS2:
 	mov R1, #0		 ;Stores values of data
 	clr RELEASE_FLAG
 	ret
+	
+Scancode_To_ASCII:
+	;Input: A = scancode
+	;Output: A = ASCII (or 0 if not valid)
+	mov DPTR, #ASCII_TABLE
+	movc A, @A+DPTR
+	ret
+	
 PS2_Interrupt:
 	push ACC
 	push PSW
@@ -72,6 +101,10 @@ CheckData:
 NotRelease:
 	;We haven't let g
 	jb RELEASE_FLAG, ClearRel
+	;Convert scancode to ASCII
+	lcall Scancode_To_ASCII
+	;Only display if valid ASCII (non-zero)
+	jz PS2_Done
 	mov LEDRA, A      
 	sjmp PS2_Done
 ClearRel:
