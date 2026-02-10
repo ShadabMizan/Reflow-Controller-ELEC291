@@ -77,6 +77,7 @@ tempsoak:           ds 1
 timesoak:           ds 1
 tempreflow:         ds 1
 timereflow:         ds 1
+undertemp_checked:  ds 1
 
 ; ====================================================================
 ; CODE
@@ -163,6 +164,7 @@ Init_Variables:
     mov timesoak, #TIME_SOAK
     mov tempreflow, #TEMP_REFLOW
     mov timereflow, #TIME_REFLOW
+    mov undertemp_checked, #0
     ret
 
 Timer0_Init:
@@ -217,6 +219,7 @@ FSM_State0:
     mov temp_state_start, a
     mov temp_max_state, a
     mov temp_previous, a
+    mov undertemp_checked, #0
 FSM_State0_Done:
     ljmp FSM_Done
 
@@ -252,13 +255,14 @@ Check_Door_Open:
     ljmp Handle_Error
     
 Check_UnderTemp:
+    mov a, undertemp_checked
+    jnz Check_Soak_Temp
     mov a, state_timer
-    cjne a, #30, Check_Soak_Temp
+    cjne a, #1, Check_Soak_Temp
+    mov undertemp_checked, #1
     mov a, temp
     clr c
-    subb a, temp_state_start
-    clr c
-    subb a, #20
+    subb a, #50
     jnc Check_Soak_Temp
     mov error_code, #ERR_UNDERTEMP
     ljmp Handle_Error
@@ -327,7 +331,7 @@ FSM_State3_Done:
 
 FSM_State4:
     cjne a, #4, FSM_State5
-    mov pwm, #100
+    mov pwm, #20                  ; state 4 at 20%
     
     mov a, temp
     clr c
@@ -796,3 +800,4 @@ Time_Label:
     DB 'Time: ', 0
 
 END
+
