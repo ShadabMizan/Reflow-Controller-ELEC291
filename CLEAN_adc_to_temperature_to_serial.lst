@@ -1,0 +1,453 @@
+0000              1   ;contains the subroutine to convert from the adc to the temperature, sending this to the serial port
+0000              2   ;                I spent many hours making subroutines converting the adc to a temperature then 
+0000              3   ;                sending values to the serial port only to find an example file that did most all of this functionality. 
+0000              4   ;                then it took more hours trying to adapt that example file to what we needed.
+0000              5   ;                The following is the result.
+0000              6   
+                 -1   $MODMAX10
+0000              1   ;--------------------------------------------------------
+0000              2   ; Special Function Registers
+0000              3   ;--------------------------------------------------------
+0000              4   P0             DATA 0x80
+0000              5   SP             DATA 0x81
+0000              6   DPL            DATA 0x82
+0000              7   DPH            DATA 0x83
+0000              8   PCON           DATA 0x87
+0000              9   TCON           DATA 0x88
+0000             10   TMOD           DATA 0x89
+0000             11   TL0            DATA 0x8a
+0000             12   TL1            DATA 0x8b
+0000             13   TH0            DATA 0x8c
+0000             14   TH1            DATA 0x8d
+0000             15   P1             DATA 0x90
+0000             16   SCON           DATA 0x98
+0000             17   SBUF           DATA 0x99
+0000             18   P2             DATA 0xa0
+0000             19   IE             DATA 0xa8
+0000             20   P3             DATA 0xb0
+0000             21   IP             DATA 0xb8
+0000             22   PSW            DATA 0xd0
+0000             23   ACC            DATA 0xe0
+0000             24   B              DATA 0xf0
+0000             25   T2CON          DATA 0xc8
+0000             26   RCAP2L         DATA 0xca
+0000             27   RCAP2H         DATA 0xcb
+0000             28   TL2            DATA 0xcc
+0000             29   TH2            DATA 0xcd
+0000             30   DPS            DATA 0x86
+0000             31   DPH1           DATA 0x85
+0000             32   DPL1           DATA 0x84
+0000             33   HEX0           DATA 0x91
+0000             34   HEX1           DATA 0x92
+0000             35   HEX2           DATA 0x93
+0000             36   HEX3           DATA 0x94
+0000             37   HEX4           DATA 0x8e
+0000             38   HEX5           DATA 0x8f
+0000             39   LEDRA          DATA 0xe8
+0000             40   LEDRB          DATA 0x95
+0000             41   SWA            DATA 0xe8
+0000             42   SWB            DATA 0x95
+0000             43   KEY            DATA 0xf8
+0000             44   P0MOD          DATA 0x9a
+0000             45   P1MOD          DATA 0x9b
+0000             46   P2MOD          DATA 0x9c
+0000             47   P3MOD          DATA 0x9d
+0000             48   REP_ADD_L      DATA 0xf1
+0000             49   REP_ADD_H      DATA 0xf2
+0000             50   REP_VALUE      DATA 0xf3
+0000             51   DEBUG_CALL_L   DATA 0xfa
+0000             52   DEBUG_CALL_H   DATA 0xfb
+0000             53   BPC            DATA 0xfc
+0000             54   BPS            DATA 0xfd
+0000             55   BPAL           DATA 0xfe
+0000             56   BPAH           DATA 0xff
+0000             57   LBPAL          DATA 0xfa
+0000             58   LBPAH          DATA 0xfb
+0000             59   P4             DATA 0xc0
+0000             60   P4MOD          DATA 0xc1
+0000             61   XRAMUSEDAS     DATA 0xc3
+0000             62   UFM_ADD0       DATA 0xe1
+0000             63   UFM_ADD1       DATA 0xe2
+0000             64   UFM_ADD2       DATA 0xe3
+0000             65   UFM_DATA0      DATA 0xe4
+0000             66   UFM_DATA1      DATA 0xe5
+0000             67   UFM_DATA2      DATA 0xe6
+0000             68   UFM_DATA3      DATA 0xe7
+0000             69   UFM_CONTROL0   DATA 0xe9
+0000             70   UFM_CONTROL1   DATA 0xea
+0000             71   UFM_CONTROL2   DATA 0xeb
+0000             72   UFM_CONTROL3   DATA 0xec
+0000             73   UFM_DATA_CMD   DATA 0xed
+0000             74   UFM_DATA_STATUS DATA 0xee
+0000             75   UFM_CONTROL_CMD DATA 0xef
+0000             76   ADC_C          DATA 0xa1
+0000             77   ADC_L          DATA 0xa2
+0000             78   ADC_H          DATA 0xa3
+0000             79   
+0000             80   ;--------------------------------------------------------
+0000             81   ; special function bits
+0000             82   ;--------------------------------------------------------
+0000             83   P0_0           BIT 0x80
+0000             84   P0_1           BIT 0x81
+0000             85   P0_2           BIT 0x82
+0000             86   P0_3           BIT 0x83
+0000             87   P0_4           BIT 0x84
+0000             88   P0_5           BIT 0x85
+0000             89   P0_6           BIT 0x86
+0000             90   P0_7           BIT 0x87
+0000             91   IT0            BIT 0x88
+0000             92   IE0            BIT 0x89
+0000             93   IT1            BIT 0x8a
+0000             94   IE1            BIT 0x8b
+0000             95   TR0            BIT 0x8c
+0000             96   TF0            BIT 0x8d
+0000             97   TR1            BIT 0x8e
+0000             98   TF1            BIT 0x8f
+0000             99   P1_0           BIT 0x90
+0000            100   P1_1           BIT 0x91
+0000            101   P1_2           BIT 0x92
+0000            102   P1_3           BIT 0x93
+0000            103   P1_4           BIT 0x94
+0000            104   P1_5           BIT 0x95
+0000            105   P1_6           BIT 0x96
+0000            106   P1_7           BIT 0x97
+0000            107   RI             BIT 0x98
+0000            108   TI             BIT 0x99
+0000            109   RB8            BIT 0x9a
+0000            110   TB8            BIT 0x9b
+0000            111   REN            BIT 0x9c
+0000            112   SM2            BIT 0x9d
+0000            113   SM1            BIT 0x9e
+0000            114   SM0            BIT 0x9f
+0000            115   P2_0           BIT 0xa0
+0000            116   P2_1           BIT 0xa1
+0000            117   P2_2           BIT 0xa2
+0000            118   P2_3           BIT 0xa3
+0000            119   P2_4           BIT 0xa4
+0000            120   P2_5           BIT 0xa5
+0000            121   P2_6           BIT 0xa6
+0000            122   P2_7           BIT 0xa7
+0000            123   EX0            BIT 0xa8
+0000            124   ET0            BIT 0xa9
+0000            125   EX1            BIT 0xaa
+0000            126   ET1            BIT 0xab
+0000            127   ES             BIT 0xac
+0000            128   ET2            BIT 0xad
+0000            129   EA             BIT 0xaf
+0000            130   P3_0           BIT 0xb0
+0000            131   P3_1           BIT 0xb1
+0000            132   P3_2           BIT 0xb2
+0000            133   P3_3           BIT 0xb3
+0000            134   P3_4           BIT 0xb4
+0000            135   P3_5           BIT 0xb5
+0000            136   P3_6           BIT 0xb6
+0000            137   P3_7           BIT 0xb7
+0000            138   RXD            BIT 0xb0
+0000            139   TXD            BIT 0xb1
+0000            140   INT0           BIT 0xb2
+0000            141   INT1           BIT 0xb3
+0000            142   T0             BIT 0xb4
+0000            143   T1             BIT 0xb5
+0000            144   WR             BIT 0xb6
+0000            145   RD             BIT 0xb7
+0000            146   PX0            BIT 0xb8
+0000            147   PT0            BIT 0xb9
+0000            148   PX1            BIT 0xba
+0000            149   PT1            BIT 0xbb
+0000            150   PS             BIT 0xbc
+0000            151   PT2            BIT 0xbd
+0000            152   P              BIT 0xd0
+0000            153   F1             BIT 0xd1
+0000            154   OV             BIT 0xd2
+0000            155   RS0            BIT 0xd3
+0000            156   RS1            BIT 0xd4
+0000            157   F0             BIT 0xd5
+0000            158   AC             BIT 0xd6
+0000            159   CY             BIT 0xd7
+0000            160   T2CON_0        BIT 0xc8
+0000            161   T2CON_1        BIT 0xc9
+0000            162   T2CON_2        BIT 0xca
+0000            163   T2CON_3        BIT 0xcb
+0000            164   T2CON_4        BIT 0xcc
+0000            165   T2CON_5        BIT 0xcd
+0000            166   T2CON_6        BIT 0xce
+0000            167   T2CON_7        BIT 0xcf
+0000            168   CP_RL2         BIT 0xc8
+0000            169   C_T2           BIT 0xc9
+0000            170   TR2            BIT 0xca
+0000            171   EXEN2          BIT 0xcb
+0000            172   TCLK           BIT 0xcc
+0000            173   RCLK           BIT 0xcd
+0000            174   EXF2           BIT 0xce
+0000            175   TF2            BIT 0xcf
+0000            176   LEDRA_0        BIT 0xe8
+0000            177   LEDRA_1        BIT 0xe9
+0000            178   LEDRA_2        BIT 0xea
+0000            179   LEDRA_3        BIT 0xeb
+0000            180   LEDRA_4        BIT 0xec
+0000            181   LEDRA_5        BIT 0xed
+0000            182   LEDRA_6        BIT 0xee
+0000            183   LEDRA_7        BIT 0xef
+0000            184   SWA_0          BIT 0xe8
+0000            185   SWA_1          BIT 0xe9
+0000            186   SWA_2          BIT 0xea
+0000            187   SWA_3          BIT 0xeb
+0000            188   SWA_4          BIT 0xec
+0000            189   SWA_5          BIT 0xed
+0000            190   SWA_6          BIT 0xee
+0000            191   SWA_7          BIT 0xef
+0000            192   KEY_0          BIT 0xf8
+0000            193   KEY_1          BIT 0xf9
+0000            194   KEY_2          BIT 0xfa
+0000            195   KEY_3          BIT 0xfb
+0000            196   P4_0           BIT 0xc0
+0000            197   P4_1           BIT 0xc1
+0000            198   P4_2           BIT 0xc2
+0000            199   P4_3           BIT 0xc3
+0000            200   P4_4           BIT 0xc4
+0000            201   P4_5           BIT 0xc5
+0000            202   P4_6           BIT 0xc6
+0000            203   P4_7           BIT 0xc7
+0000              8   
+0000              9   
+0000             10   
+0000             11   ; ADC_C DATA 0xa1
+0000             12   ; ADC_L DATA 0xa2
+0000             13   ; ADC_H DATA 0xa3
+0000             14   
+0000             15            CSEG at 0
+0000 020310      16            ljmp mycode
+0003             17   
+0030             18   dseg at 30h
+0030             19   
+0030             20   x:               ds      4
+0034             21   y:               ds      4
+0038             22   bcd:     ds      5
+003D             23   
+0000             24   bseg
+0000             25   
+0000             26   mf:              dbit 1
+0001             27   
+0001             28   ;-----------------------------------------------------------
+0001             29   ;------------parameters to be had at the main function's ---
+0001             30   ;------------initialization phase---------------------------
+0001             31   ;-----------------------------------------------------------
+0001             32   
+0001             33   CLK EQU 33333333
+0001             34   BAUD EQU 57600
+0001             35   TIMER_1_RELOAD EQU (256-((2*CLK)/(12*32*BAUD)))
+0001             36   TIMER_10ms EQU (65536-(CLK/(12*100)))
+0001             37   
+0001             38   COLD_JUNCTION_TEMP equ 22000
+0001             39   THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT equ 12300 ; 300 * 41
+0001             40   VREF_VALUE equ 4106 ; changed to whatever it will be
+0001             41   
+0001             42   ;-----------------------------------------------------------
+0001             43   ;-----------------------------------------------------------
+0001             44   ;-----------------------------------------------------------
+0001             45   ;-----------------------------------------------------------
+0001             46   
+0003             47   CSEG
+0003             48   
+0003             49   ;-----------------------------------------------------------;
+0003             50   ;--------the following subroutine definitions should--------;
+0003             51   ;--------be placed somewhere else in the main code file-----;
+0003             52   ;-----------------------------------------------------------
+0003             53   
+0003             54   InitSerialPort:
+0003             55            ; Configure serial port and baud rate
+0003 C28E        56            clr TR1 ; Disable timer 1
+0005 53890F      57            anl TMOD, #0x0f ; Mask the bits for timer 1
+0008 438920      58            orl TMOD, #0x20 ; Set timer 1 in 8-bit auto reload mode
+000B 438780      59       orl PCON, #80H ; Set SMOD to 1
+000E 758DFD      60            mov TH1, #low(TIMER_1_RELOAD)
+0011 758BFD      61            mov TL1, #low(TIMER_1_RELOAD) 
+0014 D28E        62            setb TR1 ; Enable timer 1
+0016 759852      63            mov SCON, #52H
+0019 22          64            ret
+001A             65   
+001A             66   
+001A             67   putchar:
+001A 3099FD      68       JNB TI, putchar
+001D C299        69       CLR TI
+001F F599        70       MOV SBUF, a
+0021 22          71       RET
+0022             72   
+0022             73   SendString:
+0022 E4          74       CLR A
+0023 93          75       MOVC A, @A+DPTR
+0024 6006        76       JZ SSDone
+0026 12001A      77       LCALL putchar
+0029 A3          78       INC DPTR
+002A 80F6        79       SJMP SendString
+002C             80   SSDone:
+002C 22          81       ret
+002D             82       
+002D             83   
+                 -1   $include(math32.inc)
+                546   $LIST
+029D             85   
+029D             86   cseg
+029D             87   
+029D             88   Wait50ms:
+029D             89   ;33.33MHz, 1 clk per cycle: 0.03us
+029D 781E        90            mov R0, #30
+029F             91   Wait50ms_L3:
+029F 794A        92            mov R1, #74
+02A1             93   Wait50ms_L2:
+02A1 7AFA        94            mov R2, #250
+02A3             95   Wait50ms_L1:
+02A3 DAFE        96            djnz R2, Wait50ms_L1 ;3*250*0.03us=22.5us
+02A5 D9FA        97       djnz R1, Wait50ms_L2 ;74*22.5us=1.665ms
+02A7 D8F6        98       djnz R0, Wait50ms_L3 ;1.665ms*30=50ms
+02A9 22          99       ret
+02AA            100   
+02AA            101            
+02AA            102   Display_Temp_Serial:
+02AA 7454       103            mov a, #'T'
+02AC 12001A     104            lcall putchar
+02AF 743D       105            mov a, #'='
+02B1 12001A     106            lcall putchar
+02B4            107            
+02B4 E53B       108            mov a, bcd+3
+02B6 C4         109            swap a
+02B7 540F       110            anl a, #0FH
+02B9 4430       111            orl a, #'0'
+02BB 12001A     112            lcall putchar
+02BE            113            
+02BE E53B       114            mov a, bcd+3
+02C0 540F       115            anl a, #0FH
+02C2 4430       116            orl a, #'0'
+02C4 12001A     117            lcall putchar
+02C7            118   
+02C7 E53A       119            mov a, bcd+2
+02C9 C4         120            swap a
+02CA 540F       121            anl a, #0FH
+02CC 4430       122            orl a, #'0'
+02CE 12001A     123            lcall putchar
+02D1            124            
+02D1 E53A       125            mov a, bcd+2
+02D3 540F       126            anl a, #0FH
+02D5 4430       127            orl a, #'0'
+02D7 12001A     128            lcall putchar
+02DA            129   
+02DA E539       130            mov a, bcd+1
+02DC C4         131            swap a
+02DD 540F       132            anl a, #0FH
+02DF 4430       133            orl a, #'0'
+02E1 12001A     134            lcall putchar
+02E4            135            
+02E4 742E       136            mov a, #'.'
+02E6 12001A     137            lcall putchar
+02E9            138            
+02E9 E539       139            mov a, bcd+1
+02EB 540F       140            anl a, #0FH
+02ED 4430       141            orl a, #'0'
+02EF 12001A     142            lcall putchar
+02F2            143   
+02F2 E538       144            mov a, bcd+0
+02F4 C4         145            swap a
+02F5 540F       146            anl a, #0FH
+02F7 4430       147            orl a, #'0'
+02F9 12001A     148            lcall putchar
+02FC            149            
+02FC E538       150            mov a, bcd+0
+02FE 540F       151            anl a, #0FH
+0300 4430       152            orl a, #'0'
+0302 12001A     153            lcall putchar
+0305            154   
+0305 740D       155            mov a, #'\r'
+0307 12001A     156            lcall putchar
+030A 740A       157            mov a, #'\n'
+030C 12001A     158            lcall putchar
+030F            159            
+030F 22         160            ret
+0310            161   
+0310            162   ;-----------------------------------------------------------;
+0310            163   ;--------------end of associated subroutine definitions-----;
+0310            164   ;-----------------------------------------------------------;
+0310            165   
+0310            166   
+0310            167   mycode:
+0310 75817F     168            mov SP, #7FH
+0313            169            
+0313            170   ;--------------------------------------------------;
+0313            171   ;-----I believe the following chunk can be removed-;
+0313            172   ;-----when copy/pasting the rest into main---------;
+0313            173   ;--------------------------------------------------;
+0313 E4         174            clr a
+0314 F5E8       175            mov LEDRA, a
+0316 F595       176            mov LEDRB, a
+0318            177            
+0318            178            ; so long as this is done somewhere else in the code
+0318 120003     179                    lcall InitSerialPort 
+031B 75A180     180                    mov ADC_C, #0x80 ; Reset ADC
+031E 12029D     181                    lcall Wait50ms
+0321            182            
+0321            183   ;--------------------------------------------------;
+0321            184   ;--------------------------------------------------;
+0321            185   ;--------------------------------------------------;
+0321            186   
+0321            187   
+0321            188   ;-----------------------------------------------;
+0321            189   ;-------this is the subroutine that has the-----;
+0321            190   ;-------adc->temperature->serial port ----------;
+0321            191   ;---------functionality-------------------------;
+0321            192   ;-----------------------------------------------;
+0321            193   
+0321            194   adc_to_temp_to_serial:
+0321 75A100     195            mov ADC_C, #0x00 ;ADC channel 0 is used
+0324            196            
+0324            197            ; Load 32-bit 'x' with 12-bit adc result
+0324 753300     198            mov x+3, #0
+0327 753200     199            mov x+2, #0
+032A 85A331     200            mov x+1, ADC_H
+032D 85A230     201            mov x+0, ADC_L
+0330            202            
+0330            203   ;        using equation of the form
+0330            204   ;                        Temperature = Vadc / (41*10^(-6) * (R1/R2) ) + Cold Junction Temp
+0330            205   ;                                Where Vadc = Vref * ADC / 4095
+0330            206   ;                and so:
+0330            207   
+0330            208   ; x has ADC
+0330            209   
+0330 75340A     210            mov y+0, #low (VREF_VALUE % 0x10000) 
+0333 753510     210            mov y+1, #high(VREF_VALUE % 0x10000) 
+0336 753600     210            mov y+2, #low (VREF_VALUE / 0x10000) 
+0339 753700     210            mov y+3, #high(VREF_VALUE / 0x10000) ;vref in microVolts (mV0)
+033C 1201A7     211   lcall mul32
+033F 7534FF     212            mov y+0, #low (4095 % 0x10000) 
+0342 75350F     212            mov y+1, #high(4095 % 0x10000) 
+0345 753600     212            mov y+2, #low (4095 / 0x10000) 
+0348 753700     212            mov y+3, #high(4095 / 0x10000) ; calculating Vadc
+034B 120234     213   lcall div32
+034E 753440     214            mov y+0, #low (1000000 % 0x10000) 
+0351 753542     214            mov y+1, #high(1000000 % 0x10000) 
+0354 75360F     214            mov y+2, #low (1000000 / 0x10000) 
+0357 753700     214            mov y+3, #high(1000000 / 0x10000) ;1000 * 1000 (multing by 1000 to convert to microvolts (uV)and the extra 1000 is to keep the decimal places
+035A 1201A7     215   lcall mul32
+035D 75340C     216            mov y+0, #low (THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT % 0x10000) 
+0360 753530     216            mov y+1, #high(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT % 0x10000) 
+0363 753600     216            mov y+2, #low (THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT / 0x10000) 
+0366 753700     216            mov y+3, #high(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT / 0x10000) ;41 * 300, (conversion constant * gain)
+0369 120234     217   lcall div32
+036C 7534F0     218            mov y+0, #low (COLD_JUNCTION_TEMP % 0x10000) 
+036F 753555     218            mov y+1, #high(COLD_JUNCTION_TEMP % 0x10000) 
+0372 753600     218            mov y+2, #low (COLD_JUNCTION_TEMP / 0x10000) 
+0375 753700     218            mov y+3, #high(COLD_JUNCTION_TEMP / 0x10000) 
+0378 1200F2     219   lcall add32 ;adding the cold junction temp to x, x now has the thermocouple temperature
+037B 12002D     220            lcall hex2bcd
+037E            221            
+037E            222            
+037E 1202AA     223            lcall Display_Temp_Serial ;sending this ts to the serial port
+0381            224   
+0381 12029D     225            lcall Wait50ms
+0384 12029D     226            lcall Wait50ms
+0387 12029D     227            lcall Wait50ms
+038A 12029D     228            lcall Wait50ms
+038D            229   
+038D 8092       230            sjmp adc_to_temp_to_serial ;comment this out, it was used for debugging
+038F            231   
+038F 22         232   ret
+0390            233            
+0390            234   end

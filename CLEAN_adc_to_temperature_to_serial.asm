@@ -227,7 +227,7 @@ lcall add32 ;adding the cold junction temp to x, x now has the thermocouple temp
 	lcall Wait50ms
 	lcall Wait50ms
 
-;	sjmp adc_to_temp_to_serial ;comment this out, it was used for debugging
+	sjmp adc_to_temp_to_serial ;comment this out, it was used for debugging
 
 ret
 	
