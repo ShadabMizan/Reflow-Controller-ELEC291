@@ -1,4 +1,3 @@
-0000              1   ; Blinky.asm: blinks LEDR0 of the CV-8052 each second.
                  -1   $MODMAX10
 0000              1   ;--------------------------------------------------------
 0000              2   ; Special Function Registers
@@ -203,45 +202,64 @@
 0000            201   P4_5           BIT 0xc5
 0000            202   P4_6           BIT 0xc6
 0000            203   P4_7           BIT 0xc7
-0000              3   
-0000              4   org 0000H
-0000 0202C0       5            ljmp myprogram
-0003              6   
-                546   $LIST
-                  9   $LIST
-02B3             11   
-02B3             12   ALPHA equ 300   ; ALPHA=(alpha/1000)
-02B3             13   
-0030             14   DSEG at 30H
-0030             15   x:      ds 4
-0034             16   y:      ds 4
-0038             17   bcd:    ds 5
-003D             18   
-003D             19   tmp:    ds 4
-0041             20   
-0000             21   BSEG
-0000             22   mf: dbit 1
-0001             23   
-02B3             24   CSEG
-02B3             25   ;For a 33.333333MHz clock, one machine cycle takes 30ns
-02B3             26   WaitHalfSec:
-02B3 7A5A        27            mov R2, #90
-02B5 79FA        28   L3: mov R1, #250
-02B7 78FA        29   L2: mov R0, #250
-02B9 D8FE        30   L1: djnz R0, L1 ; 3 machine cycles-> 3*30ns*250=22.5us
-02BB D9FA        31            djnz R1, L2 ; 22.5us*250=5.625ms
-02BD DAF6        32            djnz R2, L3 ; 5.625ms*90=0.506s (approximately)
-02BF 22          33            ret
-02C0             34   
-02C0             35   myprogram:
-02C0 75817F      36            mov SP, #7FH ; Set the beginning of the stack (more on this later)
-02C3 75E800      37            mov LEDRA, #0 ; Turn off all unused LEDs (Too bright!)
-02C6 759500      38            mov LEDRB, #0
-02C9             39   M0:
-02C9 B2E8        40            cpl LEDRA.0
-02CB 1202B3      41            lcall WaitHalfSec
-02CE             42   
-02CE 120273      43       lcall CalcOvenTemperature
-02D1             44   
-02D1 80F6        45            sjmp M0
-02D3             46   EN
+0000              2   
+0000              3   org 0000H
+0000 020057       4       ljmp Main
+0003              5   
+0003              6   ; For uart.inc
+0003              7   CLK            equ 33333333 
+0003              8   BAUD           equ 115200
+0003              9   TIMER_2_RELOAD equ (0x10000-(CLK/(32*BAUD)))
+0003             10   
+0057             77   $LIST
+                 12   $LIST
+0057             14   
+0030             15   DSEG at 30H
+0030             16   uartbuf: ds 30  ; For uart.inc
+004E             17   
+0057             18   CSEG
+0057             19   Main:
+0057 75817F      20       mov SP, #7FH
+005A             21   
+005A             22       ; Turn off all unused LEDs (Too bright!)
+005A 75E800      23       mov LEDRA, #0 
+005D 759500      24            mov LEDRB, #0
+0060             25   
+0060 120003      26       lcall InitSerialPort
+0063             27   MainLoop:
+0063             28   
+0063             29       ; --- Ask for input ---
+0063 900084      30       mov dptr, #Prompt
+0066 120018      31       lcall SendString
+0069             32   
+0069             33       ; --- Get string into buffer ---
+0069 7830        34       mov R0, #uartbuf
+006B 120038      35       lcall GetString
+006E             36   
+006E             37       ; --- Print newline ---
+006E 120051      38       lcall PrintNL
+0071             39   
+0071             40       ; --- Echo back ---
+0071 900093      41       mov dptr, #EchoText
+0074 120018      42       lcall SendString
+0077             43   
+0077 7830        44       mov R0, #uartbuf
+0079 120023      45       lcall SendBuffer
+007C             46   
+007C 90004E      47       mov dptr, #NewLine
+007F 120018      48       lcall SendString
+0082             49   
+0082 80DF        50       sjmp MainLoop
+0084             51   
+0084             52   Prompt:
+0084 0D0A456E    53       db '\r\nEnter text: ',0
+     74657220
+     74657874
+     3A2000
+0093             54   
+0093             55   EchoText:
+0093 596F7520    56       db 'You typed: ',0
+     74797065
+     643A2000
+009F             57   
+009F             58   EN
