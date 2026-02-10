@@ -41,9 +41,6 @@ MainLoop:
     mov dptr, #EchoText
     lcall SendString
 
-    mov R0, #uartbuf
-    lcall SendBuffer
-
     mov dptr, #NewLine
     lcall SendString
 

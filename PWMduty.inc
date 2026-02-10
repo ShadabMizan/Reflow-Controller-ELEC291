@@ -48,10 +48,6 @@ SET_PWM:
 
     LCALL sub32          ; x = Δ
 
-  
-
-    
-
     MOV  y+0, ALPHA+0
     MOV  y+1, ALPHA+1
     MOV  y+2, ALPHA+2
