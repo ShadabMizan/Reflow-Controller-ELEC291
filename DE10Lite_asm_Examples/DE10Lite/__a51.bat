@@ -1,5 +1,5 @@
 @echo off
-D:
-cd "\Courses\ELEC291\Jan_2026\Project1\Source\DE10Lite\"
-"C:\Source\call51\bin\a51.exe" -l "D:\Courses\ELEC291\Jan_2026\Project1\Source\DE10Lite\ADC_to_voltage_7seg.asm"
-echo Crosside_Action Set_Hex_File D:\Courses\ELEC291\Jan_2026\Project1\Source\DE10Lite\ADC_to_voltage_7seg.HEX
+C:
+cd "\Users\estou\elec291\Reflow-Controller-ELEC291\DE10Lite_asm_Examples\DE10Lite\"
+"C:\Users\estou\Downloads\CrossIDE\CrossIDE\Call51\Bin\a51.exe" -l "C:\Users\estou\elec291\Reflow-Controller-ELEC291\DE10Lite_asm_Examples\DE10Lite\ADC_7seg.asm"
+echo Crosside_Action Set_Hex_File C:\Users\estou\elec291\Reflow-Controller-ELEC291\DE10Lite_asm_Examples\DE10Lite\ADC_7seg.HEX

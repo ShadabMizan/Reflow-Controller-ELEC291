@@ -1,0 +1,215 @@
+0000              1   ;This program receives keyboard input from the PS/2 port on the DE1-SOC
+0000              2   ;----------------------------------------;
+0000              3   ;                  Workflow:             ;
+0000              4   ;         1. Initialize PS/2 pins        ;
+0000              5   ;         2. Wait for falling edge       ;
+0000              6   ;                of PS/2 clock           ;
+0000              7   ;         3. Read PS/2 data stream       ;
+0000              8   ;----------------------------------------;
+0000              9   ;|Start Bit|SCANCODE|Parity Bit|Stop Bit|;
+0000             10   ;----------------------------------------;
+0000             11   ;           ^^^^^^^^                     ;
+0000             12   ;           8-bit val                    ;
+0000             13   ;         4. If scancode == 0xF0,        ;
+0000             14   ;            interpret as key release    ;
+0000             15   ;         5. Else, interpret as          ;
+0000             16   ;            key press                   ;
+0000             17   ;----------------------------------------;
+                 19   $LIST
+0000             21   CLK EQU 33333333
+0000             22   TIMER_10ms EQU (65536-(CLK/(12*100)))
+0000             23   PS2_DAT EQU P3.3
+0000             24   RELEASE_FLAG BIT 20h.0
+0000             25   SET_FLAG BIT 20h.1
+0000             26   MODE BIT 20h.2 ;0=Soak, 1=Reflow
+0000             27   PARAM BIT 20h.3;0=Temp, 1=Time
+0000             28   
+0000             29   cseg
+0000 020240      30            ljmp MainProgram
+0003             31            
+0003             32            ;Interrupt on keypress at address 0003h
+0003             33            org 0003h
+0003 0201AF      34            ljmp PS2_Interrupt
+0006             35            
+0006             36            ;Scancode to ASCII lookup table
+0100             37            org 0100h
+0100             38   ASCII_TABLE:
+0100 00000000    39            DB 0, 0, 0, 0, 0, 0, 0, 0        ; 00-07
+     00000000
+0108 00000000    40            DB 0, 0, 0, 0, 0, 0, '`', 0      ; 08-0F
+     00006000
+0110 00000000    41            DB 0, 0, 0, 0, 0, 'q', '1', 0    ; 10-17
+     00713100
+0118 00007A73    42            DB 0, 0, 'z', 's', 'a', 'w', '2', 0  ; 18-1F
+     61773200
+0120 00637864    43            DB 0, 'c', 'x', 'd', 'e', '4', '3', 0  ; 20-27
+     65343300
+0128 00207666    44            DB 0, ' ', 'v', 'f', 't', 'r', '5', 0  ; 28-2F
+     74723500
+0130 006E6268    45            DB 0, 'n', 'b', 'h', 'g', 'y', '6', 0  ; 30-37
+     67793600
+0138 00006D6A    46            DB 0, 0, 'm', 'j', 'u', '7', '8', 0    ; 38-3F
+     75373800
+0140 002C6B69    47            DB 0, ',', 'k', 'i', 'o', '0', '9', 0  ; 40-47
+     6F303900
+0148 002E2F6C    48            DB 0, '.', '/', 'l', ';', 'p', '-', 0  ; 48-4F
+     3B702D00
+0150 00002700    49            DB 0, 0, 27h, 0, '[', '=', 0, 0        ; 50-57 (27h = apostrophe)
+     5B3D0000
+0158 00000A5D    50            DB 0, 0, 0Ah, ']', 0, 5Ch, 0, 0          ; 58-5F (0Ah = decimal 10 = Enter/newline key)
+     005C0000
+0160 00000000    51            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 60-67
+     00000000
+0168 00000000    52            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 68-6F
+     00000000
+0170 00000000    53            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
+     00000000
+0178 00000000    54            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
+     00000000
+0180             55   
+0180             56   ; Look-up table for 7-seg displays
+0180             57   SEG7_LUT:
+0180 C0F9A4B0    58       DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99        ; 0 TO 4
+     99
+0185 9282F880    59       DB 0x92, 0x82, 0xF8, 0x80, 0x90        ; 4 TO 9
+     90
+018A 8883C6A1    60       DB 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E  ; A to F
+     868E
+0190             61   
+0190             62   Initialize_PS2:
+0190             63            ;Configure serial protocol for PS/2
+0190 D2B3        64            setb PS2_DAT
+0192 D288        65            setb IT0         ;Setting IT0 makes external interrupts edge-triggered rather than state-triggered
+0194 D2A8        66            setb EX0         ;Enable external interrupts
+0196 D2AF        67            setb EA          ;Enable interrupts
+0198 7800        68            mov R0, #0               ;Stores what bit we're reading
+019A 7900        69            mov R1, #0               ;Stores values of data
+019C C200        70            clr RELEASE_FLAG
+019E 22          71            ret
+019F             72            
+019F             73   Scancode_To_ASCII:
+019F 900100      74            mov DPTR, #ASCII_TABLE
+01A2 93          75            movc A, @A+DPTR
+01A3 22          76            ret
+01A4             77   
+01A4             78   Update_HEX_Display:
+01A4             79            ; Display "C" (0xC6) for temperature or "S" (0x92) for time
+01A4 200304      80            jb PARAM, Show_S
+01A7             81            ; Show "C" for temperature
+01A7 7591C6      82            mov HEX0, #0xC6
+01AA 22          83            ret
+01AB             84   Show_S:
+01AB             85            ; Show "S" for time
+01AB 759192      86            mov HEX0, #0x92
+01AE 22          87            ret
+01AF             88            
+01AF             89   PS2_Interrupt:
+01AF C0E0        90            push ACC
+01B1 C0D0        91            push PSW
+01B3             92            
+01B3 E8          93            mov A, R0
+01B4             94            ;If we're at the start of a frame, validate start bit before incrementing
+01B4 B40004      95            cjne A, #0, NotAtStart
+01B7 A2B3        96            mov C, PS2_DAT
+01B9 4007        97            jc jump    ;If start bit is 1, wait for valid start (should be 0)
+01BB             98            
+01BB             99   NotAtStart:
+01BB 08         100            inc R0
+01BC E8         101            mov A, R0
+01BD            102            ;Ignore start bit
+01BD B40105     103            cjne A, #1, CheckData
+01C0 8079       104            sjmp PS2_Done
+01C2            105            
+01C2            106   jump:
+01C2 02023B     107            ljmp PS2_Done
+01C5            108            
+01C5            109   CheckData:
+01C5            110            ;Read data bits
+01C5 C3         111            clr C
+01C6 940A       112            subb A, #10      ;Carry if A < 10 (bits 2-9)
+01C8 505F       113            jnc CheckIfDone
+01CA A2B3       114            mov C, PS2_DAT   ;Read data line
+01CC E9         115            mov A, R1
+01CD 13         116            rrc A            ;Shift into R1
+01CE F9         117            mov R1, A
+01CF E8         118            mov A, R0
+01D0 B40968     119            cjne A, #9, PS2_Done
+01D3 E9         120            mov A, R1
+01D4 B4F004     121            cjne A, #0F0h, NotRelease
+01D7 D200       122            setb RELEASE_FLAG ;stop code
+01D9 8060       123            sjmp PS2_Done
+01DB            124   NotRelease:
+01DB            125            ;We haven't let go
+01DB 12019F     126            lcall Scancode_To_ASCII
+01DE 605B       127            jz PS2_Done
+01E0 F5E8       128            mov LEDRA, A      
+01E2 B4710E     129            cjne A, #'q', NotQ
+01E5 C201       130            clr SET_FLAG
+01E7 C202       131            clr MODE
+01E9 C203       132            clr PARAM
+01EB 759500     133            mov LEDRB, #0x00
+01EE 1201A4     134            lcall Update_HEX_Display
+01F1 8048       135            sjmp PS2_Done
+01F3            136            
+01F3            137   NotQ:
+01F3 200107     138            jb SET_FLAG, Setting
+01F6 B46342     139            cjne A, #'c', PS2_Done
+01F9 D201       140            setb SET_FLAG
+01FB 803E       141            sjmp PS2_Done
+01FD            142            
+01FD            143   Setting:
+01FD B47307     144            cjne A, #'s', CheckR
+0200 C202       145            clr MODE
+0202 759502     146            mov LEDRB, #0b10  ; Show 10 for Soak
+0205 8034       147            sjmp PS2_Done
+0207            148            
+0207            149   CheckR:
+0207 B47207     150            cjne A, #'r', CheckT
+020A D202       151            setb MODE
+020C 759501     152            mov LEDRB, #0b01  ; Show 01 for Reflow
+020F 802A       153            sjmp PS2_Done
+0211            154            
+0211            155   CheckT:
+0211 B47407     156            cjne A, #'t', CheckX
+0214 D203       157            setb PARAM
+0216 1201A4     158            lcall Update_HEX_Display
+0219 8020       159            sjmp PS2_Done
+021B            160            
+021B            161   CheckX:
+021B B4781D     162            cjne A, #'x', PS2_Done
+021E C203       163            clr PARAM
+0220 1201A4     164            lcall Update_HEX_Display
+0223 8016       165            sjmp PS2_Done
+0225            166   
+0225            167   ClearRel:
+0225 C200       168            clr RELEASE_FLAG 
+0227 8012       169            sjmp PS2_Done
+0229            170   CheckIfDone:
+0229            171            ;Wait for Stop Bit
+0229 B40B08     172            cjne A, #11, CheckOverflow
+022C 8000       173            sjmp Reset
+022E            174            
+022E            175   Reset:
+022E            176            ;Resets so we're ready for next keypress
+022E 7800       177            mov R0, #0
+0230 7900       178            mov R1, #0
+0232 8007       179            sjmp PS2_Done
+0234            180   CheckOverflow:
+0234            181            ;Prevents from going out of sync (this was a problem because we're not explicitly checking the parity bit)
+0234 C3         182            clr C
+0235 940C       183            subb A, #12
+0237 4002       184            jc PS2_Done
+0239 80F3       185            sjmp Reset
+023B            186   PS2_Done:
+023B D0D0       187            pop PSW
+023D D0E0       188            pop ACC
+023F 32         189            reti
+0240            190   MainProgram:
+0240 75E800     191            mov LEDRA, #0X00
+0243 759500     192            mov LEDRB, #0x00
+0246 7591C6     193            mov HEX0, #0xC6  ; Initialize to "C" (temperature)
+0249 75817F     194       mov sp, #0x7f
+024C 120190     195       lcall Initialize_PS2
+024F            196   forever:
+024F 80FE       197            sjmp forever
+0251            198   en

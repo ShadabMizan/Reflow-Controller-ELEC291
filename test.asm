@@ -53,12 +53,6 @@ ASCII_TABLE:
 	DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
 	DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
 
-; Look-up table for 7-seg displays
-SEG7_LUT:
-    DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99        ; 0 TO 4
-    DB 0x92, 0x82, 0xF8, 0x80, 0x90        ; 4 TO 9
-    DB 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E  ; A to F
-
 Initialize_PS2:
 	;Configure serial protocol for PS/2
 	setb PS2_DAT
@@ -73,17 +67,6 @@ Initialize_PS2:
 Scancode_To_ASCII:
 	mov DPTR, #ASCII_TABLE
 	movc A, @A+DPTR
-	ret
-
-Update_HEX_Display:
-	; Display "C" (0xC6) for temperature or "S" (0x92) for time
-	jb PARAM, Show_S
-	; Show "C" for temperature
-	mov HEX0, #0xC6
-	ret
-Show_S:
-	; Show "S" for time
-	mov HEX0, #0x92
 	ret
 	
 PS2_Interrupt:
@@ -131,37 +114,38 @@ NotRelease:
 	clr MODE
 	clr PARAM
 	mov LEDRB, #0x00
-	lcall Update_HEX_Display
 	sjmp PS2_Done
 	
 NotQ:
 	jb SET_FLAG, Setting
 	cjne A, #'c', PS2_Done
 	setb SET_FLAG
+	mov LEDRB, #0x01
 	sjmp PS2_Done
 	
 Setting:
+	mov LEDRB, #0x01
 	cjne A, #'s', CheckR
 	clr MODE
-	mov LEDRB, #0b10  ; Show 10 for Soak
+	mov LEDRB, #0b10
 	sjmp PS2_Done
 	
 CheckR:
 	cjne A, #'r', CheckT
 	setb MODE
-	mov LEDRB, #0b01  ; Show 01 for Reflow
+	mov LEDRB, #0b10
 	sjmp PS2_Done
 	
 CheckT:
 	cjne A, #'t', CheckX
 	setb PARAM
-	lcall Update_HEX_Display
+	mov LEDRB, #0b11
 	sjmp PS2_Done
 	
 CheckX:
 	cjne A, #'x', PS2_Done
 	clr PARAM
-	lcall Update_HEX_Display
+	mov LEDRB, #0b11
 	sjmp PS2_Done
 
 ClearRel:
@@ -190,7 +174,6 @@ PS2_Done:
 MainProgram:
 	mov LEDRA, #0X00
 	mov LEDRB, #0x00
-	mov HEX0, #0xC6  ; Initialize to "C" (temperature)
     mov sp, #0x7f
     lcall Initialize_PS2
 forever:

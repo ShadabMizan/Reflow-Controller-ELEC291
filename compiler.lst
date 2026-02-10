@@ -1,0 +1,317 @@
+0000              1   ;-----------------------------------------;
+0000              2   ;         REFLOW LANGUAGE COMPILER        ;
+0000              3   ;     Interprets content of text buffer   ;
+0000              4   ;                                         ;
+0000              5   ;     Syntax: set <PARAMETER> <VALUE>     ;
+0000              6   ;             get <PARAMETER>             ;
+0000              7   ;             start                       ;
+0000              8   ;-----------------------------------------
+                 10   $LIST
+0000             12   
+0000             13   ;shared memory with keyboard
+0000             14   INPUT_BUFFER    EQU 30h
+0000             15   INPUT_PTR       EQU 80h    ;current position in buffer
+0000             16   COMMAND_READY   BIT 20h.0  ;set when enter
+0000             17   
+0000             18   TEMP_VALUE_H    DATA 94h
+0000             19   TEMP_VALUE_L    DATA 95h
+0000             20   
+0000             21   SOAK_TEMP_H     DATA 60h
+0000             22   SOAK_TEMP_L     DATA 61h
+0000             23   SOAK_TIME_H     DATA 62h
+0000             24   SOAK_TIME_L     DATA 63h
+0000             25   REFLOW_TEMP_H   DATA 64h
+0000             26   REFLOW_TEMP_L   DATA 65h
+0000             27   REFLOW_TIME_H   DATA 66h
+0000             28   REFLOW_TIME_L   DATA 67h
+0000             29   
+0000             30   TOKEN1_PTR      DATA 90h
+0000             31   TOKEN2_PTR      DATA 91h
+0000             32   TOKEN3_PTR      DATA 92h
+0000             33   TOKEN_COUNT     DATA 93h 
+0000             34   
+0000             35   MATCH_FLAG      BIT 98h.0
+0000             36   START_FLAG      BIT 98h.1
+0000             37   
+0000             38   cseg
+0000 0201BC      39       ljmp MainProgram
+0003             40       
+0003             41   StartStr: 
+0003 73746172    42   db 'start',0
+     7400
+0009             43   GetStr: 
+0009 67657400    44   db 'get',0
+000D             45   SetStr: 
+000D 73657400    46   db 'set',0
+0011             47   
+0011 736F616B    48   SoakTempStr:    db 'soaktemp',0
+     74656D70
+     00
+001A 736F616B    49   SoakTimeStr:    db 'soaktime',0
+     74696D65
+     00
+0023 7265666C    50   ReflowTempStr:  db 'reflowtemp',0
+     6F777465
+     6D7000
+002E 7265666C    51   ReflowTimeStr:  db 'reflowtime',0
+     6F777469
+     6D6500
+0039             52   
+0039             53   
+0039             54   Initialize_Compiler:
+0039 756000      55       mov SOAK_TEMP_H, #0
+003C 756100      56       mov SOAK_TEMP_L, #0
+003F 756200      57       mov SOAK_TIME_H, #0
+0042 756300      58       mov SOAK_TIME_L, #0
+0045 756400      59       mov REFLOW_TEMP_H, #0
+0048 756500      60       mov REFLOW_TEMP_L, #0
+004B 756600      61       mov REFLOW_TIME_H, #0
+004E 756700      62       mov REFLOW_TIME_L, #0
+0051 C299        63       clr START_FLAG
+0053 C298        64       clr MATCH_FLAG
+0055 759300      65       mov TOKEN_COUNT, #0
+0058 22          66       ret
+0059             67       
+0059             68   ;convert buffer into a series of tokens
+0059             69   TokenizeInput:
+0059 7830        70       mov R0, #INPUT_BUFFER ;start pointing at beginning of buffer
+005B 7990        71       mov R1, #TOKEN1_PTR 
+005D 759300      72       mov TOKEN_COUNT, #0
+0060             73   TokenLoop:
+0060 E6          74       mov A, @R0 ;read content at R0
+0061 B42003      75       cjne A, #' ', CheckEOS ;if we encounter a character, check its value
+0064 08          76       inc R0 ;move to the next char
+0065 80F9        77       sjmp TokenLoop
+0067             78   CheckEOS:
+0067             79       ; check for end of string
+0067 B40002      80       cjne A, #0, StoreToken
+006A 801B        81       sjmp DoneTokenizing
+006C             82   StoreToken:
+006C E8          83       mov A, R0
+006D F7          84       mov @R1, A
+006E 09          85       inc R1
+006F 0593        86       inc TOKEN_COUNT
+0071             87   
+0071 E593        88       mov A, TOKEN_COUNT
+0073 B40302      89       cjne A, #3, SkipToSpace
+0076 800F        90       sjmp DoneTokenizing
+0078             91   
+0078             92   SkipToSpace:
+0078 08          93       inc R0
+0079 E6          94       mov A, @R0
+007A B40002      95       cjne A, #0, CheckSpace
+007D 8008        96       sjmp DoneTokenizing
+007F             97   CheckSpace:
+007F B420F6      98       cjne A, #' ', SkipToSpace
+0082 7600        99       mov @R0, #0
+0084 08         100       inc R0
+0085 80D9       101       sjmp TokenLoop
+0087            102   DoneTokenizing:
+0087 22         103       ret
+0088            104       
+0088            105   ;compare token with string literal
+0088            106   CompareTokenWithString:
+0088 C0E0       107       push ACC
+008A            108   CompareLoop:
+008A E6         109       mov A, @R0        ;load token char
+008B FA         110       mov R2, A         ;store token char in R2
+008C E4         111       clr A
+008D 93         112       movc A, @A+DPTR      ;load string char
+008E B40006     113       cjne A, #0, CheckTokenEnd
+0091 EA         114       mov A, R2
+0092 B40009     115       cjne A, #0, NotEqual
+0095 800C       116       sjmp Equal
+0097            117   CheckTokenEnd:
+0097 6A         118       xrl A, R2
+0098 7004       119       jnz NotEqual
+009A 08         120       inc R0
+009B A3         121       inc DPTR
+009C 80EC       122       sjmp CompareLoop
+009E            123   NotEqual:
+009E C298       124       clr MATCH_FLAG
+00A0 D0E0       125       pop ACC
+00A2 22         126       ret
+00A3            127   Equal:
+00A3 D298       128       setb MATCH_FLAG
+00A5 D0E0       129       pop ACC
+00A7 22         130       ret
+00A8            131   
+00A8            132   Check_Tok_1:
+00A8 7990       133       mov R1, #TOKEN1_PTR
+00AA E7         134       mov A, @R1
+00AB F8         135       mov R0, A
+00AC 90000D     136       mov DPTR, #SetStr
+00AF 120088     137       lcall CompareTokenWithString
+00B2 20981B     138       jb MATCH_FLAG, DoSet
+00B5 7990       139       mov R1, #TOKEN1_PTR
+00B7 E7         140       mov A, @R1
+00B8 F8         141       mov R0, A
+00B9 900003     142       mov DPTR, #StartStr
+00BC 120088     143       lcall CompareTokenWithString
+00BF 20986E     144       jb MATCH_FLAG, DoStart
+00C2 7990       145       mov R1, #TOKEN1_PTR
+00C4 E7         146       mov A, @R1
+00C5 F8         147       mov R0, A
+00C6 900009     148       mov DPTR, #GetStr
+00C9 120088     149       lcall CompareTokenWithString
+00CC 209864     150       jb MATCH_FLAG, DoGet
+00CF 22         151       ret
+00D0            152   
+00D0            153   DoSet:
+00D0 E593       154       mov A, TOKEN_COUNT
+00D2 B40336     155       cjne A, #3, DoSet_End
+00D5 E592       156       mov A, TOKEN3_PTR
+00D7 F8         157       mov R0, A
+00D8 12018D     158       lcall ParseNumber
+00DB E591       159       mov A, TOKEN2_PTR
+00DD F8         160       mov R0, A
+00DE 900011     161       mov DPTR, #SoakTempStr
+00E1 120088     162       lcall CompareTokenWithString
+00E4 209825     163       jb MATCH_FLAG, Set_SoakTemp
+00E7 E591       164       mov A, TOKEN2_PTR
+00E9 F8         165       mov R0, A
+00EA 90001A     166       mov DPTR, #SoakTimeStr
+00ED 120088     167       lcall CompareTokenWithString
+00F0 209822     168       jb MATCH_FLAG, Set_SoakTime
+00F3 E591       169       mov A, TOKEN2_PTR
+00F5 F8         170       mov R0, A
+00F6 900023     171       mov DPTR, #ReflowTempStr
+00F9 120088     172       lcall CompareTokenWithString
+00FC 20981F     173       jb MATCH_FLAG, Set_ReflowTemp
+00FF E591       174       mov A, TOKEN2_PTR
+0101 F8         175       mov R0, A
+0102 90002E     176       mov DPTR, #ReflowTimeStr
+0105 120088     177       lcall CompareTokenWithString
+0108 20981C     178       jb MATCH_FLAG, Set_ReflowTime
+010B            179   DoSet_End:
+010B 22         180       ret
+010C            181   
+010C            182   Set_SoakTemp:
+010C E594       183       mov A, TEMP_VALUE_H
+010E F560       184       mov SOAK_TEMP_H, A
+0110 E595       185       mov A, TEMP_VALUE_L
+0112 F561       186       mov SOAK_TEMP_L, A
+0114 22         187       ret
+0115            188   
+0115            189   Set_SoakTime:
+0115 E594       190       mov A, TEMP_VALUE_H
+0117 F562       191       mov SOAK_TIME_H, A
+0119 E595       192       mov A, TEMP_VALUE_L
+011B F563       193       mov SOAK_TIME_L, A
+011D 22         194       ret
+011E            195   
+011E            196   Set_ReflowTemp:
+011E E594       197       mov A, TEMP_VALUE_H
+0120 F564       198       mov REFLOW_TEMP_H, A
+0122 E595       199       mov A, TEMP_VALUE_L
+0124 F565       200       mov REFLOW_TEMP_L, A
+0126 22         201       ret
+0127            202   
+0127            203   Set_ReflowTime:
+0127 E594       204       mov A, TEMP_VALUE_H
+0129 F566       205       mov REFLOW_TIME_H, A
+012B E595       206       mov A, TEMP_VALUE_L
+012D F567       207       mov REFLOW_TIME_L, A
+012F 22         208       ret
+0130            209   
+0130            210   DoStart:
+0130 D299       211       setb START_FLAG
+0132 22         212       ret
+0133            213   
+0133            214   DoGet:
+0133 E593       215       mov A, TOKEN_COUNT
+0135 B40230     216       cjne A, #2, DoGet_End
+0138 E591       217       mov A, TOKEN2_PTR
+013A F8         218       mov R0, A
+013B 900011     219       mov DPTR, #SoakTempStr
+013E 120088     220       lcall CompareTokenWithString
+0141 209825     221       jb MATCH_FLAG, Get_SoakTemp
+0144 E591       222       mov A, TOKEN2_PTR
+0146 F8         223       mov R0, A
+0147 90001A     224       mov DPTR, #SoakTimeStr
+014A 120088     225       lcall CompareTokenWithString
+014D 209822     226       jb MATCH_FLAG, Get_SoakTime
+0150 E591       227       mov A, TOKEN2_PTR
+0152 F8         228       mov R0, A
+0153 900023     229       mov DPTR, #ReflowTempStr
+0156 120088     230       lcall CompareTokenWithString
+0159 20981F     231       jb MATCH_FLAG, Get_ReflowTemp
+015C E591       232       mov A, TOKEN2_PTR
+015E F8         233       mov R0, A
+015F 90002E     234       mov DPTR, #ReflowTimeStr
+0162 120088     235       lcall CompareTokenWithString
+0165 20981C     236       jb MATCH_FLAG, Get_ReflowTime
+0168            237   DoGet_End:
+0168 22         238       ret
+0169            239   
+0169            240   Get_SoakTemp:
+0169 E560       241       mov A, SOAK_TEMP_H
+016B F594       242       mov TEMP_VALUE_H, A
+016D E561       243       mov A, SOAK_TEMP_L
+016F F595       244       mov TEMP_VALUE_L, A
+0171 22         245       ret
+0172            246   
+0172            247   Get_SoakTime:
+0172 E562       248       mov A, SOAK_TIME_H
+0174 F594       249       mov TEMP_VALUE_H, A
+0176 E563       250       mov A, SOAK_TIME_L
+0178 F595       251       mov TEMP_VALUE_L, A
+017A 22         252       ret
+017B            253   
+017B            254   Get_ReflowTemp:
+017B E564       255       mov A, REFLOW_TEMP_H
+017D F594       256       mov TEMP_VALUE_H, A
+017F E565       257       mov A, REFLOW_TEMP_L
+0181 F595       258       mov TEMP_VALUE_L, A
+0183 22         259       ret
+0184            260   
+0184            261   Get_ReflowTime:
+0184 E566       262       mov A, REFLOW_TIME_H
+0186 F594       263       mov TEMP_VALUE_H, A
+0188 E567       264       mov A, REFLOW_TIME_L
+018A F595       265       mov TEMP_VALUE_L, A
+018C 22         266       ret
+018D            267   
+018D            268   ParseNumber:
+018D 759400     269       mov TEMP_VALUE_H, #0
+0190 759500     270       mov TEMP_VALUE_L, #0
+0193            271   ParseLoop:
+0193 E6         272       mov A, @R0
+0194 6025       273       jz ParseDone
+0196 C3         274       clr C
+0197 9430       275       subb A, #'0'
+0199 FA         276       mov R2, A
+019A            277   
+019A E595       278       mov A, TEMP_VALUE_L
+019C 75F00A     279       mov B, #10
+019F A4         280       mul AB
+01A0 F595       281       mov TEMP_VALUE_L, A
+01A2 ABF0       282       mov R3, B
+01A4            283   
+01A4 E594       284       mov A, TEMP_VALUE_H
+01A6 75F00A     285       mov B, #10
+01A9 A4         286       mul AB
+01AA 2B         287       add A, R3
+01AB F594       288       mov TEMP_VALUE_H, A
+01AD            289   
+01AD E595       290       mov A, TEMP_VALUE_L
+01AF 2A         291       add A, R2
+01B0 F595       292       mov TEMP_VALUE_L, A
+01B2 E594       293       mov A, TEMP_VALUE_H
+01B4 3400       294       addc A, #0
+01B6 F594       295       mov TEMP_VALUE_H, A
+01B8            296   
+01B8 08         297       inc R0
+01B9 80D8       298       sjmp ParseLoop
+01BB            299   ParseDone:
+01BB 22         300       ret
+01BC            301   
+01BC            302   MainProgram:
+01BC 120039     303       lcall Initialize_Compiler
+01BF            304   MainLoop:
+01BF 3000FD     305       jnb COMMAND_READY, MainLoop
+01C2 C200       306       clr COMMAND_READY
+01C4 120059     307       lcall TokenizeInput
+01C7 1200A8     308       lcall Check_Tok_1
+01CA 80F3       309       sjmp MainLoop
+01CC            310       end
