@@ -1,11 +1,12 @@
 $NOLIST
-; Requires math32 variables
-; Requires $include(math32.inc)
+
+; Requires math32
 ; 4 byte x, y in dseg
 ; 5 byte bcd in dseg
 ; 1 bit mf in bseg
 
 ; Requires a 4 byte tmp variable in dseg
+; Requires a define for ALPHA, which should be the filter coefficient * 1000
 
 CSEG
 
