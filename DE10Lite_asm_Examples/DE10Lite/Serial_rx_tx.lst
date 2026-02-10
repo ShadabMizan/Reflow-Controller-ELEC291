@@ -1,4 +1,3 @@
-0000              1   ; Blinky.asm: blinks LEDR0 of the CV-8052 each second.
                  -1   $MODMAX10
 0000              1   ;--------------------------------------------------------
 0000              2   ; Special Function Registers
@@ -203,45 +202,109 @@
 0000            201   P4_5           BIT 0xc5
 0000            202   P4_6           BIT 0xc6
 0000            203   P4_7           BIT 0xc7
-0000              3   
-0000              4   org 0000H
-0000 0202C0       5            ljmp myprogram
-0003              6   
-                546   $LIST
-                  9   $LIST
-02B3             11   
-02B3             12   ALPHA equ 300   ; ALPHA=(alpha/1000)
-02B3             13   
-0030             14   DSEG at 30H
-0030             15   x:      ds 4
-0034             16   y:      ds 4
-0038             17   bcd:    ds 5
-003D             18   
-003D             19   tmp:    ds 4
-0041             20   
-0000             21   BSEG
-0000             22   mf: dbit 1
-0001             23   
-02B3             24   CSEG
-02B3             25   ;For a 33.333333MHz clock, one machine cycle takes 30ns
-02B3             26   WaitHalfSec:
-02B3 7A5A        27            mov R2, #90
-02B5 79FA        28   L3: mov R1, #250
-02B7 78FA        29   L2: mov R0, #250
-02B9 D8FE        30   L1: djnz R0, L1 ; 3 machine cycles-> 3*30ns*250=22.5us
-02BB D9FA        31            djnz R1, L2 ; 22.5us*250=5.625ms
-02BD DAF6        32            djnz R2, L3 ; 5.625ms*90=0.506s (approximately)
-02BF 22          33            ret
-02C0             34   
-02C0             35   myprogram:
-02C0 75817F      36            mov SP, #7FH ; Set the beginning of the stack (more on this later)
-02C3 75E800      37            mov LEDRA, #0 ; Turn off all unused LEDs (Too bright!)
-02C6 759500      38            mov LEDRB, #0
-02C9             39   M0:
-02C9 B2E8        40            cpl LEDRA.0
-02CB 1202B3      41            lcall WaitHalfSec
-02CE             42   
-02CE 120273      43       lcall CalcOvenTemperature
-02D1             44   
-02D1 80F6        45            sjmp M0
-02D3             46   EN
+0000              2   
+0000              3   CLK            equ 33333333
+0000              4   BAUD           equ 115200
+0000              5   TIMER_2_RELOAD equ (0x10000-(CLK/(32*BAUD)))
+0000              6   
+0000              7   org 0000H
+0000 020071       8      ljmp MyProgram
+0003              9   
+0003             10   InitSerialPort:
+0003 75CBFF      11            mov RCAP2H, #HIGH(TIMER_2_RELOAD);
+0006 75CAF7      12            mov RCAP2L, #LOW(TIMER_2_RELOAD);
+0009 75C834      13            mov T2CON, #0x34 ; // #00110100B
+000C 759852      14            mov SCON, #0x52 ; // Serial port in mode 1, ren, txrdy, rxempty
+000F 22          15            ret
+0010             16   
+0010             17   putchar:
+0010 3099FD      18       JNB TI, putchar
+0013 C299        19       CLR TI
+0015 F599        20       MOV SBUF, a
+0017 22          21       RET
+0018             22   
+0018             23   SendString:
+0018 E4          24       CLR A
+0019 93          25       MOVC A, @A+DPTR
+001A 6006        26       JZ SSDone
+001C 120010      27       LCALL putchar
+001F A3          28       INC DPTR
+0020 80F6        29       SJMP SendString
+0022             30   SSDone:
+0022 22          31       ret
+0023             32   
+0023             33   SendBuffer:
+0023 7830        34       mov R0, #Buffer
+0025             35   SendBuffer1:
+0025 E6          36       MOV A, @R0
+0026 6006        37       JZ SendBufferDone
+0028 120010      38       LCALL putchar
+002B 08          39       INC R0
+002C 80F7        40       SJMP SendBuffer1
+002E             41   SendBufferDone:
+002E 22          42       ret
+002F             43       
+002F             44   Question:
+002F 57686174    45       DB  'What is your name?', 0AH, 0DH, 0
+     20697320
+     796F7572
+     206E616D
+     653F0A0D
+     00
+0044             46   Hello:
+0044 0A0D4865    47            DB 0AH, 0DH, 'Hello ', 0
+     6C6C6F20
+     00
+004D             48   nlcr:
+004D 0A0D00      49            DB 0AH, 0DH, 0
+0050             50   
+0050             51   getchar:
+0050 3098FD      52       jnb RI, getchar
+0053 C298        53       clr RI
+0055 E599        54       mov a, SBUF
+0057 120010      55       lcall putchar
+005A 22          56       ret
+005B             57   
+0030             58   DSEG at 30H
+0030             59   buffer: ds 30
+004E             60   
+005B             61   CSEG
+005B             62   GeString:
+005B 7830        63       mov R0, #buffer
+005D             64   GSLoop:
+005D 120050      65       lcall getchar
+0060 C0E0        66       push acc
+0062 C3          67       clr c
+0063 9410        68       subb a, #10H
+0065 D0E0        69       pop acc
+0067 4005        70       jc GSDone
+0069 F6          71       MOV @R0, A
+006A 08          72       inc R0
+006B B84DEF      73       cjne R0, #(buffer+29), GSLoop ; Prevent buffer overrun
+006E             74   GSDone:
+006E E4          75       clr a
+006F F6          76       mov @R0, a
+0070 22          77       ret
+0071             78       
+0071             79   MyProgram:
+0071 75817F      80       MOV SP, #7FH
+0074 75E800      81       mov LEDRA, #0
+0077 759500      82       mov LEDRB, #0
+007A             83       
+007A 120003      84       LCALL InitSerialPort
+007D 90002F      85       MOV DPTR, #Question
+0080             86       
+0080 120018      87       LCALL SendString
+0083 12005B      88       lcall GeString
+0086             89       
+0086 900044      90       mov dptr, #Hello
+0089 120018      91       lcall SendString
+008C             92       
+008C 120023      93       lcall SendBuffer
+008F             94       
+008F 90004D      95       mov dptr, #nlcr
+0092 120018      96       LCALL SendString
+0095             97       
+0095             98   Forever:
+0095 80FE        99       SJMP Forever
+0097            100   END

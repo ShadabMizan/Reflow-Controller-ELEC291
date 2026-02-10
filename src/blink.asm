@@ -21,6 +21,7 @@ tmp:    ds 4
 BSEG
 mf: dbit 1
 
+CSEG
 ;For a 33.333333MHz clock, one machine cycle takes 30ns
 WaitHalfSec:
 	mov R2, #90

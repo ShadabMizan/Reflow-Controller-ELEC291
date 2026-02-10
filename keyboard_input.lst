@@ -21,85 +21,134 @@
 0000             23   PS2_DAT BIT P3.3
 0000             24   RELEASE_FLAG BIT 20h
 0000             25   cseg
-0000 020060      26            ljmp MainProgram
+0000 0201E4      26            ljmp MainProgram
 0003             27            
 0003             28            ;Interrupt on keypress at address 0003h
 0003             29            org 0003h
-0003 020015      30            ljmp PS2_Interrupt
-0006             31   Initialize_PS2:
-0006             32            ; Configure serial protocol for PS/2
-0006 D2B3        33            setb PS2_DAT
-0008 D288        34            setb IT0         ;Setting IT0 makes external interrupts edge-triggered rather than state-triggered
-000A D2A8        35            setb EX0         ;Enable external interrupts
-000C D2AF        36            setb EA          ;Enable interrupts
-000E 7800        37            mov R0, #0               ;Stores what bit we're reading
-0010 7900        38            mov R1, #0               ;Stores values of data
-0012 C220        39            clr RELEASE_FLAG
-0014 22          40            ret
-0015             41   PS2_Interrupt:
-0015 C0E0        42            push ACC
-0017 C0D0        43            push PSW
-0019             44            
-0019 E8          45            mov A, R0
-001A             46            ;If we're at the start of a frame, validate start bit before incrementing
-001A B40004      47            cjne A, #0, NotAtStart
-001D A2B3        48            mov C, PS2_DAT
-001F 403A        49            jc PS2_Done    ;If start bit is 1, wait for valid start (should be 0)
-0021             50            
-0021             51   NotAtStart:
-0021 08          52            inc R0
-0022 E8          53            mov A, R0
-0023             54            ;Ignore start bit
-0023 B40102      55            cjne A, #1, CheckData
-0026 8033        56            sjmp PS2_Done
-0028             57   CheckData:
-0028             58            ;Read data bits
-0028 C3          59            clr C
-0029 940A        60            subb A, #10      ; Carry set if A < 10 (bits 2-9)
-002B 501C        61            jnc CheckIfDone
-002D A2B3        62            mov C, PS2_DAT   ; Read data line
-002F E9          63            mov A, R1
-0030 13          64            rrc A            ; Shift into R1
-0031 F9          65            mov R1, A
-0032 E8          66            mov A, R0
-0033 B40925      67            cjne A, #9, PS2_Done
-0036 E9          68            mov A, R1
-0037 B4F004      69            cjne A, #0F0h, NotRelease
-003A D220        70            setb RELEASE_FLAG ; stop code
-003C 801D        71            sjmp PS2_Done
-003E             72   NotRelease:
-003E             73            ;We haven't let g
-003E 202004      74            jb RELEASE_FLAG, ClearRel
-0041 F5E8        75            mov LEDRA, A      
-0043 8016        76            sjmp PS2_Done
-0045             77   ClearRel:
-0045 C220        78            clr RELEASE_FLAG 
-0047 8012        79            sjmp PS2_Done
-0049             80   CheckIfDone:
-0049             81            ;Wait for Stop Bit
-0049 B40B08      82            cjne A, #11, CheckOverflow
-004C 8000        83            sjmp Reset
-004E             84            
-004E             85   Reset:
-004E             86            ;Resets so we're ready for next keypress
-004E 7800        87            mov R0, #0
-0050 7900        88            mov R1, #0
-0052 8007        89            sjmp PS2_Done
-0054             90   CheckOverflow:
-0054             91            ;Prevents from going out of sync
-0054 C3          92            clr C
-0055 940C        93            subb A, #12
-0057 4002        94            jc PS2_Done
-0059 80F3        95            sjmp Reset
-005B             96   PS2_Done:
-005B D0D0        97            pop PSW
-005D D0E0        98            pop ACC
-005F 32          99            reti
-0060            100   MainProgram:
-0060 75E800     101            mov LEDRA, #0X00
-0063 759500     102            mov LEDRB, #0x00
-0066 75817F     103       mov sp, #0x7f
-0069 120006     104       lcall Initialize_PS2
-006C            105   forever:
-006C 80FE       106            sjmp forever
-006E            107   en
+0003 020194      30            ljmp PS2_Interrupt
+0006             31            
+0006             32            ;Scancode to ASCII lookup table
+0100             33            org 0100h
+0100             34   ASCII_TABLE:
+0100 00000000    35            DB 0, 0, 0, 0, 0, 0, 0, 0        ; 00-07
+     00000000
+0108 00000000    36            DB 0, 0, 0, 0, 0, 0, '`', 0      ; 08-0F
+     00006000
+0110 00000000    37            DB 0, 0, 0, 0, 0, 'q', '1', 0    ; 10-17
+     00713100
+0118 00007A73    38            DB 0, 0, 'z', 's', 'a', 'w', '2', 0  ; 18-1F
+     61773200
+0120 00637864    39            DB 0, 'c', 'x', 'd', 'e', '4', '3', 0  ; 20-27
+     65343300
+0128 00207666    40            DB 0, ' ', 'v', 'f', 't', 'r', '5', 0  ; 28-2F
+     74723500
+0130 006E6268    41            DB 0, 'n', 'b', 'h', 'g', 'y', '6', 0  ; 30-37
+     67793600
+0138 00006D6A    42            DB 0, 0, 'm', 'j', 'u', '7', '8', 0    ; 38-3F
+     75373800
+0140 002C6B69    43            DB 0, ',', 'k', 'i', 'o', '0', '9', 0  ; 40-47
+     6F303900
+0148 002E2F6C    44            DB 0, '.', '/', 'l', ';', 'p', '-', 0  ; 48-4F
+     3B702D00
+0150 00002700    45            DB 0, 0, 27h, 0, '[', '=', 0, 0        ; 50-57 (27h = apostrophe)
+     5B3D0000
+0158 0000005D    46            DB 0, 0, 0, ']', 0, 5Ch, 0, 0          ; 58-5F (5Ch = backslash)
+     005C0000
+0160 00000000    47            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 60-67
+     00000000
+0168 00000000    48            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 68-6F
+     00000000
+0170 00000000    49            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
+     00000000
+0178 00000000    50            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
+     00000000
+0180             51   
+0180             52   Initialize_PS2:
+0180             53            ; Configure serial protocol for PS/2
+0180 D2B3        54            setb PS2_DAT
+0182 D288        55            setb IT0         ;Setting IT0 makes external interrupts edge-triggered rather than state-triggered
+0184 D2A8        56            setb EX0         ;Enable external interrupts
+0186 D2AF        57            setb EA          ;Enable interrupts
+0188 7800        58            mov R0, #0               ;Stores what bit we're reading
+018A 7900        59            mov R1, #0               ;Stores values of data
+018C C220        60            clr RELEASE_FLAG
+018E 22          61            ret
+018F             62            
+018F             63   Scancode_To_ASCII:
+018F             64            ;Input: A = scancode
+018F             65            ;Output: A = ASCII (or 0 if not valid)
+018F 900100      66            mov DPTR, #ASCII_TABLE
+0192 93          67            movc A, @A+DPTR
+0193 22          68            ret
+0194             69            
+0194             70   PS2_Interrupt:
+0194 C0E0        71            push ACC
+0196 C0D0        72            push PSW
+0198             73            
+0198 E8          74            mov A, R0
+0199             75            ;If we're at the start of a frame, validate start bit before incrementing
+0199 B40004      76            cjne A, #0, NotAtStart
+019C A2B3        77            mov C, PS2_DAT
+019E 403F        78            jc PS2_Done    ;If start bit is 1, wait for valid start (should be 0)
+01A0             79            
+01A0             80   NotAtStart:
+01A0 08          81            inc R0
+01A1 E8          82            mov A, R0
+01A2             83            ;Ignore start bit
+01A2 B40102      84            cjne A, #1, CheckData
+01A5 8038        85            sjmp PS2_Done
+01A7             86   CheckData:
+01A7             87            ;Read data bits
+01A7 C3          88            clr C
+01A8 940A        89            subb A, #10      ; Carry set if A < 10 (bits 2-9)
+01AA 5021        90            jnc CheckIfDone
+01AC A2B3        91            mov C, PS2_DAT   ; Read data line
+01AE E9          92            mov A, R1
+01AF 13          93            rrc A            ; Shift into R1
+01B0 F9          94            mov R1, A
+01B1 E8          95            mov A, R0
+01B2 B4092A      96            cjne A, #9, PS2_Done
+01B5 E9          97            mov A, R1
+01B6 B4F004      98            cjne A, #0F0h, NotRelease
+01B9 D220        99            setb RELEASE_FLAG ; stop code
+01BB 8022       100            sjmp PS2_Done
+01BD            101   NotRelease:
+01BD            102            ;We haven't let g
+01BD 202009     103            jb RELEASE_FLAG, ClearRel
+01C0            104            ;Convert scancode to ASCII
+01C0 12018F     105            lcall Scancode_To_ASCII
+01C3            106            ;Only display if valid ASCII (non-zero)
+01C3 601A       107            jz PS2_Done
+01C5 F5E8       108            mov LEDRA, A      
+01C7 8016       109            sjmp PS2_Done
+01C9            110   ClearRel:
+01C9 C220       111            clr RELEASE_FLAG 
+01CB 8012       112            sjmp PS2_Done
+01CD            113   CheckIfDone:
+01CD            114            ;Wait for Stop Bit
+01CD B40B08     115            cjne A, #11, CheckOverflow
+01D0 8000       116            sjmp Reset
+01D2            117            
+01D2            118   Reset:
+01D2            119            ;Resets so we're ready for next keypress
+01D2 7800       120            mov R0, #0
+01D4 7900       121            mov R1, #0
+01D6 8007       122            sjmp PS2_Done
+01D8            123   CheckOverflow:
+01D8            124            ;Prevents from going out of sync
+01D8 C3         125            clr C
+01D9 940C       126            subb A, #12
+01DB 4002       127            jc PS2_Done
+01DD 80F3       128            sjmp Reset
+01DF            129   PS2_Done:
+01DF D0D0       130            pop PSW
+01E1 D0E0       131            pop ACC
+01E3 32         132            reti
+01E4            133   MainProgram:
+01E4 75E800     134            mov LEDRA, #0X00
+01E7 759500     135            mov LEDRB, #0x00
+01EA 75817F     136       mov sp, #0x7f
+01ED 120180     137       lcall Initialize_PS2
+01F0            138   forever:
+01F0 80FE       139            sjmp forever
+01F2            140   en
