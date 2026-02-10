@@ -81,7 +81,7 @@ SSDone:
     ret
     
 
-$include(math32.asm)
+$include(math32.inc)
 
 cseg
 
