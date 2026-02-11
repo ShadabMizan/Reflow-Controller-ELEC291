@@ -51,15 +51,15 @@ PS2_DAT         EQU P3.3
 ; ====================================================================
 BSEG
 mf:             dbit 1
-RELEASE_FLAG:   dbit 1      ; PS/2 key release flag
-SET_FLAG:       dbit 1      ; PS/2 command mode active (after 'c')
-MODE:           dbit 1      ; 0=Soak, 1=Reflow
-PARAM:          dbit 1      ; 0=Temp, 1=Time
-INVALID:        dbit 1      ; Invalid command entered
-AWAIT:          dbit 1      ; (unused in PS/2 logic)
-INPUTTING:      dbit 1      ; Currently entering a number
-PROMPT_PENDING: dbit 1      ; Show parameter prompt on next Enter
-GET_PARAM:      dbit 1      ; Show current parameter value on Enter
+RELEASE_FLAG:   dbit 1
+SET_FLAG:       dbit 1
+MODE:           dbit 1
+PARAM:          dbit 1
+INVALID:        dbit 1
+AWAIT:          dbit 1
+INPUTTING:      dbit 1
+PROMPT_PENDING: dbit 1
+GET_PARAM:      dbit 1
 
 ; ====================================================================
 ; BYTE VARIABLES
@@ -80,20 +80,21 @@ sec:                ds 1
 minutes:            ds 1
 state_timer:        ds 1
 ms_counter:         ds 1
+serial_counter:     ds 1    ; Counter for 100ms serial output
 pwm:                ds 1
 error_code:         ds 1
 
 ; Reflow parameters (keyboard can modify these)
-tempsoak:           ds 1    ; Soak temperature
-timesoak:           ds 1    ; Soak time
-tempreflow:         ds 1    ; Reflow temperature
-timereflow:         ds 1    ; Reflow time
+tempsoak:           ds 1
+timesoak:           ds 1
+tempreflow:         ds 1
+timereflow:         ds 1
 undertemp_checked:  ds 1
 
-; PS/2 input buffer (for building 3-digit numbers)
+; PS/2 input buffer
 InputBuffer:        ds 3
 
-; Create aliases so PS/2 code can reference by familiar names
+; Aliases for PS/2 code
 SoakTemp    EQU tempsoak
 SoakTime    EQU timesoak
 ReflowTemp  EQU tempreflow
@@ -108,16 +109,16 @@ org 0000H
     ljmp main
 
 org 0003H
-    ljmp PS2_Interrupt    ; External interrupt 0 (PS/2 keyboard)
+    ljmp PS2_Interrupt
 
 org 000BH
-    ljmp Timer0_ISR       ; Timer 0 interrupt
+    ljmp Timer0_ISR
 
 org 0013H
     reti
 
 org 001BH
-    reti
+    ljmp Timer1_ISR       ; Timer1 for serial monitoring
 
 org 0023H
     reti
@@ -129,22 +130,22 @@ $INCLUDE(math32.inc)
 ; ====================================================================
 org 0030h
 ASCII_TABLE:
-    DB 0, 0, 0, 0, 0, 0, 0, 0        ; 00-07
-    DB 0, 0, 0, 0, 0, 0, '`', 0      ; 08-0F
-    DB 0, 0, 0, 0, 0, 'q', '1', 0    ; 10-17
-    DB 0, 0, 'z', 's', 'a', 'w', '2', 0  ; 18-1F
-    DB 0, 'c', 'x', 'd', 'e', '4', '3', 0  ; 20-27
-    DB 0, ' ', 'v', 'f', 't', 'r', '5', 0  ; 28-2F
-    DB 0, 'n', 'b', 'h', 'g', 'y', '6', 0  ; 30-37
-    DB 0, 0, 'm', 'j', 'u', '7', '8', 0    ; 38-3F
-    DB 0, ',', 'k', 'i', 'o', '0', '9', 0  ; 40-47
-    DB 0, '.', '/', 'l', ';', 'p', '-', 0  ; 48-4F
-    DB 0, 0, 27h, 0, '[', '=', 0, 0        ; 50-57
-    DB 0, 0, 0Ah, ']', 0, 5Ch, 0, 0        ; 58-5F (0Ah = Enter key)
-    DB 0, 0, 0, 0, 0, 0, 0, 0              ; 60-67
-    DB 0, 0, 0, 0, 0, 0, 0, 0              ; 68-6F
-    DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
-    DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
+    DB 0, 0, 0, 0, 0, 0, 0, 0
+    DB 0, 0, 0, 0, 0, 0, '`', 0
+    DB 0, 0, 0, 0, 0, 'q', '1', 0
+    DB 0, 0, 'z', 's', 'a', 'w', '2', 0
+    DB 0, 'c', 'x', 'd', 'e', '4', '3', 0
+    DB 0, ' ', 'v', 'f', 't', 'r', '5', 0
+    DB 0, 'n', 'b', 'h', 'g', 'y', '6', 0
+    DB 0, 0, 'm', 'j', 'u', '7', '8', 0
+    DB 0, ',', 'k', 'i', 'o', '0', '9', 0
+    DB 0, '.', '/', 'l', ';', 'p', '-', 0
+    DB 0, 0, 27h, 0, '[', '=', 0, 0
+    DB 0, 0, 0Ah, ']', 0, 5Ch, 0, 0
+    DB 0, 0, 0, 0, 0, 0, 0, 0
+    DB 0, 0, 0, 0, 0, 0, 0, 0
+    DB 0, 0, 0, 0, 0, 0, 0, 0
+    DB 0, 0, 0, 0, 0, 0, 0, 0
 
 ; ====================================================================
 ; STRING CONSTANTS
@@ -157,6 +158,8 @@ SoakTimeStr:    db 'Param SOAK TIME? =',0
 ReflTempStr:    db 'Param REFLOW TEMP? =',0
 ReflTimeStr:    db 'Param REFLOW TIME? =',0
 SavedStr:       db '\n\rParameter saved.\n\r>',0
+MonitorOnStr:   db '\n\rMonitoring ENABLED.\n\r>',0
+MonitorOffStr:  db '\n\rMonitoring DISABLED.\n\r>',0
 Startup_Msg:    DB 'Reflow Oven V1.0', 0
 Error_Prefix:   DB 'ERROR E', 0
 Error_Messages:
@@ -190,6 +193,7 @@ main:
     
     ; Initialize all subsystems
     lcall Timer0_Init
+    lcall Timer1_Init
     lcall InitSerialPort
     lcall Initialize_PS2
     lcall LCD_Init
@@ -218,7 +222,6 @@ Forever:
     lcall FSM_Reflow
     lcall Update_PWM
     lcall Update_Display
-    lcall Send_Serial_Data
     lcall Wait100ms
     sjmp Forever
 
@@ -235,9 +238,9 @@ Init_Variables:
     mov minutes, #0
     mov state_timer, #0
     mov ms_counter, #0
+    mov serial_counter, #0
     mov pwm, #0
     mov error_code, #ERR_NONE
-    ; Initialize parameters from constants
     mov tempsoak, #TEMP_SOAK
     mov timesoak, #TIME_SOAK
     mov tempreflow, #TEMP_REFLOW
@@ -255,6 +258,17 @@ Timer0_Init:
     setb EA
     ret
 
+Timer1_Init:
+    ; Configure Timer1 in 16-bit mode (same timing as Timer0: 10ms)
+    anl TMOD, #0x0F
+    orl TMOD, #0x10    ; Timer1 mode 1 (16-bit)
+    mov TH1, #0xD5
+    mov TL1, #0x90
+    ; Don't enable ET1 yet (monitoring off by default)
+    clr ET1
+    setb TR1           ; Start Timer1 running
+    ret
+
 InitSerialPort:
     mov RCAP2H, #HIGH(TIMER_2_RELOAD)
     mov RCAP2L, #LOW(TIMER_2_RELOAD)
@@ -264,17 +278,16 @@ InitSerialPort:
 
 Initialize_PS2:
     setb PS2_DAT
-    setb IT0         ; Edge-triggered
-    setb EX0         ; Enable external interrupt 0
-    setb EA          ; Enable global interrupts
-    mov R0, #0       ; Bit counter
-    mov R1, #0       ; Data accumulator
+    setb IT0
+    setb EX0
+    setb EA
+    mov R0, #0
+    mov R1, #0
     clr RELEASE_FLAG
     clr SET_FLAG
     clr INPUTTING
     clr PROMPT_PENDING
     clr GET_PARAM
-    ; Initialize input buffer
     mov InputBuffer, #0
     mov InputBuffer+1, #0
     mov InputBuffer+2, #0
@@ -308,7 +321,6 @@ Scancode_To_ASCII:
     ret
 
 Update_HEX_Display:
-    ; Display "C" (0xC6) for temperature or "S" (0x92) for time
     jb PARAM, Show_S
     mov HEX0, #0xC6
     ret
@@ -323,14 +335,12 @@ ClearInputBuffer:
     ret
 
 AddToBuffer:
-    ; Check if buffer already has 3 characters
     mov R2, InputBuffer+2
     cjne R2, #0, BufferFull
     mov R2, InputBuffer+1
     cjne R2, #0, AddThird
     mov R2, InputBuffer
     cjne R2, #0, AddSecond
-    ; First character
     mov InputBuffer, A
     ret
 AddSecond:
@@ -343,17 +353,14 @@ BufferFull:
     ret
 
 ValidateAndConvert:
-    ; Check if buffer is empty
     mov A, InputBuffer
     jz EmptyInput
     
-    ; Check if first character is a digit
     mov A, InputBuffer
     lcall CheckDigit
     jc ValidationError
     mov R4, A
     
-    ; Check second character
     mov A, InputBuffer+1
     jz SingleDigit
     
@@ -361,7 +368,6 @@ ValidateAndConvert:
     jc ValidationError
     mov R5, A
     
-    ; Check third character
     mov A, InputBuffer+2
     jz TwoDigits
     
@@ -369,7 +375,6 @@ ValidateAndConvert:
     jc ValidationError
     mov R6, A
     
-    ; Calculate: first_digit * 100 + second_digit * 10 + third_digit
     mov A, R4
     mov B, #100
     mul AB
@@ -578,7 +583,6 @@ NotRelease:
     jz jump
     mov LEDRA, A
     
-    ; Check if we're in number input mode
     jnb INPUTTING, NotInputtingNum
     cjne A, #0Ah, JustAddChar
     lcall SaveInputToParam
@@ -735,8 +739,25 @@ CheckX:
     sjmp PS2_Done
 
 CheckG:
-    cjne A, #'g', InvalidHandler
+    cjne A, #'g', CheckM
     setb GET_PARAM
+    sjmp PS2_Done
+
+CheckM:
+    cjne A, #'m', CheckN
+    ; Enable monitoring - turn on Timer1 interrupt
+    setb ET1
+    mov serial_counter, #0
+    mov dptr, #MonitorOnStr
+    lcall SendString
+    sjmp PS2_Done
+
+CheckN:
+    cjne A, #'n', InvalidHandler
+    ; Disable monitoring - turn off Timer1 interrupt
+    clr ET1
+    mov dptr, #MonitorOffStr
+    lcall SendString
     sjmp PS2_Done
 
 InvalidHandler:
@@ -979,7 +1000,6 @@ Handle_Error:
 
 Read_Temperature:
     push acc
-    ; Simulate temperature based on FSM state
     mov a, FSM_state
     cjne a, #0, Sim_State1
     mov temp, #25
@@ -1057,6 +1077,7 @@ Update_Display:
     ret
 
 Send_Serial_Data:
+    ; This is now called from Timer1 ISR only
     mov a, temp
     lcall SendToSerialPort
     mov a, #','
@@ -1294,7 +1315,7 @@ Wait2s:
     ret
 
 ; ====================================================================
-; TIMER ISR
+; TIMER INTERRUPTS
 ; ====================================================================
 Timer0_ISR:
     push acc
@@ -1315,6 +1336,27 @@ Timer0_ISR:
     inc state_timer
     
 Timer0_Done:
+    pop psw
+    pop acc
+    reti
+
+Timer1_ISR:
+    push acc
+    push psw
+    ; Reload Timer1 for next 10ms
+    mov TH1, #0xD5
+    mov TL1, #0x90
+    
+    ; Count 10 interrupts to get 100ms
+    inc serial_counter
+    mov a, serial_counter
+    cjne a, #10, Timer1_Done
+    mov serial_counter, #0
+    
+    ; Send serial data (only happens if ET1 is enabled)
+    lcall Send_Serial_Data
+    
+Timer1_Done:
     pop psw
     pop acc
     reti
