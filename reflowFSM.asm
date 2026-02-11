@@ -1,10 +1,10 @@
-$MODEFM8LB1
+$MODDE1SOC
 
 ; ====================================================================
-; MISSING SFR DEFINITIONS
+; CV-8052 SFR DEFINITIONS (for DE1-SoC)
 ; ====================================================================
-
-ADC0CF      DATA 0xBC
+; Standard 8052 SFRs are already defined by $MODDE1SOC
+; No additional SFRs needed for basic operation
 
 ; ====================================================================
 ; PIN DEFINITIONS
@@ -15,7 +15,7 @@ START_BUTTON    EQU P1.7
 SSR_CONTROL     EQU P2.0
 STATUS_LED      EQU P2.1
 BUZZER          EQU P2.2
-LCD_RS          EQU P1.3
+LCD_RS_PIN      EQU P1.3
 LCD_E           EQU P1.4
 LCD_D4          EQU P0.0
 LCD_D5          EQU P0.1
@@ -110,19 +110,10 @@ $INCLUDE(math32.inc)
 ; ====================================================================
 
 main:
-    mov WDTCN, #0xDE
-    mov WDTCN, #0xAD
     mov SP, #7FH
     
-    mov XBR0, #0x00
-    mov XBR1, #0x00
-    mov XBR2, #0x40
-    
-    mov P0MDOUT, #0x0F
-    mov P1MDOUT, #0x18
+    ; Initialize port directions (optional for CV-8052)
     mov P1, #0xC0
-    mov P2MDOUT, #0x07
-    mov P3MDOUT, #0x00
     mov P3, #0xFF
     
     lcall Timer0_Init
@@ -407,35 +398,51 @@ Handle_Error:
     ret
 
 ; ====================================================================
-; ADC
+; SIMULATED ADC (Replace with SPI code later)
 ; ====================================================================
 
 Read_Temperature:
-    anl REF0CN, #0b_1101_1111
-    orl REF0CN, #0b_0000_0011
+    push acc
     
-    anl ADC0CF, #0b_1111_1000
-    orl ADC0CF, #0b_0000_0000
+    ; Simulate temperature based on FSM state
+    mov a, FSM_state
     
-    mov ADC0MX, #TEMP_ADC_CH
+    cjne a, #0, Sim_State1
+    mov temp, #25          ; State 0: Room temp
+    sjmp Sim_Done
     
-    mov ADC0CN0, #0b_1001_0000
+Sim_State1:
+    cjne a, #1, Sim_State2
+    mov a, sec
+    add a, #25             ; State 1: Ramp up
+    mov temp, a
+    sjmp Sim_Done
     
-ADC_wait:
-    mov a, ADC0CN0
-    jnb acc.5, ADC_wait
+Sim_State2:
+    cjne a, #2, Sim_State3
+    mov temp, #150         ; State 2: Soak
+    sjmp Sim_Done
     
-    anl ADC0CN0, #0b_1101_1111
+Sim_State3:
+    cjne a, #3, Sim_State4
+    mov a, sec
+    add a, #150            ; State 3: Ramp to reflow
+    mov temp, a
+    sjmp Sim_Done
     
-    mov a, ADC0L
-    mov R0, a
-    mov a, ADC0H
-    mov R1, a
+Sim_State4:
+    cjne a, #4, Sim_State5
+    mov temp, #220         ; State 4: Reflow
+    sjmp Sim_Done
     
-    ; TODO: Add your temperature calibration/conversion here
-    ; Current: just use upper 8 bits
-    mov temp, R1
+Sim_State5:
+    mov a, #220            ; State 5: Cool down
+    clr c
+    subb a, sec
+    mov temp, a
     
+Sim_Done:
+    pop acc
     ret
 
 ; ====================================================================
@@ -593,14 +600,14 @@ LCD_Clear:
     ret
 
 LCD_Write_Command:
-    clr LCD_RS
+    clr LCD_RS_PIN
     lcall LCD_Write_Nibble_High
     lcall LCD_Write_Nibble_Low
     lcall Wait50us
     ret
 
 LCD_Write_Data:
-    setb LCD_RS
+    setb LCD_RS_PIN
     lcall LCD_Write_Nibble_High
     lcall LCD_Write_Nibble_Low
     lcall Wait50us
@@ -800,4 +807,3 @@ Time_Label:
     DB 'Time: ', 0
 
 END
-
