@@ -159,8 +159,8 @@ SoakTimeStr:    db 'Param SOAK TIME? =',0
 ReflTempStr:    db 'Param REFLOW TEMP? =',0
 ReflTimeStr:    db 'Param REFLOW TIME? =',0
 SavedStr:       db '\n\rParameter saved.\n\r>',0
-MonitorOnStr:   db '\n\rMonitoring ENABLED.\n\r>',0
-MonitorOffStr:  db '\n\rMonitoring DISABLED.\n\r>',0
+StartingMsg:    db '\n\rREFLOW STARTED - Monitoring enabled.\n\r',0
+FinishedMsg:    db '\n\rREFLOW COMPLETE - Keyboard enabled.\n\r>',0
 Startup_Msg:    DB 'Reflow Oven V1.0', 0
 Error_Prefix:   DB 'ERROR E', 0
 Error_Messages:
@@ -264,7 +264,7 @@ Timer1_Init:
     orl TMOD, #0x10
     mov TH1, #0xD5
     mov TL1, #0x90
-    clr ET1
+    clr ET1            ; Start with monitoring disabled
     setb TR1
     ret
 
@@ -278,7 +278,7 @@ InitSerialPort:
 Initialize_PS2:
     setb PS2_DAT
     setb IT0
-    setb EX0
+    setb EX0           ; Start with keyboard enabled
     setb EA
     mov R0, #0
     mov R1, #0
@@ -738,23 +738,8 @@ CheckX:
     sjmp PS2_Done
 
 CheckG:
-    cjne A, #'g', CheckM
+    cjne A, #'g', InvalidHandler
     setb GET_PARAM
-    sjmp PS2_Done
-
-CheckM:
-    cjne A, #'m', CheckN
-    setb ET1
-    mov serial_counter, #0
-    mov dptr, #MonitorOnStr
-    lcall SendString
-    sjmp PS2_Done
-
-CheckN:
-    cjne A, #'n', InvalidHandler
-    clr ET1
-    mov dptr, #MonitorOffStr
-    lcall SendString
     sjmp PS2_Done
 
 InvalidHandler:
@@ -818,8 +803,16 @@ FSM_State0:
     lcall Wait50ms
     jb START_BUTTON, FSM_State0_Done
     jnb START_BUTTON, $
+    
+    ; *** HANDOFF: Disable keyboard, enable monitoring ***
+    clr EX0                     ; Disable PS/2 keyboard interrupt
+    setb ET1                    ; Enable serial monitoring (Timer1)
+    mov serial_counter, #0
+    mov dptr, #StartingMsg
+    lcall SendString
+    
     mov FSM_state, #1
-    lcall Beep_State_Change    ; 1 beep: Ready -> Ramp-S
+    lcall Beep_State_Change
     mov sec, #0
     mov minutes, #0
     mov state_timer, #0
@@ -876,7 +869,7 @@ Check_Soak_Temp:
     subb a, temp
     jnc FSM_State1_Check_Timeout
     mov FSM_state, #2
-    lcall Beep_State_Change    ; 1 beep: Ramp-S -> Soak
+    lcall Beep_State_Change
     mov sec, #0
     mov state_timer, #0
     ljmp FSM_State1_Done
@@ -896,7 +889,7 @@ FSM_State2:
     subb a, sec
     jnc FSM_State2_Done
     mov FSM_state, #3
-    lcall Beep_State_Change    ; 1 beep: Soak -> Ramp-R
+    lcall Beep_State_Change
     mov sec, #0
     mov state_timer, #0
     mov a, temp
@@ -919,7 +912,7 @@ FSM_State3_Check_Reflow:
     subb a, temp
     jnc FSM_State3_Check_Timeout
     mov FSM_state, #4
-    lcall Beep_State_Change    ; 1 beep: Ramp-R -> Reflow
+    lcall Beep_State_Change
     mov sec, #0
     mov state_timer, #0
     ljmp FSM_State3_Done
@@ -948,7 +941,7 @@ Check_Reflow_Time:
     subb a, sec
     jnc FSM_State4_Done
     mov FSM_state, #5
-    lcall Beep_State_Change    ; 1 beep: Reflow -> Cooling
+    lcall Beep_State_Change
     mov sec, #0
 FSM_State4_Done:
     ljmp FSM_Done
@@ -960,8 +953,15 @@ FSM_State5:
     clr c
     subb a, #TEMP_COOL
     jnc FSM_State5_Done
+    
+    ; *** HANDOFF: Disable monitoring, re-enable keyboard ***
+    clr ET1                     ; Disable serial monitoring
+    setb EX0                    ; Re-enable PS/2 keyboard interrupt
+    mov dptr, #FinishedMsg
+    lcall SendString
+    
     mov FSM_state, #0
-    lcall Beep_Complete        ; 5 beeps: Cooling complete!
+    lcall Beep_Complete
 FSM_State5_Done:
 
 FSM_Done:
@@ -973,7 +973,11 @@ Handle_Error:
     mov pwm, #0
     clr SSR_CONTROL
     
-    lcall Beep_Error           ; 10 beeps for error
+    ; *** HANDOFF: On error, re-enable keyboard ***
+    clr ET1                     ; Disable monitoring
+    setb EX0                    ; Re-enable keyboard
+    
+    lcall Beep_Error
     
     lcall LCD_Clear
     mov dptr, #Error_Prefix
@@ -995,6 +999,23 @@ Handle_Error:
     addc a, dph
     mov dph, a
     lcall LCD_Print_String
+    
+    ; Send error message to serial
+    mov A, #'\n'
+    lcall putchar
+    mov A, #'\r'
+    lcall putchar
+    mov dptr, #Error_Prefix
+    lcall SendString
+    mov a, error_code
+    add a, #'0'
+    lcall putchar
+    mov A, #'\n'
+    lcall putchar
+    mov A, #'\r'
+    lcall putchar
+    mov A, #'>'
+    lcall putchar
     
     lcall Wait2s
     mov FSM_state, #0
