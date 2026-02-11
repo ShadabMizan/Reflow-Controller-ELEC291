@@ -1,0 +1,170 @@
+0000              1   ; LCD_test_4bit.asm - FIXED 4-BIT INITIALIZATION
+                  3   $LIST
+0000              5   
+0000              6   org 0000H
+0000 0200C2       7       ljmp myprogram
+0003              8   
+0003              9   LCD_RS_PIN equ P0.4
+0003             10   LCD_E      equ P0.5
+0003             11   LCD_D4     equ P0.0
+0003             12   LCD_D5     equ P0.1
+0003             13   LCD_D6     equ P0.2
+0003             14   LCD_D7     equ P0.3
+0003             15   
+0003             16   ; Increased delays
+0003             17   Wait40uSec:
+0003 C000        18       push AR0
+0005 78FA        19       mov R0, #250
+0007 00          20   L0: nop
+0008 00          21       nop
+0009 00          22       nop
+000A D8FB        23       djnz R0, L0
+000C D000        24       pop AR0
+000E 22          25       ret
+000F             26   
+000F             27   WaitmilliSec:
+000F C000        28       push AR0
+0011 C001        29       push AR1
+0013 7932        30   L3: mov R1, #50
+0015 78FA        31   L2: mov R0, #250
+0017 D8FE        32   L1: djnz R0, L1
+0019 D9FA        33       djnz R1, L2
+001B DAF6        34       djnz R2, L3
+001D D001        35       pop AR1
+001F D000        36       pop AR0
+0021 22          37       ret
+0022             38   
+0022             39   LCD_pulse:
+0022 D285        40       setb LCD_E
+0024 120003      41       lcall Wait40uSec
+0027 C285        42       clr LCD_E
+0029 120003      43       lcall Wait40uSec
+002C 22          44       ret
+002D             45   
+002D             46   ; Special function: send only 4 bits (for initialization)
+002D             47   LCD_4bits:
+002D A2E7        48       mov c, ACC.7
+002F 9283        49       mov LCD_D7, c
+0031 A2E6        50       mov c, ACC.6
+0033 9282        51       mov LCD_D6, c
+0035 A2E5        52       mov c, ACC.5
+0037 9281        53       mov LCD_D5, c
+0039 A2E4        54       mov c, ACC.4
+003B 9280        55       mov LCD_D4, c
+003D 120022      56       lcall LCD_pulse
+0040 22          57       ret
+0041             58   
+0041             59   WriteData:
+0041 D284        60       setb LCD_RS_PIN
+0043 02004B      61       ljmp LCD_byte
+0046             62   
+0046             63   WriteCommand:
+0046 C284        64       clr LCD_RS_PIN
+0048 02004B      65       ljmp LCD_byte
+004B             66   
+004B             67   LCD_byte:
+004B             68       ; Send high nibble
+004B A2E7        69       mov c, ACC.7
+004D 9283        70       mov LCD_D7, c
+004F A2E6        71       mov c, ACC.6
+0051 9282        72       mov LCD_D6, c
+0053 A2E5        73       mov c, ACC.5
+0055 9281        74       mov LCD_D5, c
+0057 A2E4        75       mov c, ACC.4
+0059 9280        76       mov LCD_D4, c
+005B 120022      77       lcall LCD_pulse
+005E             78       
+005E             79       ; Send low nibble
+005E A2E3        80       mov c, ACC.3
+0060 9283        81       mov LCD_D7, c
+0062 A2E2        82       mov c, ACC.2
+0064 9282        83       mov LCD_D6, c
+0066 A2E1        84       mov c, ACC.1
+0068 9281        85       mov LCD_D5, c
+006A A2E0        86       mov c, ACC.0
+006C 9280        87       mov LCD_D4, c
+006E 120022      88       lcall LCD_pulse
+0071 22          89       ret
+0072             90   
+0072             91   LCD_4BIT:
+0072 C285        92       clr LCD_E
+0074 C284        93       clr LCD_RS_PIN
+0076             94       
+0076             95       ; Wait >40ms after power on
+0076 7A32        96       mov R2, #50
+0078 12000F      97       lcall WaitmilliSec
+007B             98       
+007B             99       ; CRITICAL: First commands are 8-bit, but we send only upper nibble
+007B            100       ; Send 0x03 three times (this is 0x30 in 8-bit mode)
+007B 7430       101       mov A, #030h
+007D 12002D     102       lcall LCD_4bits
+0080 7A05       103       mov R2, #5
+0082 12000F     104       lcall WaitmilliSec
+0085            105       
+0085 7430       106       mov A, #030h
+0087 12002D     107       lcall LCD_4bits
+008A 7A01       108       mov R2, #1
+008C 12000F     109       lcall WaitmilliSec
+008F            110       
+008F 7430       111       mov A, #030h
+0091 12002D     112       lcall LCD_4bits
+0094 7A01       113       mov R2, #1
+0096 12000F     114       lcall WaitmilliSec
+0099            115       
+0099            116       ; Now switch to 4-bit mode
+0099 7420       117       mov A, #020h
+009B 12002D     118       lcall LCD_4bits
+009E 7A01       119       mov R2, #1
+00A0 12000F     120       lcall WaitmilliSec
+00A3            121       
+00A3            122       ; Now we can use full LCD_byte function
+00A3            123       ; Function set: 4-bit, 2 lines, 5x8
+00A3 7428       124       mov A, #028h
+00A5 120046     125       lcall WriteCommand
+00A8            126       
+00A8            127       ; Display off
+00A8 7408       128       mov A, #008h
+00AA 120046     129       lcall WriteCommand
+00AD            130       
+00AD            131       ; Clear display
+00AD 7401       132       mov A, #001h
+00AF 120046     133       lcall WriteCommand
+00B2 7A05       134       mov R2, #5
+00B4 12000F     135       lcall WaitmilliSec
+00B7            136       
+00B7            137       ; Entry mode: increment, no shift
+00B7 7406       138       mov A, #006h
+00B9 120046     139       lcall WriteCommand
+00BC            140       
+00BC            141       ; Display on, cursor off
+00BC 740C       142       mov A, #00Ch
+00BE 120046     143       lcall WriteCommand
+00C1            144       
+00C1 22         145       ret
+00C2            146   
+00C2            147   myprogram:
+00C2 75817F     148       mov SP, #7FH
+00C5            149       
+00C5            150       ; Drive ports high
+00C5 7580FF     151       mov P0, #0FFh
+00C8 7590FF     152       mov P1, #0FFh
+00CB 75A0FF     153       mov P2, #0FFh
+00CE 75B0FF     154       mov P3, #0FFh
+00D1            155       
+00D1 120072     156       lcall LCD_4BIT
+00D4            157       
+00D4            158       ; Write 'A' at position 0
+00D4 7480       159       mov A, #080h
+00D6 120046     160       lcall WriteCommand
+00D9 7441       161       mov A, #'A'
+00DB 120041     162       lcall WriteData
+00DE            163       
+00DE            164       ; Write 'B' at second line, position 2
+00DE 74C2       165       mov A, #0C2h
+00E0 120046     166       lcall WriteCommand
+00E3 7442       167       mov A, #'B'
+00E5 120041     168       lcall WriteData
+00E8            169   
+00E8            170   forever:
+00E8 80FE       171       sjmp forever
+00EA            172   EN

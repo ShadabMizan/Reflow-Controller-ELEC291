@@ -1,0 +1,10 @@
+module ps2_to_io(
+			input PS2_CLK,
+			input PS2_DATA,
+			
+			output PS2_CLK_O,
+			output PS2_DATA_O);
+			
+assign PS2_CLK_O=PS2_CLK;
+assign PS2_DATA_O=PS2_DATA;
+endmodule

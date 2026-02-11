@@ -21,76 +21,89 @@
 0000             23   CLK EQU 33333333
 0000             24   TIMER_10ms EQU (65536-(CLK/(12*100)))
 0000             25   PS2_DAT EQU P3.3
-0000             26   RELEASE_FLAG BIT 20h.0
-0000             27   SET_FLAG BIT 20h.1
-0000             28   MODE BIT 20h.2 ;0=Soak, 1=Reflow
-0000             29   PARAM BIT 20h.3;0=Temp, 1=Time
-0000             30   INVALID BIT 20h.4 ;Encountered invalid input
-0000             31   AWAIT BIT 20h.5
-0000             32   INPUTTING BIT 20h.6
-0000             33   PROMPT_PENDING BIT 20h.7 ; Flag to show prompt on next Enter
-0000             34   GET_PARAM BIT 21h.0 ; Flag to show parameter value on Enter
-0000             35   
-0000             36   ; Data storage for parameters
-0030             37   dseg at 30h
-0030             38   SoakTemp:    ds 1  ; Soak temperature parameter
-0031             39   SoakTime:    ds 1  ; Soak time parameter
-0032             40   ReflowTemp:  ds 1  ; Reflow temperature parameter
-0033             41   ReflowTime:  ds 1  ; Reflow time parameter
-0034             42   InputBuffer: ds 3  ; 3-byte buffer for building the number (max 3 digits for 255)
-0037             43   
-0000             44   cseg
-0000             45       org 0000h       
-0000 02049F      46       ljmp MainProgram
-0003             47       
-0003             48       ;Interrupt on keypress at address 0003h
-0003             49       org 0003h
-0003 020326      50       ljmp PS2_Interrupt
-0006             51            
-0030             52   org 0030h
-0030             53   ASCII_TABLE:
-0030 00000000    54            DB 0, 0, 0, 0, 0, 0, 0, 0        ; 00-07
+0000             26   TRANSMIT_MODE EQU P0.0
+0000             27   TRANSMIT_PARAM EQU P0.2
+0000             28   TRANSMIT_SET EQU P0.4
+0000             29   
+0000             30   BIT1 EQU P1.3
+0000             31   BIT2 EQU P1.5
+0000             32   BIT3 EQU P1.7
+0000             33   BIT4 EQU P2.1
+0000             34   BIT5 EQU P2.3
+0000             35   BIT6 EQU P2.5
+0000             36   BIT7 EQU P2.7
+0000             37   BIT8 EQU P3.1
+0000             38   
+0000             39   RELEASE_FLAG BIT 20h.0
+0000             40   SET_FLAG BIT 20h.1
+0000             41   MODE BIT 20h.2 ;0=Soak, 1=Reflow
+0000             42   PARAM BIT 20h.3;0=Temp, 1=Time
+0000             43   INVALID BIT 20h.4 ;Encountered invalid input
+0000             44   AWAIT BIT 20h.5
+0000             45   INPUTTING BIT 20h.6
+0000             46   PROMPT_PENDING BIT 20h.7 ; Flag to show prompt on next Enter
+0000             47   GET_PARAM BIT 21h.0 ; Flag to show parameter value on Enter
+0000             48   
+0000             49   ; Data storage for parameters
+0030             50   dseg at 30h
+0030             51   SoakTemp:    ds 1  ; Soak temperature parameter
+0031             52   SoakTime:    ds 1  ; Soak time parameter
+0032             53   ReflowTemp:  ds 1  ; Reflow temperature parameter
+0033             54   ReflowTime:  ds 1  ; Reflow time parameter
+0034             55   InputBuffer: ds 3  ; 3-byte buffer for building the number (max 3 digits for 255)
+0037             56   
+0000             57   cseg
+0000             58       org 0000h       
+0000 02050F      59       ljmp MainProgram
+0003             60       
+0003             61       ;Interrupt on keypress at address 0003h
+0003             62       org 0003h
+0003 020396      63       ljmp PS2_Interrupt
+0006             64            
+0030             65   org 0030h
+0030             66   ASCII_TABLE:
+0030 00000000    67            DB 0, 0, 0, 0, 0, 0, 0, 0        ; 00-07
      00000000
-0038 00000000    55            DB 0, 0, 0, 0, 0, 0, '`', 0      ; 08-0F
+0038 00000000    68            DB 0, 0, 0, 0, 0, 0, '`', 0      ; 08-0F
      00006000
-0040 00000000    56            DB 0, 0, 0, 0, 0, 'q', '1', 0    ; 10-17
+0040 00000000    69            DB 0, 0, 0, 0, 0, 'q', '1', 0    ; 10-17
      00713100
-0048 00007A73    57            DB 0, 0, 'z', 's', 'a', 'w', '2', 0  ; 18-1F
+0048 00007A73    70            DB 0, 0, 'z', 's', 'a', 'w', '2', 0  ; 18-1F
      61773200
-0050 00637864    58            DB 0, 'c', 'x', 'd', 'e', '4', '3', 0  ; 20-27
+0050 00637864    71            DB 0, 'c', 'x', 'd', 'e', '4', '3', 0  ; 20-27
      65343300
-0058 00207666    59            DB 0, ' ', 'v', 'f', 't', 'r', '5', 0  ; 28-2F
+0058 00207666    72            DB 0, ' ', 'v', 'f', 't', 'r', '5', 0  ; 28-2F
      74723500
-0060 006E6268    60            DB 0, 'n', 'b', 'h', 'g', 'y', '6', 0  ; 30-37
+0060 006E6268    73            DB 0, 'n', 'b', 'h', 'g', 'y', '6', 0  ; 30-37
      67793600
-0068 00006D6A    61            DB 0, 0, 'm', 'j', 'u', '7', '8', 0    ; 38-3F
+0068 00006D6A    74            DB 0, 0, 'm', 'j', 'u', '7', '8', 0    ; 38-3F
      75373800
-0070 002C6B69    62            DB 0, ',', 'k', 'i', 'o', '0', '9', 0  ; 40-47
+0070 002C6B69    75            DB 0, ',', 'k', 'i', 'o', '0', '9', 0  ; 40-47
      6F303900
-0078 002E2F6C    63            DB 0, '.', '/', 'l', ';', 'p', '-', 0  ; 48-4F
+0078 002E2F6C    76            DB 0, '.', '/', 'l', ';', 'p', '-', 0  ; 48-4F
      3B702D00
-0080 00002700    64            DB 0, 0, 27h, 0, '[', '=', 0, 0        ; 50-57 (27h = apostrophe)
+0080 00002700    77            DB 0, 0, 27h, 0, '[', '=', 0, 0        ; 50-57 (27h = apostrophe)
      5B3D0000
-0088 00000A5D    65            DB 0, 0, 0Ah, ']', 0, 5Ch, 0, 0          ; 58-5F (0Ah = decimal 10 = Enter/newline key)
+0088 00000A5D    78            DB 0, 0, 0Ah, ']', 0, 5Ch, 0, 0          ; 58-5F (0Ah = decimal 10 = Enter/newline key)
      005C0000
-0090 00000000    66            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 60-67
+0090 00000000    79            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 60-67
      00000000
-0098 00000000    67            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 68-6F
+0098 00000000    80            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 68-6F
      00000000
-00A0 00000000    68            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
+00A0 00000000    81            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
      00000000
-00A8 00000000    69            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
+00A8 00000000    82            DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
      00000000
-00B0             70   
-00B0             71   ; Look-up table for 7-seg displays
-00B0             72   SEG7_LUT:
-00B0 C0F9A4B0    73       DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99        ; 0 TO 4
+00B0             83   
+00B0             84   ; Look-up table for 7-seg displays
+00B0             85   SEG7_LUT:
+00B0 C0F9A4B0    86       DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99        ; 0 TO 4
      99
-00B5 9282F880    74       DB 0x92, 0x82, 0xF8, 0x80, 0x90        ; 4 TO 9
+00B5 9282F880    87       DB 0x92, 0x82, 0xF8, 0x80, 0x90        ; 4 TO 9
      90
-00BA 8883C6A1    75       DB 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E  ; A to F
+00BA 8883C6A1    88       DB 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E  ; A to F
      868E
-00C0 5741524E    76   WarningStr: db 'WARNING: CHANGES NOT APPLIED. TO ENTER SET MODE, BEGIN COMMAND WITH "C".\n\r>',0
+00C0 5741524E    89   WarningStr: db 'WARNING: CHANGES NOT APPLIED. TO ENTER SET MODE, BEGIN COMMAND WITH "C".\n\r>',0
      494E473A
      20434841
      4E474553
@@ -109,14 +122,14 @@
      49544820
      2243222E
      0A0D3E00
-010C 4552524F    77   ErrorStr:   db 'ERROR: INVALID COMMAND.\n\r>', 0
+010C 4552524F    90   ErrorStr:   db 'ERROR: INVALID COMMAND.\n\r>', 0
      523A2049
      4E56414C
      49442043
      4F4D4D41
      4E442E0A
      0D3E00
-0127 0A0D4552    78   InputErrorStr: db '\n\rERROR: INVALID INPUT. ENTER A NUMBER 0-255.\n\r>', 0
+0127 0A0D4552    91   InputErrorStr: db '\n\rERROR: INVALID INPUT. ENTER A NUMBER 0-255.\n\r>', 0
      524F523A
      20494E56
      414C4944
@@ -129,598 +142,719 @@
      2D323535
      2E0A0D3E
      00
-0158 50617261    79   SoakTempStr:db 'Param SOAK TEMP? =',0
+0158 50617261    92   SoakTempStr:db 'Param SOAK TEMP? =',0
      6D20534F
      414B2054
      454D503F
      203D00
-016B 50617261    80   SoakTimeStr:db 'Param SOAK TIME? =',0
+016B 50617261    93   SoakTimeStr:db 'Param SOAK TIME? =',0
      6D20534F
      414B2054
      494D453F
      203D00
-017E 50617261    81   ReflTempStr:db 'Param REFLOW TEMP? =',0
+017E 50617261    94   ReflTempStr:db 'Param REFLOW TEMP? =',0
      6D205245
      464C4F57
      2054454D
      503F203D
      00
-0193 50617261    82   ReflTimeStr:db 'Param REFLOW TIME? =',0
+0193 50617261    95   ReflTimeStr:db 'Param REFLOW TIME? =',0
      6D205245
      464C4F57
      2054494D
      453F203D
      00
-01A8 0A0D5061    83   SavedStr:   db '\n\rParameter saved.\n\r>',0
+01A8 0A0D5061    96   SavedStr:   db '\n\rParameter saved.\n\r>',0
      72616D65
      74657220
      73617665
      642E0A0D
      3E00
-01BE             84   
-01BE             85   InitSerialPort:
-01BE 75CBFF      86            mov RCAP2H, #HIGH(TIMER_2_RELOAD);
-01C1 75CAF7      87            mov RCAP2L, #LOW(TIMER_2_RELOAD);
-01C4 75C834      88            mov T2CON, #0x34 ; // #00110100B
-01C7 759852      89            mov SCON, #0x52 ; // Serial port in mode 1, ren, txrdy, rxempty
-01CA 22          90            ret
-01CB             91   
-01CB             92   putchar:
-01CB 3099FD      93       JNB TI, putchar
-01CE C299        94       CLR TI
-01D0 F599        95       MOV SBUF, a
-01D2 22          96       RET
-01D3             97       
-01D3             98   SendString:
-01D3 E4          99       CLR A
-01D4 93         100       MOVC A, @A+DPTR
-01D5 6006       101       JZ SSDone
-01D7 1201CB     102       LCALL putchar
-01DA A3         103       INC DPTR
-01DB 80F6       104       SJMP SendString
-01DD            105   SSDone:
-01DD 22         106       ret
-01DE            107   
-01DE            108   Initialize_PS2:
-01DE            109            ;Configure serial protocol for PS/2
-01DE D2B3       110            setb PS2_DAT
-01E0 D288       111            setb IT0         ;Setting IT0 makes external interrupts edge-triggered rather than state-triggered
-01E2 D2A8       112            setb EX0         ;Enable external interrupts
-01E4 D2AF       113            setb EA          ;Enable interrupts
-01E6 7800       114            mov R0, #0               ;Stores what bit we're reading
-01E8 7900       115            mov R1, #0               ;Stores values of data
-01EA C200       116            clr RELEASE_FLAG
-01EC C201       117            clr SET_FLAG
-01EE C206       118            clr INPUTTING
-01F0 C207       119            clr PROMPT_PENDING
-01F2 C208       120            clr GET_PARAM
-01F4            121            ; Initialize input buffer
-01F4 753400     122            mov InputBuffer, #0
-01F7 753500     123            mov InputBuffer+1, #0
-01FA 753600     124            mov InputBuffer+2, #0
-01FD 22         125            ret
-01FE            126            
-01FE            127   Scancode_To_ASCII:
-01FE 900030     128            mov DPTR, #ASCII_TABLE
-0201 93         129            movc A, @A+DPTR
-0202 22         130            ret
-0203            131   
-0203            132   Update_HEX_Display:
-0203            133            ; Display "C" (0xC6) for temperature or "S" (0x92) for time
-0203 200304     134            jb PARAM, Show_S
-0206            135            ; Show "C" for temperature
-0206 7591C6     136            mov HEX0, #0xC6
-0209 22         137            ret
-020A            138   Show_S:
-020A            139            ; Show "S" for time
-020A 759192     140            mov HEX0, #0x92
-020D 22         141            ret
-020E            142   
-020E            143   ; Clear input buffer
-020E            144   ClearInputBuffer:
-020E 753400     145            mov InputBuffer, #0
-0211 753500     146            mov InputBuffer+1, #0
-0214 753600     147            mov InputBuffer+2, #0
-0217 22         148            ret
-0218            149   
-0218            150   ; Add ASCII character to input buffer
-0218            151   ; Input: A contains ASCII character
-0218            152   ; Just stores it in the buffer, no validation
-0218            153   AddToBuffer:
-0218            154            ; Check if buffer already has 3 characters
-0218 AA36       155            mov R2, InputBuffer+2
-021A BA0013     156            cjne R2, #0, BufferFull
-021D AA35       157            mov R2, InputBuffer+1
-021F BA000B     158            cjne R2, #0, AddThird
-0222 AA34       159            mov R2, InputBuffer
-0224 BA0003     160            cjne R2, #0, AddSecond
-0227            161            ; First character
-0227 F534       162            mov InputBuffer, A
-0229 22         163            ret
-022A            164   AddSecond:
-022A            165            ; Second character  
-022A F535       166            mov InputBuffer+1, A
-022C 22         167            ret
-022D            168   AddThird:
-022D            169            ; Third character
-022D F536       170            mov InputBuffer+2, A
-022F 22         171            ret
-0230            172   BufferFull:
-0230            173            ; Already have 3 characters, can't add more (will check on Enter)
-0230 22         174            ret
-0231            175   
-0231            176   ; Validate and convert input buffer to number
-0231            177   ; Returns: A = converted number (0-255), CY = 1 if error
-0231            178   ValidateAndConvert:
-0231            179            ; Check if buffer is empty
-0231 E534       180            mov A, InputBuffer
-0233 6053       181            jz EmptyInput
-0235            182            
-0235            183            ; Check if first character is a digit
-0235 E534       184            mov A, InputBuffer
-0237 12028A     185            lcall CheckDigit
-023A 404C       186            jc ValidationError
-023C FC         187            mov R4, A              ; Save first digit value in R4
-023D            188            
-023D            189            ; Check if there's a second character
-023D E535       190            mov A, InputBuffer+1
-023F 6044       191            jz SingleDigit        ; Only one digit
-0241            192            
-0241            193            ; Check if second character is a digit
-0241 12028A     194            lcall CheckDigit
-0244 4042       195            jc ValidationError
-0246 FD         196            mov R5, A             ; Save second digit value in R5
-0247            197            
-0247            198            ; Check if there's a third character
-0247 E536       199            mov A, InputBuffer+2
-0249 6030       200            jz TwoDigits          ; Only two digits
-024B            201            
-024B            202            ; Check if third character is a digit
-024B 12028A     203            lcall CheckDigit
-024E 4038       204            jc ValidationError
-0250 FE         205            mov R6, A             ; Save third digit value in R6
-0251            206            
-0251            207            ; Calculate: first_digit * 100 + second_digit * 10 + third_digit
-0251 EC         208            mov A, R4             ; Get first digit
-0252 75F064     209            mov B, #100
-0255 A4         210            mul AB                ; A = first_digit * 100, B = overflow
-0256            211            ; Check if multiplication overflowed (B should be 0 unless first_digit >= 3)
-0256 FF         212            mov R7, A             ; Save result (first * 100)
-0257 E5F0       213            mov A, B
-0259 700F       214            jnz CheckValid3Digit  ; If B != 0, need to validate carefully
-025B            215            
-025B            216   Add2ndAnd3rdDigits:
-025B            217            ; Add second_digit * 10
-025B ED         218            mov A, R5
-025C 75F00A     219            mov B, #10
-025F A4         220            mul AB
-0260 2F         221            add A, R7             ; Add to running total
-0261 4025       222            jc ValidationError    ; Overflow
-0263 FF         223            mov R7, A
-0264            224            
-0264            225            ; Add third digit
-0264 EF         226            mov A, R7
-0265 2E         227            add A, R6
-0266 4020       228            jc ValidationError    ; Overflow
-0268            229            
-0268            230            ; Final result in A
-0268 C3         231            clr C
-0269 22         232            ret
-026A            233   
-026A            234   CheckValid3Digit:
-026A            235            ; First digit is >= 3, could be 200-299, need to validate
-026A            236            ; Only 200-255 are valid
-026A EC         237            mov A, R4
-026B B4021A     238            cjne A, #2, ValidationError  ; If first digit != 2, it's > 255
-026E            239            ; First digit is 2, check if 2XX <= 255
-026E            240            ; This means second_digit * 10 + third_digit <= 55
-026E ED         241            mov A, R5
-026F 75F00A     242            mov B, #10
-0272 A4         243            mul AB
-0273 2E         244            add A, R6
-0274            245            ; A now has the last two digits as a number
-0274 C3         246            clr C
-0275 9438       247            subb A, #56           ; Check if > 55
-0277 500F       248            jnc ValidationError   ; If >= 56, then 2XX > 255
-0279            249            ; Valid! Calculate actual value
-0279 80E0       250            sjmp Add2ndAnd3rdDigits
-027B            251   
-027B            252   TwoDigits:
-027B            253            ; Calculate: first_digit * 10 + second_digit
-027B EC         254            mov A, R4             ; Get first digit
-027C 75F00A     255            mov B, #10
-027F A4         256            mul AB                ; A = first_digit * 10
-0280 2D         257            add A, R5             ; Add second digit
-0281 4005       258            jc ValidationError    ; Overflow (shouldn't happen with 2 digits)
-0283 C3         259            clr C
-0284 22         260            ret
-0285            261   
-0285            262   SingleDigit:
-0285 EC         263            mov A, R4             ; Single digit value
-0286 C3         264            clr C
-0287 22         265            ret
-0288            266   
-0288            267   EmptyInput:
-0288            268   ValidationError:
-0288 D3         269            setb C
-0289 22         270            ret
-028A            271   
-028A            272   ; Check if ASCII character in A is a digit ('0'-'9')
-028A            273   ; Returns: A = numeric value (0-9), CY = 1 if not a digit
-028A            274   CheckDigit:
-028A C3         275            clr C
-028B 9430       276            subb A, #'0'
-028D 400B       277            jc NotDigit           ; Less than '0'
-028F            278            ; A now contains value 0-? 
-028F F5F0       279            mov B, A
-0291 C3         280            clr C
-0292 940A       281            subb A, #10           ; Check if >= 10
-0294 5004       282            jnc NotDigit          ; If A >= 10, not a digit
-0296 E5F0       283            mov A, B              ; Restore numeric value (0-9)
-0298 C3         284            clr C
-0299 22         285            ret
-029A            286   NotDigit:
-029A D3         287            setb C
-029B 22         288            ret
-029C            289   
-029C            290   ; Display number in A as decimal ASCII
-029C            291   ; Input: A = number (0-255)
-029C            292   DisplayNumber:
-029C 75F064     293            mov B, #100
-029F 84         294            div AB                ; A = hundreds, B = remainder
-02A0 AAF0       295            mov R2, B             ; Save remainder
-02A2 F5F0       296            mov B, A              ; Save hundreds digit
-02A4            297            
-02A4            298            ; Check if we need to display hundreds
-02A4 E5F0       299            mov A, B
-02A6 6005       300            jz SkipHundreds
-02A8 2430       301            add A, #'0'
-02AA 1201CB     302            lcall putchar
-02AD            303            
-02AD            304   SkipHundreds:
-02AD            305            ; Get tens digit
-02AD EA         306            mov A, R2             ; Get remainder
-02AE 75F00A     307            mov B, #10
-02B1 84         308            div AB                ; A = tens, B = ones
-02B2 ABF0       309            mov R3, B             ; Save ones digit
-02B4            310            
-02B4            311            ; Display tens (if hundreds was shown, or if tens > 0)
-02B4 F5F0       312            mov B, A              ; Save tens
-02B6 EA         313            mov A, R2
-02B7 7A64       314            mov R2, #100
-02B9 C3         315            clr C
-02BA 9A         316            subb A, R2
-02BB 5004       317            jnc ShowTens          ; If original remainder >= 100, show tens
-02BD E5F0       318            mov A, B
-02BF 6007       319            jz SkipTens           ; If no hundreds and tens = 0, skip
-02C1            320            
-02C1            321   ShowTens:
-02C1 E5F0       322            mov A, B
-02C3 2430       323            add A, #'0'
-02C5 1201CB     324            lcall putchar
-02C8            325            
-02C8            326   SkipTens:
-02C8            327            ; Always display ones digit
-02C8 EB         328            mov A, R3
-02C9 2430       329            add A, #'0'
-02CB 1201CB     330            lcall putchar
-02CE 22         331            ret
-02CF            332   
-02CF            333   ; Get the currently selected parameter value
-02CF            334   ; Returns: A = parameter value
-02CF            335   GetCurrentParam:
-02CF 200209     336            jb MODE, GetReflowParam
-02D2            337            ; MODE = 0: Soak
-02D2 200303     338            jb PARAM, GetSoakTime
-02D5 E530       339            mov A, SoakTemp
-02D7 22         340            ret
-02D8            341   GetSoakTime:
-02D8 E531       342            mov A, SoakTime
-02DA 22         343            ret
-02DB            344   GetReflowParam:
-02DB            345            ; MODE = 1: Reflow
-02DB 200303     346            jb PARAM, GetReflowTime
-02DE E532       347            mov A, ReflowTemp
-02E0 22         348            ret
-02E1            349   GetReflowTime:
-02E1 E533       350            mov A, ReflowTime
-02E3 22         351            ret
-02E4            352   
-02E4            353   ; Save the input buffer to the appropriate parameter variable
-02E4            354   SaveInputToParam:
-02E4            355            ; First validate and convert the input
-02E4 120231     356            lcall ValidateAndConvert
-02E7 4028       357            jc SaveError          ; If CY = 1, validation failed
-02E9            358            
-02E9            359            ; A contains the valid number (0-255)
-02E9 FA         360            mov R2, A             ; Save the value
-02EA            361            
-02EA 20020D     362            jb MODE, SaveReflowParam
-02ED            363            ; MODE = 0: Soak
-02ED 200305     364            jb PARAM, SaveSoakTime
-02F0            365            ; Save to SoakTemp
-02F0 EA         366            mov A, R2
-02F1 F530       367            mov SoakTemp, A
-02F3 8010       368            sjmp ParamSaved
-02F5            369   SaveSoakTime:
-02F5 EA         370            mov A, R2
-02F6 F531       371            mov SoakTime, A
-02F8 800B       372            sjmp ParamSaved
-02FA            373   SaveReflowParam:
-02FA            374            ; MODE = 1: Reflow
-02FA 200305     375            jb PARAM, SaveReflowTime
-02FD            376            ; Save to ReflowTemp
-02FD EA         377            mov A, R2
-02FE F532       378            mov ReflowTemp, A
-0300 8003       379            sjmp ParamSaved
-0302            380   SaveReflowTime:
-0302 EA         381            mov A, R2
-0303 F533       382            mov ReflowTime, A
-0305            383   ParamSaved:
-0305 9001A8     384            mov dptr, #SavedStr
-0308 1201D3     385            lcall SendString
-030B C206       386            clr INPUTTING
-030D 12020E     387            lcall ClearInputBuffer
-0310 22         388            ret
-0311            389   
-0311            390   SaveError:
-0311            391            ; Check if empty or invalid
-0311 E534       392            mov A, InputBuffer
-0313 600A       393            jz EmptyError
-0315            394            ; Invalid/overflow error
-0315 900127     395            mov dptr, #InputErrorStr
-0318 1201D3     396            lcall SendString
-031B 12020E     397            lcall ClearInputBuffer
-031E 22         398            ret
-031F            399   EmptyError:
-031F 900127     400            mov dptr, #InputErrorStr
-0322 1201D3     401            lcall SendString
-0325 22         402            ret
-0326            403            
-0326            404   PS2_Interrupt:
-0326 C0E0       405            push ACC
-0328 C0D0       406            push PSW
-032A            407            
-032A E8         408            mov A, R0
-032B            409            ;If we're at the start of a frame, validate start bit before incrementing
-032B B40004     410            cjne A, #0, NotAtStart
-032E A2B3       411            mov C, PS2_DAT
-0330 4008       412            jc jump    ;If start bit is 1, wait for valid start (should be 0)
-0332            413            
-0332            414   NotAtStart:
-0332 08         415            inc R0
-0333 E8         416            mov A, R0
-0334            417            ;Ignore start bit
-0334 B40106     418            cjne A, #1, CheckData
-0337 02049A     419            ljmp PS2_Done
-033A            420            
-033A            421   jump:
-033A 02049A     422            ljmp PS2_Done
-033D            423            
-033D            424   CheckData:
-033D            425            ;Read data bits
-033D C3         426            clr C
-033E 940A       427            subb A, #10      ;Carry if A < 10 (bits 2-9)
-0340 5012       428            jnc CheckIfDoneJump
-0342 A2B3       429            mov C, PS2_DAT   ;Read data line
-0344 E9         430            mov A, R1
-0345 13         431            rrc A            ;Shift into R1
-0346 F9         432            mov R1, A
-0347 E8         433            mov A, R0
-0348 B409EF     434            cjne A, #9, jump
-034B E9         435            mov A, R1
-034C B4F008     436            cjne A, #0F0h, NotRelease
-034F D200       437            setb RELEASE_FLAG ;stop code
-0351 02049A     438            ljmp PS2_Done
-0354            439   CheckIfDoneJump:
-0354 020488     440            ljmp CheckIfDone
-0357            441   NotRelease:
-0357 200013     442            jb RELEASE_FLAG, ClearRelJump
-035A 1201FE     443            lcall Scancode_To_ASCII
-035D 60DB       444            jz jump
-035F F5E8       445            mov LEDRA, A  
-0361            446            
-0361            447            ; Check if we're in number input mode
-0361 300615     448            jnb INPUTTING, NotInputtingNum
-0364            449            ; We're inputting a number - just accumulate characters
-0364 B40A09     450            cjne A, #0Ah, JustAddChar
-0367            451            ; Enter key pressed - validate and save the value
-0367 1202E4     452            lcall SaveInputToParam
-036A 02049A     453            ljmp PS2_Done
-036D            454            
-036D            455   ClearRelJump:
-036D 020484     456            ljmp ClearRel
-0370            457   JustAddChar:
-0370            458            ; Just echo the character and add to buffer (no validation yet)
-0370 1201CB     459            lcall putchar
-0373 120218     460            lcall AddToBuffer
-0376 02049A     461            ljmp PS2_Done
-0379            462            
-0379            463   NotInputtingNum:
-0379            464            ; Check if we need to show a prompt (Enter pressed after 't' or 'x')
-0379 B40A1B     465            cjne A, #0Ah, NotEnterJump
-037C            466            ; Enter key pressed
-037C 30073E     467            jnb PROMPT_PENDING, CheckGetParam
-037F            468            ; We need to show the parameter prompt
-037F 740A       469            mov A, #0Ah    
-0381 1201CB     470            lcall putchar
-0384 740D       471            mov A, #'\r'   
-0386 1201CB     472            lcall putchar
-0389            473            ; Show the appropriate prompt based on MODE and PARAM
-0389 200216     474            jb MODE, ShowReflowPrompt
-038C 20030B     475            jb PARAM, ShowSoakTimePrompt
-038F 900158     476            mov dptr, #SoakTempStr
-0392 1201D3     477            lcall SendString
-0395 801C       478            sjmp StartInputMode
-0397            479   NotEnterJump:
-0397 020435     480            ljmp NotEnter
-039A            481   ShowSoakTimePrompt:
-039A 90016B     482            mov dptr, #SoakTimeStr
-039D 1201D3     483            lcall SendString
-03A0 8011       484            sjmp StartInputMode
-03A2            485   ShowReflowPrompt:
-03A2 200308     486            jb PARAM, ShowReflowTimePrompt
-03A5 90017E     487            mov dptr, #ReflTempStr
-03A8 1201D3     488            lcall SendString
-03AB 8006       489            sjmp StartInputMode
-03AD            490   ShowReflowTimePrompt:
-03AD 900193     491            mov dptr, #ReflTimeStr
-03B0 1201D3     492            lcall SendString
-03B3            493   StartInputMode:
-03B3 D206       494            setb INPUTTING
-03B5 C207       495            clr PROMPT_PENDING
-03B7 12020E     496            lcall ClearInputBuffer
-03BA 02049A     497            ljmp PS2_Done
-03BD            498   
-03BD            499   CheckGetParam:
-03BD            500            ; Check if we need to display current parameter value
-03BD 30084B     501            jnb GET_PARAM, NormalEnter
-03C0            502            ; Display the current parameter
-03C0 740A       503            mov A, #0Ah    
-03C2 1201CB     504            lcall putchar
-03C5 740D       505            mov A, #'\r'   
-03C7 1201CB     506            lcall putchar
-03CA            507            ; Show parameter name
-03CA 200213     508            jb MODE, ShowReflowParamName
-03CD 200308     509            jb PARAM, ShowSoakTimeName
-03D0 900158     510            mov dptr, #SoakTempStr
-03D3 1201D3     511            lcall SendString
-03D6 8019       512            sjmp ShowParamValue
-03D8            513   ShowSoakTimeName:
-03D8 90016B     514            mov dptr, #SoakTimeStr
-03DB 1201D3     515            lcall SendString
-03DE 8011       516            sjmp ShowParamValue
-03E0            517   ShowReflowParamName:
-03E0 200308     518            jb PARAM, ShowReflowTimeName
-03E3 90017E     519            mov dptr, #ReflTempStr
-03E6 1201D3     520            lcall SendString
-03E9 8006       521            sjmp ShowParamValue
-03EB            522   ShowReflowTimeName:
-03EB 900193     523            mov dptr, #ReflTimeStr
-03EE 1201D3     524            lcall SendString
-03F1            525   ShowParamValue:
-03F1 1202CF     526            lcall GetCurrentParam
-03F4 12029C     527            lcall DisplayNumber
-03F7 740A       528            mov A, #0Ah    
-03F9 1201CB     529            lcall putchar
-03FC 740D       530            mov A, #'\r'   
-03FE 1201CB     531            lcall putchar
-0401 743E       532            mov A, #'>'
-0403 1201CB     533            lcall putchar
-0406 C208       534            clr GET_PARAM
-0408 02049A     535            ljmp PS2_Done
-040B            536            
-040B            537   NormalEnter:
-040B            538            ; Normal Enter handling (not after 't' or 'x')
-040B 740A       539            mov A, #0Ah    
-040D 1201CB     540            lcall putchar
-0410 740D       541            mov A, #'\r'   
-0412 1201CB     542            lcall putchar
-0415 743E       543            mov A, #'>'     
-0417 1201CB     544            lcall putchar
-041A 200406     545            jb INVALID, Error
-041D 30010D     546            jnb SET_FLAG, Warning
-0420 02049A     547            ljmp PS2_Done
-0423            548            
-0423            549   Error:
-0423 90010C     550            mov dptr, #ErrorStr
-0426 1201D3     551            lcall SendString
-0429 C204       552            clr INVALID
-042B 806D       553            sjmp PS2_Done
-042D            554            
-042D            555   Warning:
-042D 9000C0     556            mov dptr, #WarningStr
-0430 1201D3     557            lcall SendString
-0433 8065       558            sjmp PS2_Done
-0435            559            
-0435            560   NotEnter:
-0435 1201CB     561            lcall putchar
-0438 B47104     562            cjne A, #'q', NotQ
-043B C201       563            clr SET_FLAG
-043D 805B       564            sjmp PS2_Done
-043F            565   
-043F            566   NotQ:
-043F D205       567            setb AWAIT
-0441 200107     568            jb SET_FLAG, Setting
-0444 B46353     569            cjne A, #'c', PS2_Done
-0447 D201       570            setb SET_FLAG
-0449 804F       571            sjmp PS2_Done
-044B            572            
-044B            573   Setting:
-044B B47307     574            cjne A, #'s', CheckR
-044E C202       575            clr MODE
-0450 759502     576            mov LEDRB, #0b10  ; Show 10 for Soak
-0453 8045       577            sjmp PS2_Done
-0455            578            
-0455            579   CheckR:
-0455 B47209     580            cjne A, #'r', CheckT
-0458 D202       581            setb MODE
-045A 759501     582            mov LEDRB, #0b01  ; Show 01 for Reflow
-045D D205       583            setb AWAIT
-045F 8039       584            sjmp PS2_Done
-0461            585            
-0461            586   CheckT:
-0461 B47409     587            cjne A, #'t', CheckX
-0464 D203       588            setb PARAM
-0466 120203     589            lcall Update_HEX_Display
-0469 D207       590            setb PROMPT_PENDING   ; Will prompt on next Enter
-046B 802D       591            sjmp PS2_Done
-046D            592            
-046D            593   CheckX:
-046D B47809     594            cjne A, #'x', CheckG
-0470 C203       595            clr PARAM
-0472 120203     596            lcall Update_HEX_Display
-0475 D207       597            setb PROMPT_PENDING   ; Will prompt on next Enter
-0477 8021       598            sjmp PS2_Done
-0479            599   
-0479            600   CheckG:
-0479 B46704     601            cjne A, #'g', InvalidHandler
-047C D208       602            setb GET_PARAM        ; Will display current parameter on next Enter
-047E 801A       603            sjmp PS2_Done
-0480            604   
-0480            605   InvalidHandler:
-0480 D204       606            setb INVALID
-0482 8016       607            sjmp PS2_Done
-0484            608            
-0484            609   ClearRel:
-0484 C200       610            clr RELEASE_FLAG 
-0486 8012       611            sjmp PS2_Done
-0488            612   CheckIfDone:
-0488            613            ;Wait for Stop Bit
-0488 B40B08     614            cjne A, #11, CheckOverflow
-048B 8000       615            sjmp Reset
-048D            616            
-048D            617   Reset:
-048D            618            ;Resets so we're ready for next keypress
-048D 7800       619            mov R0, #0
-048F 7900       620            mov R1, #0
-0491 8007       621            sjmp PS2_Done
-0493            622   CheckOverflow:
-0493            623            ;Prevents from going out of sync (this was a problem because we're not explicitly checking the parity bit)
-0493 C3         624            clr C
-0494 940C       625            subb A, #12
-0496 4002       626            jc PS2_Done
-0498 80F3       627            sjmp Reset
-049A            628   PS2_Done:
-049A D0D0       629            pop PSW
-049C D0E0       630            pop ACC
-049E 32         631            reti
-049F            632   MainProgram:
-049F 75E800     633            mov LEDRA, #0X00
-04A2 759500     634            mov LEDRB, #0x00
-04A5 7591C6     635            mov HEX0, #0xC6  ; Initialize to "C" (temperature)
-04A8 75817F     636       mov sp, #0x7f
-04AB 740D       637       mov A, #'\r'
-04AD 1201DE     638       lcall Initialize_PS2
-04B0 1201BE     639       lcall InitSerialPort
-04B3 1201CB     640       lcall putchar
-04B6 740A       641            mov A, #'\n'
-04B8 1201CB     642            lcall putchar
-04BB 743E       643       mov A, #'>'
-04BD 1201CB     644       lcall putchar
-04C0            645   forever:
-04C0 80FE       646            sjmp forever
-04C2            647            
-04C2            648            
-04C2            649   
-04C2            650   en
+01BE             97   
+01BE             98   InitSerialPort:
+01BE 75CBFF      99            mov RCAP2H, #HIGH(TIMER_2_RELOAD);
+01C1 75CAF7     100            mov RCAP2L, #LOW(TIMER_2_RELOAD);
+01C4 75C834     101            mov T2CON, #0x34 ; // #00110100B
+01C7 759852     102            mov SCON, #0x52 ; // Serial port in mode 1, ren, txrdy, rxempty
+01CA 22         103            ret
+01CB            104   
+01CB            105   putchar:
+01CB 3099FD     106       JNB TI, putchar
+01CE C299       107       CLR TI
+01D0 F599       108       MOV SBUF, a
+01D2 22         109       RET
+01D3            110       
+01D3            111   SendString:
+01D3 E4         112       CLR A
+01D4 93         113       MOVC A, @A+DPTR
+01D5 6006       114       JZ SSDone
+01D7 1201CB     115       LCALL putchar
+01DA A3         116       INC DPTR
+01DB 80F6       117       SJMP SendString
+01DD            118   SSDone:
+01DD 22         119       ret
+01DE            120   
+01DE            121   Initialize_PS2:
+01DE            122            ;Configure serial protocol for PS/2
+01DE D2B3       123            setb PS2_DAT
+01E0 D288       124            setb IT0         ;Setting IT0 makes external interrupts edge-triggered rather than state-triggered
+01E2 D2A8       125            setb EX0         ;Enable external interrupts
+01E4 D2AF       126            setb EA          ;Enable interrupts
+01E6 7800       127            mov R0, #0               ;Stores what bit we're reading
+01E8 7900       128            mov R1, #0               ;Stores values of data
+01EA C200       129            clr RELEASE_FLAG
+01EC C201       130            clr SET_FLAG
+01EE C206       131            clr INPUTTING
+01F0 C207       132            clr PROMPT_PENDING
+01F2 C208       133            clr GET_PARAM
+01F4            134            ; Initialize input buffer
+01F4 753400     135            mov InputBuffer, #0
+01F7 753500     136            mov InputBuffer+1, #0
+01FA 753600     137            mov InputBuffer+2, #0
+01FD 22         138            ret
+01FE            139            
+01FE            140   Scancode_To_ASCII:
+01FE 900030     141            mov DPTR, #ASCII_TABLE
+0201 93         142            movc A, @A+DPTR
+0202 22         143            ret
+0203            144   
+0203            145   Update_HEX_Display:
+0203            146            ; Display "C" (0xC6) for temperature or "S" (0x92) for time
+0203 200304     147            jb PARAM, Show_S
+0206            148            ; Show "C" for temperature
+0206 7591C6     149            mov HEX0, #0xC6
+0209 22         150            ret
+020A            151   Show_S:
+020A            152            ; Show "S" for time
+020A 759192     153            mov HEX0, #0x92
+020D 22         154            ret
+020E            155   
+020E            156   ; Update output pins with current state
+020E            157   UpdateOutputs:
+020E            158            ; Update TRANSMIT_MODE (P0.0) with MODE bit
+020E 200204     159            jb MODE, SetMode1
+0211 C280       160            clr TRANSMIT_MODE
+0213 8002       161            sjmp DoneMode
+0215            162   SetMode1:
+0215 D280       163            setb TRANSMIT_MODE
+0217            164   DoneMode:
+0217            165            
+0217            166            ; Update TRANSMIT_PARAM (P0.2) with PARAM bit
+0217 200304     167            jb PARAM, SetParam1
+021A C282       168            clr TRANSMIT_PARAM
+021C 8002       169            sjmp DoneParam
+021E            170   SetParam1:
+021E D282       171            setb TRANSMIT_PARAM
+0220            172   DoneParam:
+0220            173            
+0220            174            ; Update TRANSMIT_SET (P0.4) with SET_FLAG bit
+0220 200104     175            jb SET_FLAG, SetFlag1
+0223 C284       176            clr TRANSMIT_SET
+0225 8002       177            sjmp DoneSet
+0227            178   SetFlag1:
+0227 D284       179            setb TRANSMIT_SET
+0229            180   DoneSet:
+0229            181            
+0229            182            ; Get current parameter value
+0229 12033F     183            lcall GetCurrentParam  ; Returns value in A
+022C FA         184            mov R2, A             ; Save in R2
+022D            185            
+022D            186            ; Output the 8-bit value to BIT1-BIT8
+022D            187            ; Bit 0 -> BIT1 (P1.3)
+022D EA         188            mov A, R2
+022E 20E004     189            jb ACC.0, SetBit1
+0231 C293       190            clr BIT1
+0233 8002       191            sjmp DoneBit1
+0235            192   SetBit1:
+0235 D293       193            setb BIT1
+0237            194   DoneBit1:
+0237            195            
+0237            196            ; Bit 1 -> BIT2 (P1.5)
+0237 EA         197            mov A, R2
+0238 20E104     198            jb ACC.1, SetBit2
+023B C295       199            clr BIT2
+023D 8002       200            sjmp DoneBit2
+023F            201   SetBit2:
+023F D295       202            setb BIT2
+0241            203   DoneBit2:
+0241            204            
+0241            205            ; Bit 2 -> BIT3 (P1.7)
+0241 EA         206            mov A, R2
+0242 20E204     207            jb ACC.2, SetBit3
+0245 C297       208            clr BIT3
+0247 8002       209            sjmp DoneBit3
+0249            210   SetBit3:
+0249 D297       211            setb BIT3
+024B            212   DoneBit3:
+024B            213            
+024B            214            ; Bit 3 -> BIT4 (P2.1)
+024B EA         215            mov A, R2
+024C 20E304     216            jb ACC.3, SetBit4
+024F C2A1       217            clr BIT4
+0251 8002       218            sjmp DoneBit4
+0253            219   SetBit4:
+0253 D2A1       220            setb BIT4
+0255            221   DoneBit4:
+0255            222            
+0255            223            ; Bit 4 -> BIT5 (P2.3)
+0255 EA         224            mov A, R2
+0256 20E404     225            jb ACC.4, SetBit5
+0259 C2A3       226            clr BIT5
+025B 8002       227            sjmp DoneBit5
+025D            228   SetBit5:
+025D D2A3       229            setb BIT5
+025F            230   DoneBit5:
+025F            231            
+025F            232            ; Bit 5 -> BIT6 (P2.5)
+025F EA         233            mov A, R2
+0260 20E504     234            jb ACC.5, SetBit6
+0263 C2A5       235            clr BIT6
+0265 8002       236            sjmp DoneBit6
+0267            237   SetBit6:
+0267 D2A5       238            setb BIT6
+0269            239   DoneBit6:
+0269            240            
+0269            241            ; Bit 6 -> BIT7 (P2.7)
+0269 EA         242            mov A, R2
+026A 20E604     243            jb ACC.6, SetBit7
+026D C2A7       244            clr BIT7
+026F 8002       245            sjmp DoneBit7
+0271            246   SetBit7:
+0271 D2A7       247            setb BIT7
+0273            248   DoneBit7:
+0273            249            
+0273            250            ; Bit 7 -> BIT8 (P3.1)
+0273 EA         251            mov A, R2
+0274 20E704     252            jb ACC.7, SetBit8
+0277 C2B1       253            clr BIT8
+0279 8002       254            sjmp DoneBit8
+027B            255   SetBit8:
+027B D2B1       256            setb BIT8
+027D            257   DoneBit8:
+027D            258            
+027D 22         259            ret
+027E            260   
+027E            261   ; Clear input buffer
+027E            262   ClearInputBuffer:
+027E 753400     263            mov InputBuffer, #0
+0281 753500     264            mov InputBuffer+1, #0
+0284 753600     265            mov InputBuffer+2, #0
+0287 22         266            ret
+0288            267   
+0288            268   ; Add ASCII character to input buffer
+0288            269   ; Input: A contains ASCII character
+0288            270   ; Just stores it in the buffer, no validation
+0288            271   AddToBuffer:
+0288            272            ; Check if buffer already has 3 characters
+0288 AA36       273            mov R2, InputBuffer+2
+028A BA0013     274            cjne R2, #0, BufferFull
+028D AA35       275            mov R2, InputBuffer+1
+028F BA000B     276            cjne R2, #0, AddThird
+0292 AA34       277            mov R2, InputBuffer
+0294 BA0003     278            cjne R2, #0, AddSecond
+0297            279            ; First character
+0297 F534       280            mov InputBuffer, A
+0299 22         281            ret
+029A            282   AddSecond:
+029A            283            ; Second character  
+029A F535       284            mov InputBuffer+1, A
+029C 22         285            ret
+029D            286   AddThird:
+029D            287            ; Third character
+029D F536       288            mov InputBuffer+2, A
+029F 22         289            ret
+02A0            290   BufferFull:
+02A0            291            ; Already have 3 characters, can't add more (will check on Enter)
+02A0 22         292            ret
+02A1            293   
+02A1            294   ; Validate and convert input buffer to number
+02A1            295   ; Returns: A = converted number (0-255), CY = 1 if error
+02A1            296   ValidateAndConvert:
+02A1            297            ; Check if buffer is empty
+02A1 E534       298            mov A, InputBuffer
+02A3 6053       299            jz EmptyInput
+02A5            300            
+02A5            301            ; Check if first character is a digit
+02A5 E534       302            mov A, InputBuffer
+02A7 1202FA     303            lcall CheckDigit
+02AA 404C       304            jc ValidationError
+02AC FC         305            mov R4, A              ; Save first digit value in R4
+02AD            306            
+02AD            307            ; Check if there's a second character
+02AD E535       308            mov A, InputBuffer+1
+02AF 6044       309            jz SingleDigit        ; Only one digit
+02B1            310            
+02B1            311            ; Check if second character is a digit
+02B1 1202FA     312            lcall CheckDigit
+02B4 4042       313            jc ValidationError
+02B6 FD         314            mov R5, A             ; Save second digit value in R5
+02B7            315            
+02B7            316            ; Check if there's a third character
+02B7 E536       317            mov A, InputBuffer+2
+02B9 6030       318            jz TwoDigits          ; Only two digits
+02BB            319            
+02BB            320            ; Check if third character is a digit
+02BB 1202FA     321            lcall CheckDigit
+02BE 4038       322            jc ValidationError
+02C0 FE         323            mov R6, A             ; Save third digit value in R6
+02C1            324            
+02C1            325            ; Calculate: first_digit * 100 + second_digit * 10 + third_digit
+02C1 EC         326            mov A, R4             ; Get first digit
+02C2 75F064     327            mov B, #100
+02C5 A4         328            mul AB                ; A = first_digit * 100, B = overflow
+02C6            329            ; Check if multiplication overflowed (B should be 0 unless first_digit >= 3)
+02C6 FF         330            mov R7, A             ; Save result (first * 100)
+02C7 E5F0       331            mov A, B
+02C9 700F       332            jnz CheckValid3Digit  ; If B != 0, need to validate carefully
+02CB            333            
+02CB            334   Add2ndAnd3rdDigits:
+02CB            335            ; Add second_digit * 10
+02CB ED         336            mov A, R5
+02CC 75F00A     337            mov B, #10
+02CF A4         338            mul AB
+02D0 2F         339            add A, R7             ; Add to running total
+02D1 4025       340            jc ValidationError    ; Overflow
+02D3 FF         341            mov R7, A
+02D4            342            
+02D4            343            ; Add third digit
+02D4 EF         344            mov A, R7
+02D5 2E         345            add A, R6
+02D6 4020       346            jc ValidationError    ; Overflow
+02D8            347            
+02D8            348            ; Final result in A
+02D8 C3         349            clr C
+02D9 22         350            ret
+02DA            351   
+02DA            352   CheckValid3Digit:
+02DA            353            ; First digit is >= 3, could be 200-299, need to validate
+02DA            354            ; Only 200-255 are valid
+02DA EC         355            mov A, R4
+02DB B4021A     356            cjne A, #2, ValidationError  ; If first digit != 2, it's > 255
+02DE            357            ; First digit is 2, check if 2XX <= 255
+02DE            358            ; This means second_digit * 10 + third_digit <= 55
+02DE ED         359            mov A, R5
+02DF 75F00A     360            mov B, #10
+02E2 A4         361            mul AB
+02E3 2E         362            add A, R6
+02E4            363            ; A now has the last two digits as a number
+02E4 C3         364            clr C
+02E5 9438       365            subb A, #56           ; Check if > 55
+02E7 500F       366            jnc ValidationError   ; If >= 56, then 2XX > 255
+02E9            367            ; Valid! Calculate actual value
+02E9 80E0       368            sjmp Add2ndAnd3rdDigits
+02EB            369   
+02EB            370   TwoDigits:
+02EB            371            ; Calculate: first_digit * 10 + second_digit
+02EB EC         372            mov A, R4             ; Get first digit
+02EC 75F00A     373            mov B, #10
+02EF A4         374            mul AB                ; A = first_digit * 10
+02F0 2D         375            add A, R5             ; Add second digit
+02F1 4005       376            jc ValidationError    ; Overflow (shouldn't happen with 2 digits)
+02F3 C3         377            clr C
+02F4 22         378            ret
+02F5            379   
+02F5            380   SingleDigit:
+02F5 EC         381            mov A, R4             ; Single digit value
+02F6 C3         382            clr C
+02F7 22         383            ret
+02F8            384   
+02F8            385   EmptyInput:
+02F8            386   ValidationError:
+02F8 D3         387            setb C
+02F9 22         388            ret
+02FA            389   
+02FA            390   ; Check if ASCII character in A is a digit ('0'-'9')
+02FA            391   ; Returns: A = numeric value (0-9), CY = 1 if not a digit
+02FA            392   CheckDigit:
+02FA C3         393            clr C
+02FB 9430       394            subb A, #'0'
+02FD 400B       395            jc NotDigit           ; Less than '0'
+02FF            396            ; A now contains value 0-? 
+02FF F5F0       397            mov B, A
+0301 C3         398            clr C
+0302 940A       399            subb A, #10           ; Check if >= 10
+0304 5004       400            jnc NotDigit          ; If A >= 10, not a digit
+0306 E5F0       401            mov A, B              ; Restore numeric value (0-9)
+0308 C3         402            clr C
+0309 22         403            ret
+030A            404   NotDigit:
+030A D3         405            setb C
+030B 22         406            ret
+030C            407   
+030C            408   ; Display number in A as decimal ASCII
+030C            409   ; Input: A = number (0-255)
+030C            410   DisplayNumber:
+030C 75F064     411            mov B, #100
+030F 84         412            div AB                ; A = hundreds, B = remainder
+0310 AAF0       413            mov R2, B             ; Save remainder
+0312 F5F0       414            mov B, A              ; Save hundreds digit
+0314            415            
+0314            416            ; Check if we need to display hundreds
+0314 E5F0       417            mov A, B
+0316 6005       418            jz SkipHundreds
+0318 2430       419            add A, #'0'
+031A 1201CB     420            lcall putchar
+031D            421            
+031D            422   SkipHundreds:
+031D            423            ; Get tens digit
+031D EA         424            mov A, R2             ; Get remainder
+031E 75F00A     425            mov B, #10
+0321 84         426            div AB                ; A = tens, B = ones
+0322 ABF0       427            mov R3, B             ; Save ones digit
+0324            428            
+0324            429            ; Display tens (if hundreds was shown, or if tens > 0)
+0324 F5F0       430            mov B, A              ; Save tens
+0326 EA         431            mov A, R2
+0327 7A64       432            mov R2, #100
+0329 C3         433            clr C
+032A 9A         434            subb A, R2
+032B 5004       435            jnc ShowTens          ; If original remainder >= 100, show tens
+032D E5F0       436            mov A, B
+032F 6007       437            jz SkipTens           ; If no hundreds and tens = 0, skip
+0331            438            
+0331            439   ShowTens:
+0331 E5F0       440            mov A, B
+0333 2430       441            add A, #'0'
+0335 1201CB     442            lcall putchar
+0338            443            
+0338            444   SkipTens:
+0338            445            ; Always display ones digit
+0338 EB         446            mov A, R3
+0339 2430       447            add A, #'0'
+033B 1201CB     448            lcall putchar
+033E 22         449            ret
+033F            450   
+033F            451   ; Get the currently selected parameter value
+033F            452   ; Returns: A = parameter value
+033F            453   GetCurrentParam:
+033F 200209     454            jb MODE, GetReflowParam
+0342            455            ; MODE = 0: Soak
+0342 200303     456            jb PARAM, GetSoakTime
+0345 E530       457            mov A, SoakTemp
+0347 22         458            ret
+0348            459   GetSoakTime:
+0348 E531       460            mov A, SoakTime
+034A 22         461            ret
+034B            462   GetReflowParam:
+034B            463            ; MODE = 1: Reflow
+034B 200303     464            jb PARAM, GetReflowTime
+034E E532       465            mov A, ReflowTemp
+0350 22         466            ret
+0351            467   GetReflowTime:
+0351 E533       468            mov A, ReflowTime
+0353 22         469            ret
+0354            470   
+0354            471   ; Save the input buffer to the appropriate parameter variable
+0354            472   SaveInputToParam:
+0354            473            ; First validate and convert the input
+0354 1202A1     474            lcall ValidateAndConvert
+0357 4028       475            jc SaveError          ; If CY = 1, validation failed
+0359            476            
+0359            477            ; A contains the valid number (0-255)
+0359 FA         478            mov R2, A             ; Save the value
+035A            479            
+035A 20020D     480            jb MODE, SaveReflowParam
+035D            481            ; MODE = 0: Soak
+035D 200305     482            jb PARAM, SaveSoakTime
+0360            483            ; Save to SoakTemp
+0360 EA         484            mov A, R2
+0361 F530       485            mov SoakTemp, A
+0363 8010       486            sjmp ParamSaved
+0365            487   SaveSoakTime:
+0365 EA         488            mov A, R2
+0366 F531       489            mov SoakTime, A
+0368 800B       490            sjmp ParamSaved
+036A            491   SaveReflowParam:
+036A            492            ; MODE = 1: Reflow
+036A 200305     493            jb PARAM, SaveReflowTime
+036D            494            ; Save to ReflowTemp
+036D EA         495            mov A, R2
+036E F532       496            mov ReflowTemp, A
+0370 8003       497            sjmp ParamSaved
+0372            498   SaveReflowTime:
+0372 EA         499            mov A, R2
+0373 F533       500            mov ReflowTime, A
+0375            501   ParamSaved:
+0375 9001A8     502            mov dptr, #SavedStr
+0378 1201D3     503            lcall SendString
+037B C206       504            clr INPUTTING
+037D 12027E     505            lcall ClearInputBuffer
+0380 22         506            ret
+0381            507   
+0381            508   SaveError:
+0381            509            ; Check if empty or invalid
+0381 E534       510            mov A, InputBuffer
+0383 600A       511            jz EmptyError
+0385            512            ; Invalid/overflow error
+0385 900127     513            mov dptr, #InputErrorStr
+0388 1201D3     514            lcall SendString
+038B 12027E     515            lcall ClearInputBuffer
+038E 22         516            ret
+038F            517   EmptyError:
+038F 900127     518            mov dptr, #InputErrorStr
+0392 1201D3     519            lcall SendString
+0395 22         520            ret
+0396            521            
+0396            522   PS2_Interrupt:
+0396 C0E0       523            push ACC
+0398 C0D0       524            push PSW
+039A            525            
+039A E8         526            mov A, R0
+039B            527            ;If we're at the start of a frame, validate start bit before incrementing
+039B B40004     528            cjne A, #0, NotAtStart
+039E A2B3       529            mov C, PS2_DAT
+03A0 4008       530            jc jump    ;If start bit is 1, wait for valid start (should be 0)
+03A2            531            
+03A2            532   NotAtStart:
+03A2 08         533            inc R0
+03A3 E8         534            mov A, R0
+03A4            535            ;Ignore start bit
+03A4 B40106     536            cjne A, #1, CheckData
+03A7 02050A     537            ljmp PS2_Done
+03AA            538            
+03AA            539   jump:
+03AA 02050A     540            ljmp PS2_Done
+03AD            541            
+03AD            542   CheckData:
+03AD            543            ;Read data bits
+03AD C3         544            clr C
+03AE 940A       545            subb A, #10      ;Carry if A < 10 (bits 2-9)
+03B0 5012       546            jnc CheckIfDoneJump
+03B2 A2B3       547            mov C, PS2_DAT   ;Read data line
+03B4 E9         548            mov A, R1
+03B5 13         549            rrc A            ;Shift into R1
+03B6 F9         550            mov R1, A
+03B7 E8         551            mov A, R0
+03B8 B409EF     552            cjne A, #9, jump
+03BB E9         553            mov A, R1
+03BC B4F008     554            cjne A, #0F0h, NotRelease
+03BF D200       555            setb RELEASE_FLAG ;stop code
+03C1 02050A     556            ljmp PS2_Done
+03C4            557   CheckIfDoneJump:
+03C4 0204F8     558            ljmp CheckIfDone
+03C7            559   NotRelease:
+03C7 200013     560            jb RELEASE_FLAG, ClearRelJump
+03CA 1201FE     561            lcall Scancode_To_ASCII
+03CD 60DB       562            jz jump
+03CF F5E8       563            mov LEDRA, A  
+03D1            564            
+03D1            565            ; Check if we're in number input mode
+03D1 300615     566            jnb INPUTTING, NotInputtingNum
+03D4            567            ; We're inputting a number - just accumulate characters
+03D4 B40A09     568            cjne A, #0Ah, JustAddChar
+03D7            569            ; Enter key pressed - validate and save the value
+03D7 120354     570            lcall SaveInputToParam
+03DA 02050A     571            ljmp PS2_Done
+03DD            572            
+03DD            573   ClearRelJump:
+03DD 0204F4     574            ljmp ClearRel
+03E0            575   JustAddChar:
+03E0            576            ; Just echo the character and add to buffer (no validation yet)
+03E0 1201CB     577            lcall putchar
+03E3 120288     578            lcall AddToBuffer
+03E6 02050A     579            ljmp PS2_Done
+03E9            580            
+03E9            581   NotInputtingNum:
+03E9            582            ; Check if we need to show a prompt (Enter pressed after 't' or 'x')
+03E9 B40A1B     583            cjne A, #0Ah, NotEnterJump
+03EC            584            ; Enter key pressed
+03EC 30073E     585            jnb PROMPT_PENDING, CheckGetParam
+03EF            586            ; We need to show the parameter prompt
+03EF 740A       587            mov A, #0Ah    
+03F1 1201CB     588            lcall putchar
+03F4 740D       589            mov A, #'\r'   
+03F6 1201CB     590            lcall putchar
+03F9            591            ; Show the appropriate prompt based on MODE and PARAM
+03F9 200216     592            jb MODE, ShowReflowPrompt
+03FC 20030B     593            jb PARAM, ShowSoakTimePrompt
+03FF 900158     594            mov dptr, #SoakTempStr
+0402 1201D3     595            lcall SendString
+0405 801C       596            sjmp StartInputMode
+0407            597   NotEnterJump:
+0407 0204A5     598            ljmp NotEnter
+040A            599   ShowSoakTimePrompt:
+040A 90016B     600            mov dptr, #SoakTimeStr
+040D 1201D3     601            lcall SendString
+0410 8011       602            sjmp StartInputMode
+0412            603   ShowReflowPrompt:
+0412 200308     604            jb PARAM, ShowReflowTimePrompt
+0415 90017E     605            mov dptr, #ReflTempStr
+0418 1201D3     606            lcall SendString
+041B 8006       607            sjmp StartInputMode
+041D            608   ShowReflowTimePrompt:
+041D 900193     609            mov dptr, #ReflTimeStr
+0420 1201D3     610            lcall SendString
+0423            611   StartInputMode:
+0423 D206       612            setb INPUTTING
+0425 C207       613            clr PROMPT_PENDING
+0427 12027E     614            lcall ClearInputBuffer
+042A 02050A     615            ljmp PS2_Done
+042D            616   
+042D            617   CheckGetParam:
+042D            618            ; Check if we need to display current parameter value
+042D 30084B     619            jnb GET_PARAM, NormalEnter
+0430            620            ; Display the current parameter
+0430 740A       621            mov A, #0Ah    
+0432 1201CB     622            lcall putchar
+0435 740D       623            mov A, #'\r'   
+0437 1201CB     624            lcall putchar
+043A            625            ; Show parameter name
+043A 200213     626            jb MODE, ShowReflowParamName
+043D 200308     627            jb PARAM, ShowSoakTimeName
+0440 900158     628            mov dptr, #SoakTempStr
+0443 1201D3     629            lcall SendString
+0446 8019       630            sjmp ShowParamValue
+0448            631   ShowSoakTimeName:
+0448 90016B     632            mov dptr, #SoakTimeStr
+044B 1201D3     633            lcall SendString
+044E 8011       634            sjmp ShowParamValue
+0450            635   ShowReflowParamName:
+0450 200308     636            jb PARAM, ShowReflowTimeName
+0453 90017E     637            mov dptr, #ReflTempStr
+0456 1201D3     638            lcall SendString
+0459 8006       639            sjmp ShowParamValue
+045B            640   ShowReflowTimeName:
+045B 900193     641            mov dptr, #ReflTimeStr
+045E 1201D3     642            lcall SendString
+0461            643   ShowParamValue:
+0461 12033F     644            lcall GetCurrentParam
+0464 12030C     645            lcall DisplayNumber
+0467 740A       646            mov A, #0Ah    
+0469 1201CB     647            lcall putchar
+046C 740D       648            mov A, #'\r'   
+046E 1201CB     649            lcall putchar
+0471 743E       650            mov A, #'>'
+0473 1201CB     651            lcall putchar
+0476 C208       652            clr GET_PARAM
+0478 02050A     653            ljmp PS2_Done
+047B            654            
+047B            655   NormalEnter:
+047B            656            ; Normal Enter handling (not after 't' or 'x')
+047B 740A       657            mov A, #0Ah    
+047D 1201CB     658            lcall putchar
+0480 740D       659            mov A, #'\r'   
+0482 1201CB     660            lcall putchar
+0485 743E       661            mov A, #'>'     
+0487 1201CB     662            lcall putchar
+048A 200406     663            jb INVALID, Error
+048D 30010D     664            jnb SET_FLAG, Warning
+0490 02050A     665            ljmp PS2_Done
+0493            666            
+0493            667   Error:
+0493 90010C     668            mov dptr, #ErrorStr
+0496 1201D3     669            lcall SendString
+0499 C204       670            clr INVALID
+049B 806D       671            sjmp PS2_Done
+049D            672            
+049D            673   Warning:
+049D 9000C0     674            mov dptr, #WarningStr
+04A0 1201D3     675            lcall SendString
+04A3 8065       676            sjmp PS2_Done
+04A5            677            
+04A5            678   NotEnter:
+04A5 1201CB     679            lcall putchar
+04A8 B47104     680            cjne A, #'q', NotQ
+04AB C201       681            clr SET_FLAG
+04AD 805B       682            sjmp PS2_Done
+04AF            683   
+04AF            684   NotQ:
+04AF D205       685            setb AWAIT
+04B1 200107     686            jb SET_FLAG, Setting
+04B4 B46353     687            cjne A, #'c', PS2_Done
+04B7 D201       688            setb SET_FLAG
+04B9 804F       689            sjmp PS2_Done
+04BB            690            
+04BB            691   Setting:
+04BB B47307     692            cjne A, #'s', CheckR
+04BE C202       693            clr MODE
+04C0 759502     694            mov LEDRB, #0b10  ; Show 10 for Soak
+04C3 8045       695            sjmp PS2_Done
+04C5            696            
+04C5            697   CheckR:
+04C5 B47209     698            cjne A, #'r', CheckT
+04C8 D202       699            setb MODE
+04CA 759501     700            mov LEDRB, #0b01  ; Show 01 for Reflow
+04CD D205       701            setb AWAIT
+04CF 8039       702            sjmp PS2_Done
+04D1            703            
+04D1            704   CheckT:
+04D1 B47409     705            cjne A, #'t', CheckX
+04D4 D203       706            setb PARAM
+04D6 120203     707            lcall Update_HEX_Display
+04D9 D207       708            setb PROMPT_PENDING   ; Will prompt on next Enter
+04DB 802D       709            sjmp PS2_Done
+04DD            710            
+04DD            711   CheckX:
+04DD B47809     712            cjne A, #'x', CheckG
+04E0 C203       713            clr PARAM
+04E2 120203     714            lcall Update_HEX_Display
+04E5 D207       715            setb PROMPT_PENDING   ; Will prompt on next Enter
+04E7 8021       716            sjmp PS2_Done
+04E9            717   
+04E9            718   CheckG:
+04E9 B46704     719            cjne A, #'g', InvalidHandler
+04EC D208       720            setb GET_PARAM        ; Will display current parameter on next Enter
+04EE 801A       721            sjmp PS2_Done
+04F0            722   
+04F0            723   InvalidHandler:
+04F0 D204       724            setb INVALID
+04F2 8016       725            sjmp PS2_Done
+04F4            726            
+04F4            727   ClearRel:
+04F4 C200       728            clr RELEASE_FLAG 
+04F6 8012       729            sjmp PS2_Done
+04F8            730   CheckIfDone:
+04F8            731            ;Wait for Stop Bit
+04F8 B40B08     732            cjne A, #11, CheckOverflow
+04FB 8000       733            sjmp Reset
+04FD            734            
+04FD            735   Reset:
+04FD            736            ;Resets so we're ready for next keypress
+04FD 7800       737            mov R0, #0
+04FF 7900       738            mov R1, #0
+0501 8007       739            sjmp PS2_Done
+0503            740   CheckOverflow:
+0503            741            ;Prevents from going out of sync (this was a problem because we're not explicitly checking the parity bit)
+0503 C3         742            clr C
+0504 940C       743            subb A, #12
+0506 4002       744            jc PS2_Done
+0508 80F3       745            sjmp Reset
+050A            746   PS2_Done:
+050A D0D0       747            pop PSW
+050C D0E0       748            pop ACC
+050E 32         749            reti
+050F            750   
+050F            751   MainProgram:
+050F 759AFF     752            mov P0MOD, #0b11111111
+0512 759BFF     753            mov P1MOD, #0b11111111
+0515 759CFF     754            mov P2MOD, #0b11111111
+0518 759D01     755            mov P3MOD, #0b1
+051B 75E800     756            mov LEDRA, #0X00
+051E 759500     757            mov LEDRB, #0x00
+0521 7591C6     758            mov HEX0, #0xC6  ; Initialize to "C" (temperature)
+0524            759            
+0524            760            ; Initialize parameters to default values
+0524 753000     761            mov SoakTemp, #0
+0527 753100     762            mov SoakTime, #0
+052A 753200     763            mov ReflowTemp, #0
+052D 753300     764            mov ReflowTime, #0
+0530            765            
+0530 75817F     766       mov sp, #0x7f
+0533 740D       767       mov A, #'\r'
+0535 1201DE     768       lcall Initialize_PS2
+0538 1201BE     769       lcall InitSerialPort
+053B 1201CB     770       lcall putchar
+053E 740A       771            mov A, #'\n'
+0540 1201CB     772            lcall putchar
+0543 743E       773       mov A, #'>'
+0545 1201CB     774       lcall putchar
+0548            775       
+0548            776       ; Initial output update
+0548 12020E     777       lcall UpdateOutputs
+054B            778       
+054B            779   forever:
+054B            780            ; Continuously update outputs
+054B 12020E     781            lcall UpdateOutputs
+054E 80FB       782            sjmp forever
+0550            783            
+0550            784   en

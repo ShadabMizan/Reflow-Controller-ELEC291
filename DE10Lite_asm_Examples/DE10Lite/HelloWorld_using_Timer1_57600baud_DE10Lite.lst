@@ -1,0 +1,89 @@
+0000              1   ; Unfortunately the maximum baurate we can use with timer 1 is 57600
+0000              2   ; so make sure you configure putty/matlab/python accordingly.
+                  4   $LIST
+0000              6   
+0000              7   CLK EQU 33333333
+0000              8   BAUD EQU 57600
+0000              9   TIMER_1_RELOAD EQU (256-((2*CLK)/(12*32*BAUD)))
+0000             10   TIMER_10ms EQU (65536-(CLK/(12*100)))
+0000             11   
+0000             12   cseg
+0000 020066      13            ljmp MainProgram
+0003             14   
+0003             15   Initialize_Serial_Port:
+0003             16            ; Configure serial port and baud rate
+0003 C28E        17            clr TR1 ; Disable timer 1
+0005 53890F      18            anl TMOD, #0x0f ; Mask the bits for timer 1
+0008 438920      19            orl TMOD, #0x20 ; Set timer 1 in 8-bit auto reload mode
+000B 438780      20       orl PCON, #80H ; Set SMOD to 1
+000E 758DFD      21            mov TH1, #low(TIMER_1_RELOAD)
+0011 758BFD      22            mov TL1, #low(TIMER_1_RELOAD) 
+0014 D28E        23            setb TR1 ; Enable timer 1
+0016 759852      24            mov SCON, #52H
+0019 22          25            ret
+001A             26   
+001A             27   putchar:
+001A 109902      28            jbc     TI,putchar_L1
+001D 80FB        29            sjmp putchar
+001F             30   putchar_L1:
+001F F599        31            mov     SBUF,a
+0021 22          32            ret
+0022             33   
+0022             34   SendString:
+0022 E4          35       clr a
+0023 93          36       movc a, @a+dptr
+0024 6006        37       jz SendString_L1
+0026 12001A      38       lcall putchar
+0029 A3          39       inc dptr
+002A 80F6        40       sjmp SendString  
+002C             41   SendString_L1:
+002C 22          42            ret
+002D             43   
+002D             44   ; Wait 10 millisecond using Timer 0
+002D             45   Wait10ms:
+002D C28C        46            clr     TR0
+002F 74F0        47            mov     a,#0xF0
+0031 5589        48            anl     a,TMOD
+0033 4401        49            orl     a,#0x01
+0035 F589        50            mov     TMOD,a
+0037 758C93      51            mov     TH0, #high(TIMER_10ms)
+003A 758A7F      52            mov     TL0, #low(TIMER_10ms)
+003D C28D        53            clr     TF0
+003F D28C        54            setb TR0
+0041 308DFD      55            jnb     TF0,$
+0044 C28C        56            clr     TR0
+0046 22          57            ret
+0047             58            
+0047             59   ; Wait R2 10-milliseconds
+0047             60   MyDelay:
+0047 12002D      61            lcall Wait10ms
+004A DAFB        62       djnz R2, MyDelay
+004C 22          63            ret
+004D             64            
+004D             65   Initialize_LEDs:
+004D             66       ; Turn off LEDs
+004D 75E800      67            mov     LEDRA,#0x00
+0050 759500      68            mov     LEDRB,#0x00
+0053 22          69            ret
+0054             70            
+0054 0D0A4865    71   InitialString: db '\r\nHello, World!\r\n', 0
+     6C6C6F2C
+     20576F72
+     6C64210D
+     0A00
+0066             72   
+0066             73   MainProgram:
+0066 75817F      74       mov sp, #0x7f
+0069 12004D      75       lcall Initialize_LEDs
+006C 120003      76       lcall Initialize_Serial_Port
+006F             77       
+006F 900054      78       mov dptr, #InitialString
+0072 120022      79       lcall SendString
+0075             80   
+0075             81   forever:
+0075 7A32        82            mov R2, #50
+0077 120047      83            lcall MyDelay ; wait 0.5 seconds
+007A B2E8        84            cpl LEDRA.0
+007C 80F7        85            sjmp forever
+007E             86   
+007E             87   end

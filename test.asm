@@ -23,6 +23,19 @@ TIMER_2_RELOAD equ (0x10000-(CLK/(32*BAUD)))
 CLK EQU 33333333
 TIMER_10ms EQU (65536-(CLK/(12*100)))
 PS2_DAT EQU P3.3
+TRANSMIT_MODE EQU P0.0
+TRANSMIT_PARAM EQU P0.2
+TRANSMIT_SET EQU P0.4
+
+BIT1 EQU P1.3
+BIT2 EQU P1.5
+BIT3 EQU P1.7
+BIT4 EQU P2.1
+BIT5 EQU P2.3
+BIT6 EQU P2.5
+BIT7 EQU P2.7
+BIT8 EQU P3.1
+
 RELEASE_FLAG BIT 20h.0
 SET_FLAG BIT 20h.1
 MODE BIT 20h.2 ;0=Soak, 1=Reflow
@@ -138,6 +151,111 @@ Update_HEX_Display:
 Show_S:
 	; Show "S" for time
 	mov HEX0, #0x92
+	ret
+
+; Update output pins with current state
+UpdateOutputs:
+	; Update TRANSMIT_MODE (P0.0) with MODE bit
+	jb MODE, SetMode1
+	clr TRANSMIT_MODE
+	sjmp DoneMode
+SetMode1:
+	setb TRANSMIT_MODE
+DoneMode:
+	
+	; Update TRANSMIT_PARAM (P0.2) with PARAM bit
+	jb PARAM, SetParam1
+	clr TRANSMIT_PARAM
+	sjmp DoneParam
+SetParam1:
+	setb TRANSMIT_PARAM
+DoneParam:
+	
+	; Update TRANSMIT_SET (P0.4) with SET_FLAG bit
+	jb SET_FLAG, SetFlag1
+	clr TRANSMIT_SET
+	sjmp DoneSet
+SetFlag1:
+	setb TRANSMIT_SET
+DoneSet:
+	
+	; Get current parameter value
+	lcall GetCurrentParam  ; Returns value in A
+	mov R2, A             ; Save in R2
+	
+	; Output the 8-bit value to BIT1-BIT8
+	; Bit 0 -> BIT1 (P1.3)
+	mov A, R2
+	jb ACC.0, SetBit1
+	clr BIT1
+	sjmp DoneBit1
+SetBit1:
+	setb BIT1
+DoneBit1:
+	
+	; Bit 1 -> BIT2 (P1.5)
+	mov A, R2
+	jb ACC.1, SetBit2
+	clr BIT2
+	sjmp DoneBit2
+SetBit2:
+	setb BIT2
+DoneBit2:
+	
+	; Bit 2 -> BIT3 (P1.7)
+	mov A, R2
+	jb ACC.2, SetBit3
+	clr BIT3
+	sjmp DoneBit3
+SetBit3:
+	setb BIT3
+DoneBit3:
+	
+	; Bit 3 -> BIT4 (P2.1)
+	mov A, R2
+	jb ACC.3, SetBit4
+	clr BIT4
+	sjmp DoneBit4
+SetBit4:
+	setb BIT4
+DoneBit4:
+	
+	; Bit 4 -> BIT5 (P2.3)
+	mov A, R2
+	jb ACC.4, SetBit5
+	clr BIT5
+	sjmp DoneBit5
+SetBit5:
+	setb BIT5
+DoneBit5:
+	
+	; Bit 5 -> BIT6 (P2.5)
+	mov A, R2
+	jb ACC.5, SetBit6
+	clr BIT6
+	sjmp DoneBit6
+SetBit6:
+	setb BIT6
+DoneBit6:
+	
+	; Bit 6 -> BIT7 (P2.7)
+	mov A, R2
+	jb ACC.6, SetBit7
+	clr BIT7
+	sjmp DoneBit7
+SetBit7:
+	setb BIT7
+DoneBit7:
+	
+	; Bit 7 -> BIT8 (P3.1)
+	mov A, R2
+	jb ACC.7, SetBit8
+	clr BIT8
+	sjmp DoneBit8
+SetBit8:
+	setb BIT8
+DoneBit8:
+	
 	ret
 
 ; Clear input buffer
@@ -629,10 +747,22 @@ PS2_Done:
 	pop PSW
 	pop ACC
 	reti
+
 MainProgram:
+	mov P0MOD, #0b11111111
+	mov P1MOD, #0b11111111
+	mov P2MOD, #0b11111111
+	mov P3MOD, #0b1
 	mov LEDRA, #0X00
 	mov LEDRB, #0x00
 	mov HEX0, #0xC6  ; Initialize to "C" (temperature)
+	
+	; Initialize parameters to default values
+	mov SoakTemp, #0
+	mov SoakTime, #0
+	mov ReflowTemp, #0
+	mov ReflowTime, #0
+	
     mov sp, #0x7f
     mov A, #'\r'
     lcall Initialize_PS2
@@ -642,9 +772,13 @@ MainProgram:
  	lcall putchar
     mov A, #'>'
     lcall putchar
+    
+    ; Initial output update
+    lcall UpdateOutputs
+    
 forever:
+	; Continuously update outputs
+	lcall UpdateOutputs
 	sjmp forever
 	
-	
-
 end

@@ -463,16 +463,35 @@
 050D 753600     235            mov y+2, #low (4096 / 0x10000) 
 0510 753700     235            mov y+3, #high(4096 / 0x10000) 
 0513 120279     236            lcall div32
-0516            237            
-0516 120027     238            lcall hex2bcd
-0519 1203ED     239            lcall Display_Voltage_7seg
-051C 120411     240            lcall Display_Voltage_LCD
-051F 120451     241            lcall Display_Voltage_Serial
-0522            242   
-0522 1203E0     243            lcall Wait50ms
-0525 1203E0     244            lcall Wait50ms
-0528 1203E0     245            lcall Wait50ms
-052B 1203E0     246            lcall Wait50ms
-052E 0204E6     247            ljmp forever
-0531            248            
-0531            249   end
+0516            237   
+0516            238       ; Convert the Voltage at the ADC to a temperature:
+0516 7534E8     239            mov y+0, #low (1000 % 0x10000) 
+0519 753503     239            mov y+1, #high(1000 % 0x10000) 
+051C 753600     239            mov y+2, #low (1000 / 0x10000) 
+051F 753700     239            mov y+3, #high(1000 / 0x10000)  ; convert to microvolts
+0522 120185     240       lcall mul32
+0525 75340C     241            mov y+0, #low (12300 % 0x10000) 
+0528 753530     241            mov y+1, #high(12300 % 0x10000) 
+052B 753600     241            mov y+2, #low (12300 / 0x10000) 
+052E 753700     241            mov y+3, #high(12300 / 0x10000)  ; 41 * 300
+0531 120279     242       lcall div32
+0534            243   
+0534 753416     244            mov y+0, #low (22 % 0x10000) 
+0537 753500     244            mov y+1, #high(22 % 0x10000) 
+053A 753600     244            mov y+2, #low (22 / 0x10000) 
+053D 753700     244            mov y+3, #high(22 / 0x10000)  ; add cold junction temperature
+0540 1200CC     245       lcall add32
+0543            246       ; Now, the displayed value will be the temperature
+0543            247            
+0543 120027     248            lcall hex2bcd
+0546 1203ED     249            lcall Display_Voltage_7seg
+0549 120411     250            lcall Display_Voltage_LCD
+054C 120451     251            lcall Display_Voltage_Serial
+054F            252   
+054F 1203E0     253            lcall Wait50ms
+0552 1203E0     254            lcall Wait50ms
+0555 1203E0     255            lcall Wait50ms
+0558 1203E0     256            lcall Wait50ms
+055B 0204E6     257            ljmp forever
+055E            258   
+055E            259   end
