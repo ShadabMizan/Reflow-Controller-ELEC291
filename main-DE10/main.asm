@@ -42,7 +42,7 @@ TIMER2_RATE      EQU 2048        ; 2048 Hz for a 488 u-sec period/per tick
 TIMER2_RELOAD    EQU ((65536-(CLK/(12*TIMER2_RATE))))
 PWM_PERIOD_TICKS EQU 20          ; 20 ticks = 9.77ms period = 102 Hz PWM
 
-SSR_PIN          equ P3.7        ; PWM output pin
+SSR_PIN         EQU P3.7
 
 CSEG
 
@@ -298,6 +298,6 @@ Read_Temperature:
 
     lcall hex2bcd
     lcall Display_Voltage_Serial
+    ret
 
 end
-

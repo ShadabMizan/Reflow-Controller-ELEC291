@@ -245,7 +245,7 @@
 0003             42   TIMER2_RELOAD    EQU ((65536-(CLK/(12*TIMER2_RATE))))
 0003             43   PWM_PERIOD_TICKS EQU 20          ; 20 ticks = 9.77ms period = 102 Hz PWM
 0003             44   
-0003             45   SSR_PIN          equ P3.7        ; PWM output pin
+0003             45   SSR_PIN         EQU P3.7
 0003             46   
 002E             47   CSEG
 002E             48   
@@ -453,76 +453,88 @@
 0576 754100     242       mov pwm, #0
 0579 120469     243       lcall Update_PWM        
 057C            244   
-057C            245       ; lcall ELCD_4BIT ; Configure LCD in four bit mode
-057C            246       ; ; For convenience a few handy macros are included in 'LCD_4bit_DE1Lite.inc':
-057C            247            ; Set_Cursor(1, 1)
-057C            248       ; Send_Constant_String(#Initial_Message)
-057C            249            
-057C            250            ; mov dptr, #Initial_Message
-057C            251            ; lcall SendString
-057C            252            ; mov a, #'\r'
-057C            253            ; lcall putchar
-057C            254            ; mov a, #'\n'
-057C            255            ; lcall putchar
-057C            256   
-057C 754132     257       mov pwm, #50
-057F 120469     258       lcall Update_PWM
-0582            259   
-0582            260   forever:
-0582 75411E     261       mov pwm, #30
-0585 120469     262       lcall Update_PWM
-0588            263   
-0588 12058E     264       lcall Read_Temperature
-058B            265            ; lcall Wait50ms
-058B            266            ; lcall Wait50ms
-058B            267            ; lcall Wait50ms
-058B            268            ; lcall Wait50ms
-058B 020582     269            ljmp forever
-058E            270   
-058E            271   ; ----------------------------------------
-058E            272   ; TEMPERATURE ROUTINES
-058E            273   ; ----------------------------------------
-058E            274   
-058E            275   Read_Temperature:
-058E F5A1       276       mov ADC_C, a
-0590            277   
-0590            278       ; Load 32-bit 'x' with 12-bit adc result
-0590 753300     279            mov x+3, #0
-0593 753200     280            mov x+2, #0
-0596 85A331     281            mov x+1, ADC_H
-0599 85A230     282            mov x+0, ADC_L
-059C            283   
-059C            284            ; Convert to voltage by multiplying by 5.000 and dividing by 4096
-059C 753488     285            mov y+0, #low (5000 % 0x10000) 
-059F 753513     285            mov y+1, #high(5000 % 0x10000) 
-05A2 753600     285            mov y+2, #low (5000 / 0x10000) 
-05A5 753700     285            mov y+3, #high(5000 / 0x10000) 
-05A8 1201B0     286            lcall mul32
-05AB 753400     287            mov y+0, #low (4096 % 0x10000) 
-05AE 753510     287            mov y+1, #high(4096 % 0x10000) 
-05B1 753600     287            mov y+2, #low (4096 / 0x10000) 
-05B4 753700     287            mov y+3, #high(4096 / 0x10000) 
-05B7 1202A4     288            lcall div32
-05BA            289   
-05BA            290       ; Convert the Voltage at the ADC to a temperature:
-05BA 7534E8     291            mov y+0, #low (1000 % 0x10000) 
-05BD 753503     291            mov y+1, #high(1000 % 0x10000) 
-05C0 753600     291            mov y+2, #low (1000 / 0x10000) 
-05C3 753700     291            mov y+3, #high(1000 / 0x10000)  ; convert to microvolts
-05C6 1201B0     292       lcall mul32
-05C9 75340C     293            mov y+0, #low (12300 % 0x10000) 
-05CC 753530     293            mov y+1, #high(12300 % 0x10000) 
-05CF 753600     293            mov y+2, #low (12300 / 0x10000) 
-05D2 753700     293            mov y+3, #high(12300 / 0x10000)  ; 41 * 300
-05D5 1202A4     294       lcall div32
-05D8            295   
-05D8 753416     296            mov y+0, #low (22 % 0x10000) 
-05DB 753500     296            mov y+1, #high(22 % 0x10000) 
-05DE 753600     296            mov y+2, #low (22 / 0x10000) 
-05E1 753700     296            mov y+3, #high(22 / 0x10000)  ; add cold junction temperature
-05E4 1200F7     297       lcall add32
-05E7            298   
-05E7 120052     299       lcall hex2bcd
-05EA 120500     300       lcall Display_Voltage_Serial
-05ED            301   
-05ED            302   end
+057C 1203A0     245       lcall ELCD_4BIT ; Configure LCD in four bit mode
+057F            246       ; ; For convenience a few handy macros are included in 'LCD_4bit_DE1Lite.inc':
+057F C0E0       247            push acc
+0581 7401       247            mov a, #1
+0583 14         247            dec a
+0584 1203E0     247            lcall ?Set_Cursor_1 ; Select column and row
+0587 D0E0       247            pop acc
+0589 C083       248            push dph
+058B C082       248            push dpl
+058D C0E0       248            push acc
+058F 900540     248            mov dptr, #Initial_Message
+0592 1203D3     248            lcall ?Send_Constant_String
+0595 D0E0       248            pop acc
+0597 D082       248            pop dpl
+0599 D083       248            pop dph
+059B            249            
+059B            250            ; mov dptr, #Initial_Message
+059B            251            ; lcall SendString
+059B            252            ; mov a, #'\r'
+059B            253            ; lcall putchar
+059B            254            ; mov a, #'\n'
+059B            255            ; lcall putchar
+059B            256   
+059B 754132     257       mov pwm, #50
+059E 120469     258       lcall Update_PWM
+05A1            259   
+05A1            260   forever:
+05A1 75411E     261       mov pwm, #30
+05A4 120469     262       lcall Update_PWM
+05A7            263   
+05A7 1205AD     264       lcall Read_Temperature
+05AA            265            ; lcall Wait50ms
+05AA            266            ; lcall Wait50ms
+05AA            267            ; lcall Wait50ms
+05AA            268            ; lcall Wait50ms
+05AA 0205A1     269            ljmp forever
+05AD            270   
+05AD            271   ; ----------------------------------------
+05AD            272   ; TEMPERATURE ROUTINES
+05AD            273   ; ----------------------------------------
+05AD            274   
+05AD            275   Read_Temperature:
+05AD F5A1       276       mov ADC_C, a
+05AF            277   
+05AF            278       ; Load 32-bit 'x' with 12-bit adc result
+05AF 753300     279            mov x+3, #0
+05B2 753200     280            mov x+2, #0
+05B5 85A331     281            mov x+1, ADC_H
+05B8 85A230     282            mov x+0, ADC_L
+05BB            283   
+05BB            284            ; Convert to voltage by multiplying by 5.000 and dividing by 4096
+05BB 753488     285            mov y+0, #low (5000 % 0x10000) 
+05BE 753513     285            mov y+1, #high(5000 % 0x10000) 
+05C1 753600     285            mov y+2, #low (5000 / 0x10000) 
+05C4 753700     285            mov y+3, #high(5000 / 0x10000) 
+05C7 1201B0     286            lcall mul32
+05CA 753400     287            mov y+0, #low (4096 % 0x10000) 
+05CD 753510     287            mov y+1, #high(4096 % 0x10000) 
+05D0 753600     287            mov y+2, #low (4096 / 0x10000) 
+05D3 753700     287            mov y+3, #high(4096 / 0x10000) 
+05D6 1202A4     288            lcall div32
+05D9            289   
+05D9            290       ; Convert the Voltage at the ADC to a temperature:
+05D9 7534E8     291            mov y+0, #low (1000 % 0x10000) 
+05DC 753503     291            mov y+1, #high(1000 % 0x10000) 
+05DF 753600     291            mov y+2, #low (1000 / 0x10000) 
+05E2 753700     291            mov y+3, #high(1000 / 0x10000)  ; convert to microvolts
+05E5 1201B0     292       lcall mul32
+05E8 75340C     293            mov y+0, #low (12300 % 0x10000) 
+05EB 753530     293            mov y+1, #high(12300 % 0x10000) 
+05EE 753600     293            mov y+2, #low (12300 / 0x10000) 
+05F1 753700     293            mov y+3, #high(12300 / 0x10000)  ; 41 * 300
+05F4 1202A4     294       lcall div32
+05F7            295   
+05F7 753416     296            mov y+0, #low (22 % 0x10000) 
+05FA 753500     296            mov y+1, #high(22 % 0x10000) 
+05FD 753600     296            mov y+2, #low (22 / 0x10000) 
+0600 753700     296            mov y+3, #high(22 / 0x10000)  ; add cold junction temperature
+0603 1200F7     297       lcall add32
+0606            298   
+0606 120052     299       lcall hex2bcd
+0609 120500     300       lcall Display_Voltage_Serial
+060C 22         301       ret
+060D            302   
+060D            303   en
