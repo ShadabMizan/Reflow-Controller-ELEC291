@@ -1,10 +1,33 @@
+$NOLIST
 $MODDE1SOC
+$LIST
 
 ; ====================================================================
-; CV-8052 SFR DEFINITIONS (for DE1-SoC)
+; CONSTANTS
 ; ====================================================================
-; Standard 8052 SFRs are already defined by $MODDE1SOC
-; No additional SFRs needed for basic operation
+BAUD           EQU 115200
+TIMER_2_RELOAD EQU (0x10000-(CLK/(32*BAUD)))
+CLK            EQU 33333333
+
+; Reflow oven temperature/time constants (defaults)
+TEMP_SOAK           EQU 150
+TIME_SOAK           EQU 60
+TEMP_REFLOW         EQU 220
+TIME_REFLOW         EQU 45
+TEMP_COOL           EQU 60
+TEMP_MAX            EQU 240
+TEMP_DROP_THRESHOLD EQU 10
+
+; Error codes
+ERR_NONE        EQU 0
+ERR_ABORT       EQU 1
+ERR_TEMP_DROP   EQU 2
+ERR_OVERTEMP    EQU 3
+ERR_SENSOR      EQU 4
+ERR_TIMEOUT     EQU 5
+ERR_UNDERTEMP   EQU 6
+ERR_DOOR_OPEN   EQU 7
+ERR_POWER       EQU 8
 
 ; ====================================================================
 ; PIN DEFINITIONS
@@ -21,30 +44,7 @@ LCD_D5          EQU P0.1
 LCD_D6          EQU P0.2
 LCD_D7          EQU P0.3
 TEMP_ADC_CH     EQU 0
-
-; PS/2 keyboard pin
-PS2_DAT         BIT P3.3
-
-; ====================================================================
-; CONSTANTS
-; ====================================================================
-TEMP_SOAK           EQU 150
-TIME_SOAK           EQU 60
-TEMP_REFLOW         EQU 220
-TIME_REFLOW         EQU 45
-TEMP_COOL           EQU 60
-TEMP_MAX            EQU 240
-TEMP_DROP_THRESHOLD EQU 10
-
-ERR_NONE        EQU 0
-ERR_ABORT       EQU 1
-ERR_TEMP_DROP   EQU 2
-ERR_OVERTEMP    EQU 3
-ERR_SENSOR      EQU 4
-ERR_TIMEOUT     EQU 5
-ERR_UNDERTEMP   EQU 6
-ERR_DOOR_OPEN   EQU 7
-ERR_POWER       EQU 8
+PS2_DAT         EQU P3.3
 
 ; ====================================================================
 ; BIT VARIABLES
@@ -52,14 +52,25 @@ ERR_POWER       EQU 8
 BSEG
 mf:             dbit 1
 RELEASE_FLAG:   dbit 1      ; PS/2 key release flag
+SET_FLAG:       dbit 1      ; PS/2 command mode active (after 'c')
+MODE:           dbit 1      ; 0=Soak, 1=Reflow
+PARAM:          dbit 1      ; 0=Temp, 1=Time
+INVALID:        dbit 1      ; Invalid command entered
+AWAIT:          dbit 1      ; (unused in PS/2 logic)
+INPUTTING:      dbit 1      ; Currently entering a number
+PROMPT_PENDING: dbit 1      ; Show parameter prompt on next Enter
+GET_PARAM:      dbit 1      ; Show current parameter value on Enter
 
 ; ====================================================================
 ; BYTE VARIABLES
 ; ====================================================================
 DSEG at 30h
+; Math32 variables
 x:                  ds 4
 y:                  ds 4
 bcd:                ds 5
+
+; FSM state variables
 FSM_state:          ds 1
 temp:               ds 1
 temp_state_start:   ds 1
@@ -71,11 +82,22 @@ state_timer:        ds 1
 ms_counter:         ds 1
 pwm:                ds 1
 error_code:         ds 1
-tempsoak:           ds 1
-timesoak:           ds 1
-tempreflow:         ds 1
-timereflow:         ds 1
+
+; Reflow parameters (keyboard can modify these)
+tempsoak:           ds 1    ; Soak temperature
+timesoak:           ds 1    ; Soak time
+tempreflow:         ds 1    ; Reflow temperature
+timereflow:         ds 1    ; Reflow time
 undertemp_checked:  ds 1
+
+; PS/2 input buffer (for building 3-digit numbers)
+InputBuffer:        ds 3
+
+; Create aliases so PS/2 code can reference by familiar names
+SoakTemp    EQU tempsoak
+SoakTime    EQU timesoak
+ReflowTemp  EQU tempreflow
+ReflowTime  EQU timereflow
 
 ; ====================================================================
 ; CODE
@@ -105,6 +127,7 @@ $INCLUDE(math32.inc)
 ; ====================================================================
 ; PS/2 KEYBOARD - SCANCODE TO ASCII TABLE
 ; ====================================================================
+org 0030h
 ASCII_TABLE:
     DB 0, 0, 0, 0, 0, 0, 0, 0        ; 00-07
     DB 0, 0, 0, 0, 0, 0, '`', 0      ; 08-0F
@@ -117,11 +140,43 @@ ASCII_TABLE:
     DB 0, ',', 'k', 'i', 'o', '0', '9', 0  ; 40-47
     DB 0, '.', '/', 'l', ';', 'p', '-', 0  ; 48-4F
     DB 0, 0, 27h, 0, '[', '=', 0, 0        ; 50-57
-    DB 0, 0, 0, ']', 0, 5Ch, 0, 0          ; 58-5F
+    DB 0, 0, 0Ah, ']', 0, 5Ch, 0, 0        ; 58-5F (0Ah = Enter key)
     DB 0, 0, 0, 0, 0, 0, 0, 0              ; 60-67
     DB 0, 0, 0, 0, 0, 0, 0, 0              ; 68-6F
     DB 0, 0, 0, 0, 0, 0, 0, 0              ; 70-77
     DB 0, 0, 0, 0, 0, 0, 0, 0              ; 78-7F
+
+; ====================================================================
+; STRING CONSTANTS
+; ====================================================================
+WarningStr:     db 'WARNING: CHANGES NOT APPLIED. TO ENTER SET MODE, BEGIN COMMAND WITH "C".\n\r>',0
+ErrorStr:       db 'ERROR: INVALID COMMAND.\n\r>', 0
+InputErrorStr:  db '\n\rERROR: INVALID INPUT. ENTER A NUMBER 0-255.\n\r>', 0
+SoakTempStr:    db 'Param SOAK TEMP? =',0
+SoakTimeStr:    db 'Param SOAK TIME? =',0
+ReflTempStr:    db 'Param REFLOW TEMP? =',0
+ReflTimeStr:    db 'Param REFLOW TIME? =',0
+SavedStr:       db '\n\rParameter saved.\n\r>',0
+Startup_Msg:    DB 'Reflow Oven V1.0', 0
+Error_Prefix:   DB 'ERROR E', 0
+Error_Messages:
+    DB 'User Abort     ', 0
+    DB 'Temp Drop >=10C', 0
+    DB 'Over Temp >240C', 0
+    DB 'Sensor Failure ', 0
+    DB 'State Timeout  ', 0
+    DB 'Heater Fault   ', 0
+    DB 'Door Opened    ', 0
+    DB 'Power Issue    ', 0
+State_Names:
+    DB 'Ready  ', 0
+    DB 'Ramp->S', 0
+    DB 'Soak   ', 0
+    DB 'Ramp->R', 0
+    DB 'Reflow ', 0
+    DB 'Cooling', 0
+Time_Label:
+    DB 'Time: ', 0
 
 ; ====================================================================
 ; MAIN
@@ -129,19 +184,32 @@ ASCII_TABLE:
 main:
     mov SP, #7FH
     
-    ; Initialize port directions (optional for CV-8052)
+    ; Initialize port directions
     mov P1, #0xC0
     mov P3, #0xFF
     
+    ; Initialize all subsystems
     lcall Timer0_Init
-    lcall Initialize_PS2    ; Enable PS/2 keyboard
+    lcall InitSerialPort
+    lcall Initialize_PS2
     lcall LCD_Init
     lcall Wait50ms
     
+    ; Show startup message on LCD
     mov dptr, #Startup_Msg
     lcall LCD_Print_String
     lcall Wait1s
+    
+    ; Initialize variables
     lcall Init_Variables
+    
+    ; Show prompt on serial terminal
+    mov A, #'\r'
+    lcall putchar
+    mov A, #'\n'
+    lcall putchar
+    mov A, #'>'
+    lcall putchar
     
 Forever:
     lcall Check_Abort
@@ -155,7 +223,7 @@ Forever:
     sjmp Forever
 
 ; ====================================================================
-; INIT
+; INITIALIZATION ROUTINES
 ; ====================================================================
 Init_Variables:
     mov FSM_state, #0
@@ -169,6 +237,7 @@ Init_Variables:
     mov ms_counter, #0
     mov pwm, #0
     mov error_code, #ERR_NONE
+    ; Initialize parameters from constants
     mov tempsoak, #TEMP_SOAK
     mov timesoak, #TIME_SOAK
     mov tempreflow, #TEMP_REFLOW
@@ -186,17 +255,521 @@ Timer0_Init:
     setb EA
     ret
 
+InitSerialPort:
+    mov RCAP2H, #HIGH(TIMER_2_RELOAD)
+    mov RCAP2L, #LOW(TIMER_2_RELOAD)
+    mov T2CON, #0x34
+    mov SCON, #0x52
+    ret
+
 Initialize_PS2:
-    ; Configure PS/2 keyboard interrupt
     setb PS2_DAT
-    setb IT0         ; Edge-triggered on falling edge
+    setb IT0         ; Edge-triggered
     setb EX0         ; Enable external interrupt 0
-    setb EA          ; Enable global interrupts (redundant with Timer0_Init)
+    setb EA          ; Enable global interrupts
     mov R0, #0       ; Bit counter
     mov R1, #0       ; Data accumulator
     clr RELEASE_FLAG
+    clr SET_FLAG
+    clr INPUTTING
+    clr PROMPT_PENDING
+    clr GET_PARAM
+    ; Initialize input buffer
+    mov InputBuffer, #0
+    mov InputBuffer+1, #0
+    mov InputBuffer+2, #0
     ret
 
+; ====================================================================
+; SERIAL PORT ROUTINES
+; ====================================================================
+putchar:
+    JNB TI, putchar
+    CLR TI
+    MOV SBUF, a
+    RET
+
+SendString:
+    CLR A
+    MOVC A, @A+DPTR
+    JZ SSDone
+    LCALL putchar
+    INC DPTR
+    SJMP SendString
+SSDone:
+    ret
+
+; ====================================================================
+; PS/2 HELPER ROUTINES
+; ====================================================================
+Scancode_To_ASCII:
+    mov DPTR, #ASCII_TABLE
+    movc A, @A+DPTR
+    ret
+
+Update_HEX_Display:
+    ; Display "C" (0xC6) for temperature or "S" (0x92) for time
+    jb PARAM, Show_S
+    mov HEX0, #0xC6
+    ret
+Show_S:
+    mov HEX0, #0x92
+    ret
+
+ClearInputBuffer:
+    mov InputBuffer, #0
+    mov InputBuffer+1, #0
+    mov InputBuffer+2, #0
+    ret
+
+AddToBuffer:
+    ; Check if buffer already has 3 characters
+    mov R2, InputBuffer+2
+    cjne R2, #0, BufferFull
+    mov R2, InputBuffer+1
+    cjne R2, #0, AddThird
+    mov R2, InputBuffer
+    cjne R2, #0, AddSecond
+    ; First character
+    mov InputBuffer, A
+    ret
+AddSecond:
+    mov InputBuffer+1, A
+    ret
+AddThird:
+    mov InputBuffer+2, A
+    ret
+BufferFull:
+    ret
+
+ValidateAndConvert:
+    ; Check if buffer is empty
+    mov A, InputBuffer
+    jz EmptyInput
+    
+    ; Check if first character is a digit
+    mov A, InputBuffer
+    lcall CheckDigit
+    jc ValidationError
+    mov R4, A
+    
+    ; Check second character
+    mov A, InputBuffer+1
+    jz SingleDigit
+    
+    lcall CheckDigit
+    jc ValidationError
+    mov R5, A
+    
+    ; Check third character
+    mov A, InputBuffer+2
+    jz TwoDigits
+    
+    lcall CheckDigit
+    jc ValidationError
+    mov R6, A
+    
+    ; Calculate: first_digit * 100 + second_digit * 10 + third_digit
+    mov A, R4
+    mov B, #100
+    mul AB
+    mov R7, A
+    mov A, B
+    jnz CheckValid3Digit
+    
+Add2ndAnd3rdDigits:
+    mov A, R5
+    mov B, #10
+    mul AB
+    add A, R7
+    jc ValidationError
+    mov R7, A
+    
+    mov A, R7
+    add A, R6
+    jc ValidationError
+    
+    clr C
+    ret
+
+CheckValid3Digit:
+    mov A, R4
+    cjne A, #2, ValidationError
+    mov A, R5
+    mov B, #10
+    mul AB
+    add A, R6
+    clr C
+    subb A, #56
+    jnc ValidationError
+    sjmp Add2ndAnd3rdDigits
+
+TwoDigits:
+    mov A, R4
+    mov B, #10
+    mul AB
+    add A, R5
+    jc ValidationError
+    clr C
+    ret
+
+SingleDigit:
+    mov A, R4
+    clr C
+    ret
+
+EmptyInput:
+ValidationError:
+    setb C
+    ret
+
+CheckDigit:
+    clr C
+    subb A, #'0'
+    jc NotDigit
+    mov B, A
+    clr C
+    subb A, #10
+    jnc NotDigit
+    mov A, B
+    clr C
+    ret
+NotDigit:
+    setb C
+    ret
+
+DisplayNumber:
+    mov B, #100
+    div AB
+    mov R2, B
+    mov B, A
+    
+    mov A, B
+    jz SkipHundreds
+    add A, #'0'
+    lcall putchar
+    
+SkipHundreds:
+    mov A, R2
+    mov B, #10
+    div AB
+    mov R3, B
+    
+    mov B, A
+    mov A, R2
+    mov R2, #100
+    clr C
+    subb A, R2
+    jnc ShowTens
+    mov A, B
+    jz SkipTens
+    
+ShowTens:
+    mov A, B
+    add A, #'0'
+    lcall putchar
+    
+SkipTens:
+    mov A, R3
+    add A, #'0'
+    lcall putchar
+    ret
+
+GetCurrentParam:
+    jb MODE, GetReflowParam
+    jb PARAM, GetSoakTime
+    mov A, SoakTemp
+    ret
+GetSoakTime:
+    mov A, SoakTime
+    ret
+GetReflowParam:
+    jb PARAM, GetReflowTime
+    mov A, ReflowTemp
+    ret
+GetReflowTime:
+    mov A, ReflowTime
+    ret
+
+SaveInputToParam:
+    lcall ValidateAndConvert
+    jc SaveError
+    
+    mov R2, A
+    
+    jb MODE, SaveReflowParam
+    jb PARAM, SaveSoakTime
+    mov A, R2
+    mov SoakTemp, A
+    sjmp ParamSaved
+SaveSoakTime:
+    mov A, R2
+    mov SoakTime, A
+    sjmp ParamSaved
+SaveReflowParam:
+    jb PARAM, SaveReflowTime
+    mov A, R2
+    mov ReflowTemp, A
+    sjmp ParamSaved
+SaveReflowTime:
+    mov A, R2
+    mov ReflowTime, A
+ParamSaved:
+    mov dptr, #SavedStr
+    lcall SendString
+    clr INPUTTING
+    lcall ClearInputBuffer
+    ret
+
+SaveError:
+    mov A, InputBuffer
+    jz EmptyError
+    mov dptr, #InputErrorStr
+    lcall SendString
+    lcall ClearInputBuffer
+    ret
+EmptyError:
+    mov dptr, #InputErrorStr
+    lcall SendString
+    ret
+
+; ====================================================================
+; PS/2 INTERRUPT HANDLER
+; ====================================================================
+PS2_Interrupt:
+    push ACC
+    push PSW
+    
+    mov A, R0
+    cjne A, #0, NotAtStart
+    mov C, PS2_DAT
+    jc jump
+    
+NotAtStart:
+    inc R0
+    mov A, R0
+    cjne A, #1, CheckData
+    ljmp PS2_Done
+    
+jump:
+    ljmp PS2_Done
+    
+CheckData:
+    clr C
+    subb A, #10
+    jnc CheckIfDoneJump
+    mov C, PS2_DAT
+    mov A, R1
+    rrc A
+    mov R1, A
+    mov A, R0
+    cjne A, #9, jump
+    mov A, R1
+    cjne A, #0F0h, NotRelease
+    setb RELEASE_FLAG
+    ljmp PS2_Done
+
+CheckIfDoneJump:
+    ljmp CheckIfDone
+
+NotRelease:
+    jb RELEASE_FLAG, ClearRelJump
+    lcall Scancode_To_ASCII
+    jz jump
+    mov LEDRA, A
+    
+    ; Check if we're in number input mode
+    jnb INPUTTING, NotInputtingNum
+    cjne A, #0Ah, JustAddChar
+    lcall SaveInputToParam
+    ljmp PS2_Done
+    
+ClearRelJump:
+    ljmp ClearRel
+
+JustAddChar:
+    lcall putchar
+    lcall AddToBuffer
+    ljmp PS2_Done
+    
+NotInputtingNum:
+    cjne A, #0Ah, NotEnterJump
+    jnb PROMPT_PENDING, CheckGetParam
+    
+    mov A, #0Ah
+    lcall putchar
+    mov A, #'\r'
+    lcall putchar
+    
+    jb MODE, ShowReflowPrompt
+    jb PARAM, ShowSoakTimePrompt
+    mov dptr, #SoakTempStr
+    lcall SendString
+    sjmp StartInputMode
+
+NotEnterJump:
+    ljmp NotEnter
+
+ShowSoakTimePrompt:
+    mov dptr, #SoakTimeStr
+    lcall SendString
+    sjmp StartInputMode
+
+ShowReflowPrompt:
+    jb PARAM, ShowReflowTimePrompt
+    mov dptr, #ReflTempStr
+    lcall SendString
+    sjmp StartInputMode
+
+ShowReflowTimePrompt:
+    mov dptr, #ReflTimeStr
+    lcall SendString
+
+StartInputMode:
+    setb INPUTTING
+    clr PROMPT_PENDING
+    lcall ClearInputBuffer
+    ljmp PS2_Done
+
+CheckGetParam:
+    jnb GET_PARAM, NormalEnter
+    
+    mov A, #0Ah
+    lcall putchar
+    mov A, #'\r'
+    lcall putchar
+    
+    jb MODE, ShowReflowParamName
+    jb PARAM, ShowSoakTimeName
+    mov dptr, #SoakTempStr
+    lcall SendString
+    sjmp ShowParamValue
+
+ShowSoakTimeName:
+    mov dptr, #SoakTimeStr
+    lcall SendString
+    sjmp ShowParamValue
+
+ShowReflowParamName:
+    jb PARAM, ShowReflowTimeName
+    mov dptr, #ReflTempStr
+    lcall SendString
+    sjmp ShowParamValue
+
+ShowReflowTimeName:
+    mov dptr, #ReflTimeStr
+    lcall SendString
+
+ShowParamValue:
+    lcall GetCurrentParam
+    lcall DisplayNumber
+    mov A, #0Ah
+    lcall putchar
+    mov A, #'\r'
+    lcall putchar
+    mov A, #'>'
+    lcall putchar
+    clr GET_PARAM
+    ljmp PS2_Done
+    
+NormalEnter:
+    mov A, #0Ah
+    lcall putchar
+    mov A, #'\r'
+    lcall putchar
+    mov A, #'>'
+    lcall putchar
+    jb INVALID, Error
+    jnb SET_FLAG, Warning
+    ljmp PS2_Done
+    
+Error:
+    mov dptr, #ErrorStr
+    lcall SendString
+    clr INVALID
+    sjmp PS2_Done
+    
+Warning:
+    mov dptr, #WarningStr
+    lcall SendString
+    sjmp PS2_Done
+    
+NotEnter:
+    lcall putchar
+    cjne A, #'q', NotQ
+    clr SET_FLAG
+    sjmp PS2_Done
+
+NotQ:
+    setb AWAIT
+    jb SET_FLAG, Setting
+    cjne A, #'c', PS2_Done
+    setb SET_FLAG
+    sjmp PS2_Done
+    
+Setting:
+    cjne A, #'s', CheckR
+    clr MODE
+    mov LEDRB, #0b10
+    sjmp PS2_Done
+    
+CheckR:
+    cjne A, #'r', CheckT
+    setb MODE
+    mov LEDRB, #0b01
+    setb AWAIT
+    sjmp PS2_Done
+    
+CheckT:
+    cjne A, #'t', CheckX
+    setb PARAM
+    lcall Update_HEX_Display
+    setb PROMPT_PENDING
+    sjmp PS2_Done
+    
+CheckX:
+    cjne A, #'x', CheckG
+    clr PARAM
+    lcall Update_HEX_Display
+    setb PROMPT_PENDING
+    sjmp PS2_Done
+
+CheckG:
+    cjne A, #'g', InvalidHandler
+    setb GET_PARAM
+    sjmp PS2_Done
+
+InvalidHandler:
+    setb INVALID
+    sjmp PS2_Done
+    
+ClearRel:
+    clr RELEASE_FLAG
+    sjmp PS2_Done
+
+CheckIfDone:
+    cjne A, #11, CheckOverflow
+    sjmp Reset
+    
+Reset:
+    mov R0, #0
+    mov R1, #0
+    sjmp PS2_Done
+
+CheckOverflow:
+    clr C
+    subb A, #12
+    jc PS2_Done
+    sjmp Reset
+
+PS2_Done:
+    pop PSW
+    pop ACC
+    reti
+
+; ====================================================================
+; FSM LOGIC
+; ====================================================================
 Check_Abort:
     jb ABORT_BUTTON, No_Abort
     lcall Wait50ms
@@ -217,9 +790,6 @@ Sensor_Error:
 Sensor_OK:
     ret
 
-; ====================================================================
-; FSM
-; ====================================================================
 FSM_Reflow:
     mov a, FSM_state
 
@@ -375,9 +945,6 @@ FSM_Done:
     mov temp_previous, a
     ret
 
-; ====================================================================
-; ERROR HANDLER
-; ====================================================================
 Handle_Error:
     mov pwm, #0
     clr SSR_CONTROL
@@ -410,92 +977,6 @@ Handle_Error:
     mov error_code, #ERR_NONE
     ret
 
-; ====================================================================
-; PS/2 KEYBOARD INTERRUPT
-; ====================================================================
-Scancode_To_ASCII:
-    ; Input: A = scancode
-    ; Output: A = ASCII (or 0 if not valid)
-    mov DPTR, #ASCII_TABLE
-    movc A, @A+DPTR
-    ret
-
-PS2_Interrupt:
-    push ACC
-    push PSW
-    
-    mov A, R0
-    ; If we're at the start of a frame, validate start bit
-    cjne A, #0, NotAtStart
-    mov C, PS2_DAT
-    jc PS2_Done    ; If start bit is 1, wait for valid start (should be 0)
-    
-NotAtStart:
-    inc R0
-    mov A, R0
-    ; Ignore start bit
-    cjne A, #1, CheckData
-    sjmp PS2_Done
-
-CheckData:
-    ; Read data bits (bits 2-9)
-    clr C
-    subb A, #10
-    jnc CheckIfDone
-    
-    mov C, PS2_DAT
-    mov A, R1
-    rrc A            ; Shift into R1
-    mov R1, A
-    
-    mov A, R0
-    cjne A, #9, PS2_Done
-    
-    ; At bit 9, we have full scancode
-    mov A, R1
-    cjne A, #0F0h, NotRelease
-    setb RELEASE_FLAG
-    sjmp PS2_Done
-
-NotRelease:
-    jb RELEASE_FLAG, ClearRel
-    ; Convert scancode to ASCII
-    lcall Scancode_To_ASCII
-    ; Only display if valid ASCII (non-zero)
-    jz PS2_Done
-    mov LEDRA, A      ; Display ASCII on LEDRA
-    sjmp PS2_Done
-
-ClearRel:
-    clr RELEASE_FLAG 
-    sjmp PS2_Done
-
-CheckIfDone:
-    ; Wait for Stop Bit
-    cjne A, #11, CheckOverflow
-    sjmp Reset
-
-Reset:
-    ; Reset for next keypress
-    mov R0, #0
-    mov R1, #0
-    sjmp PS2_Done
-
-CheckOverflow:
-    ; Prevent going out of sync
-    clr C
-    subb A, #12
-    jc PS2_Done
-    sjmp Reset
-
-PS2_Done:
-    pop PSW
-    pop ACC
-    reti
-
-; ====================================================================
-; SIMULATED ADC (Replace with SPI code later)
-; ====================================================================
 Read_Temperature:
     push acc
     ; Simulate temperature based on FSM state
@@ -532,9 +1013,6 @@ Sim_Done:
     pop acc
     ret
 
-; ====================================================================
-; PWM & DISPLAY
-; ====================================================================
 Update_PWM:
     mov a, pwm
     jz PWM_Off
@@ -596,9 +1074,6 @@ Send_Serial_Data:
     lcall putchar
     ret
 
-; ====================================================================
-; BINARY TO DECIMAL (from slides)
-; ====================================================================
 SendToLCD:
     push acc
     push b
@@ -638,7 +1113,7 @@ SendToSerialPort:
     ret
 
 ; ====================================================================
-; LCD
+; LCD ROUTINES
 ; ====================================================================
 LCD_Print_String:
     push acc
@@ -728,16 +1203,7 @@ LCD_Write_Nibble_Low:
     ret
 
 ; ====================================================================
-; UART
-; ====================================================================
-putchar:
-    jnb TI, putchar
-    clr TI
-    mov SBUF, a
-    ret
-
-; ====================================================================
-; DELAYS
+; DELAY ROUTINES
 ; ====================================================================
 Wait100ms:
     push acc
@@ -852,35 +1318,5 @@ Timer0_Done:
     pop psw
     pop acc
     reti
-
-; ====================================================================
-; STRINGS
-; ====================================================================
-Startup_Msg:
-    DB 'Reflow Oven V1.0', 0
-
-Error_Prefix:
-    DB 'ERROR E', 0
-
-Error_Messages:
-    DB 'User Abort     ', 0
-    DB 'Temp Drop >=10C', 0
-    DB 'Over Temp >240C', 0
-    DB 'Sensor Failure ', 0
-    DB 'State Timeout  ', 0
-    DB 'Heater Fault   ', 0
-    DB 'Door Opened    ', 0
-    DB 'Power Issue    ', 0
-
-State_Names:
-    DB 'Ready  ', 0
-    DB 'Ramp->S', 0
-    DB 'Soak   ', 0
-    DB 'Ramp->R', 0
-    DB 'Reflow ', 0
-    DB 'Cooling', 0
-
-Time_Label:
-    DB 'Time: ', 0
 
 END
