@@ -264,8 +264,8 @@ Timer1_Init:
     orl TMOD, #0x10
     mov TH1, #0xD5
     mov TL1, #0x90
-    clr ET1            ; Start with monitoring disabled
-    setb TR1
+    clr ET1            ; Interrupt disabled
+    clr TR1            ; Timer1 stopped initially
     ret
 
 InitSerialPort:
@@ -806,8 +806,12 @@ FSM_State0:
     
     ; *** HANDOFF: Disable keyboard, enable monitoring ***
     clr EX0                     ; Disable PS/2 keyboard interrupt
-    setb ET1                    ; Enable serial monitoring (Timer1)
+    clr TF1                     ; Clear any pending Timer1 flag
+    mov TH1, #0xD5              ; Reset Timer1
+    mov TL1, #0x90
     mov serial_counter, #0
+    setb TR1                    ; Start Timer1 running
+    setb ET1                    ; Enable Timer1 interrupt
     mov dptr, #StartingMsg
     lcall SendString
     
@@ -955,7 +959,9 @@ FSM_State5:
     jnc FSM_State5_Done
     
     ; *** HANDOFF: Disable monitoring, re-enable keyboard ***
+    clr TR1                     ; Stop Timer1
     clr ET1                     ; Disable serial monitoring
+    clr TF1                     ; Clear any pending flag
     setb EX0                    ; Re-enable PS/2 keyboard interrupt
     mov dptr, #FinishedMsg
     lcall SendString
@@ -974,7 +980,9 @@ Handle_Error:
     clr SSR_CONTROL
     
     ; *** HANDOFF: On error, re-enable keyboard ***
+    clr TR1                     ; Stop Timer1
     clr ET1                     ; Disable monitoring
+    clr TF1                     ; Clear any pending flag
     setb EX0                    ; Re-enable keyboard
     
     lcall Beep_Error
