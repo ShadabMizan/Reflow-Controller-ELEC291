@@ -24,7 +24,7 @@ BAUD  EQU 57600
 TIMER_2_RELOAD EQU (65536-(CLK/(32*BAUD)))
 
 ; Temperature measurement constants
-THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT equ 12300 ; 300 * 41
+THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT equ 12628 ; 308 * 41
 VREF_VALUE equ 4106  ; Reference voltage in mV (adjust as needed)
 
 ;===================================================================
@@ -374,19 +374,20 @@ adc_to_temp_to_serial:
 	mov x+0, R0
 	
 	; Calculate Vadc in microvolts
-	load_y(VREF_VALUE)       ; Vref in millivolts
+	;load_y(VREF_VALUE)
+	load_y(326)       ; Vref in millivolts
 	lcall mul32
 	
 	load_y(ref4040)          ; Calculate Vadc
 	lcall div32
 	
-	load_y(1000000)          ; Convert to microvolts (x1000 twice for decimal places)
-	lcall mul32
+	;load_y(1000)          ; Convert to microvolts (x1000 twice for decimal places)
+	;lcall mul32
 	
 	; Divide by thermocouple sensitivity * gain
-	load_y(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT) ; 41 * 300
-	lcall div32
-	; Note: might need to tune the gain value to 308 or so
+	;load_y(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT) ; 41 * 308
+	;lcall div32
+	; Note: might need to tune the gain value to 308 or so -> edit feb 10, 2026, 10:39: thumbs up emoji
 	
 	; Add cold junction temperature
 	load_y(COLD_JUNCTION_TEMP)
