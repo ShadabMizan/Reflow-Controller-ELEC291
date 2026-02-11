@@ -237,6 +237,9 @@ main:
     
 Forever:
     lcall Check_Abort
+
+    mov DPTR, #Test_MSG
+    lcall SendString
     
 	lcall LM4040_ADC
 	lcall LM335_ADC
@@ -248,6 +251,9 @@ Forever:
     lcall Update_Display
     lcall Wait100ms
     sjmp Forever
+
+Test_MSG:
+    DB 'PLS WORK\r\n', 0
 
 ; ====================================================================
 ; INITIALIZATION ROUTINES
@@ -296,6 +302,7 @@ InitSerialPort:
     mov RCAP2L, #LOW(TIMER_2_RELOAD)
     mov T2CON, #0x34
     mov SCON, #0x52
+    setb TI
     ret
 
 Initialize_PS2:
@@ -1232,7 +1239,7 @@ LM4040_ADC:
 	mov ref4040+1, R1
 	mov ref4040+0, R0
 	
-	lcall Wait50ms
+	; lcall Wait50ms
 	ret
 
 ;-------------------------------------------------------------------
@@ -1252,16 +1259,16 @@ LM335_ADC:
 	mov x+0, R0
 	
 	; Calculate: Vlm335 = (ADClm335/ADCref)*Vref
-	load_y(VREF_VALUE)       ; Vref in millivolts
+	Load_y(VREF_VALUE)       ; Vref in millivolts
 	lcall mul32
 	
-	load_y(ref4040)          ; Divide by reference ADC
+	Load_y(ref4040)          ; Divide by reference ADC
 	lcall div32
 	
-	load_y(2730)             ; Subtract 2730mV (0°C offset)
+	Load_y(2730)             ; Subtract 2730mV (0°C offset)
 	lcall sub32
 	
-	load_y(10)               ; Divide by 10mV/°C sensitivity
+	Load_y(10)               ; Divide by 10mV/°C sensitivity
 	lcall div32
 	
 	; Store result
@@ -1270,7 +1277,7 @@ LM335_ADC:
 	mov COLD_JUNCTION_TEMP+1, x+1
 	mov COLD_JUNCTION_TEMP+0, x+0
 	
-	lcall Wait50ms
+	; lcall Wait50ms
 	ret
 
 ;-------------------------------------------------------------------
@@ -1291,22 +1298,22 @@ adc_to_temp_to_serial:
 	mov x+0, R0
 	
 	; Calculate Vadc in microvolts
-	load_y(VREF_VALUE)       ; Vref in millivolts
+	Load_y(VREF_VALUE)       ; Vref in millivolts
 	lcall mul32
 	
-	load_y(ref4040)          ; Calculate Vadc
+	Load_y(ref4040)          ; Calculate Vadc
 	lcall div32
 	
-	load_y(1000000)          ; Convert to microvolts (x1000 twice for decimal places)
+	Load_y(1000000)          ; Convert to microvolts (x1000 twice for decimal places)
 	lcall mul32
 	
 	; Divide by thermocouple sensitivity * gain
-	load_y(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT) ; 41 * 300
+	Load_y(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT) ; 41 * 300
 	lcall div32
 	; Note: might need to tune the gain value to 308 or so
 	
 	; Add cold junction temperature
-	load_y(COLD_JUNCTION_TEMP)
+	Load_y(COLD_JUNCTION_TEMP)
 	lcall add32
 	
 	; Convert to BCD for display
@@ -1315,10 +1322,10 @@ adc_to_temp_to_serial:
 	; Send to serial port
 	lcall Display_Temp_Serial
 	
-	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
+	; lcall Wait50ms
+	; lcall Wait50ms
+	; lcall Wait50ms
+	; lcall Wait50ms
 	
 	ret
 
