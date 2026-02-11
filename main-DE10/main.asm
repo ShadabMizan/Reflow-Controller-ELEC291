@@ -25,6 +25,10 @@ pwm_tick_counter: ds 1
 pwm_on_ticks:     ds 1
 pwm:              ds 1    ; 0–100 (% duty cycle)
 
+; Tmp variables
+ref4040: ds 4
+coldj_tmp: ds 4
+
 
 bseg
 ; math32 bit
@@ -41,11 +45,15 @@ PWM_PERIOD_TICKS EQU 20          ; 20 ticks = 9.77ms period = 102 Hz PWM
 
 SSR_PIN         EQU P3.7
 
+VREF_VALUE      EQU 4116
+
+THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT equ 12628 ; 300 * 41
+
 CSEG
 
 InitSerialPort:
     mov TMOD, #20H        ; Timer1 mode 2
-    mov TH1, #0F7H       ; 9600 baud @ 33.333MHz
+    mov TH1, #0F7H          ; 9600 baud @ 33.333MHz
     mov TL1, #0F7H
     setb TR1              ; Start Timer1
     mov SCON, #50H        ; Mode 1, REN enabled
@@ -270,46 +278,212 @@ mycode:
     lcall Wait50ms
 
 forever:
-    mov pwm, #30
+    mov pwm, #75
     lcall Update_PWM
 
-    lcall Read_Temperature
-   	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
+    lcall Read_Temperature_Simple
+    lcall Wait50ms
 	ljmp forever
 
 ; ----------------------------------------
 ; TEMPERATURE ROUTINES
 ; ----------------------------------------
-Read_Temperature:
-    mov ADC_C, #0x80          ; ← FIXED: Use immediate value
-    lcall Wait50ms            ; ← ADDED: Wait for conversion
+Read_Temperature:    
+    ; Load LM335 ADC
+    mov ADC_C, #0x01
+    lcall Wait5ms
 
-    ; Load 32-bit 'x' with 12-bit adc result
-    mov x+3, #0
-    mov x+2, #0
-    mov x+1, ADC_H
-    mov x+0, ADC_L
+	mov x+3, #0
+	mov x+2, #0
+	mov x+1, ADC_H
+	mov x+0, ADC_L
 
-    ; Convert to voltage by multiplying by 5.000 and dividing by 4096
-    Load_y(5000)
-    lcall mul32
-    Load_y(4096)
+    Load_y(VREF_VALUE)
+    lcall mul32     ; x = VREF * ADCLM335
+
+    ; Load Reference ADC 
+    mov ADC_C, #0x00 
+    lcall Wait5ms
+
+    mov y+3, #0
+	mov y+2, #0
+	mov y+1, ADC_H
+	mov y+0, ADC_L
+
     lcall div32
+    ; x = (VREF(mV) * ADCLM335)/ADCREF = VLM335 (mV)
 
-    ; Convert the Voltage at the ADC to a temperature:
+    Load_y(2730)
+    lcall sub32 
+    ; x = (VLM335 - 2730mV)
+
+    Load_y(10)
+    lcall div32
+    ; x = (VLM335 -2730mV)/(10mV/C)
+
+    mov coldj_tmp+3, x+3
+    mov coldj_tmp+2, x+2
+    mov coldj_tmp+1, x+1
+    mov coldj_tmp+0, x+0
+
+    ; coldj_tmp = TC
+
+    mov ADC_C, #0x02
+    lcall Wait5ms
+
+	mov x+3, #0
+	mov x+2, #0
+	mov x+1, ADC_H
+	mov x+0, ADC_L
+
+    Load_y(330) ; (4096mV)/(0.041mV) * (1/303)
+    lcall mul32
+    ; x = (4096mV/0.041mV)*(1/303)*ADCOp
+
+    mov ADC_C, #0x00
+    lcall Wait5ms
+
+    mov y+3, #0
+	mov y+2, #0
+	mov y+1, ADC_H
+	mov y+0, ADC_L
+    lcall div32
+    ; x = ((4096mV/0.041mV)*(1/303)*ADCOp)/ADCref
+
+    ; x = TH
+
+    mov y+3, coldj_tmp+3
+	mov y+2, coldj_tmp+2
+	mov y+1, coldj_tmp+1
+	mov y+0, coldj_tmp+0
+    ; y = TC
+
+    lcall add32
+    ; x = TH + TC
+
     Load_y(1000)
     lcall mul32
-    Load_y(12300)
+    
+	lcall hex2bcd
+
+    lcall Display_Temp_Serial ;sending this ts to the serial port
+
+    lcall Wait50ms
+	lcall Wait50ms
+	lcall Wait50ms
+	lcall Wait50ms
+    ret
+
+Read_Temperature_Simple:
+    mov ADC_C, #0x02
+    lcall Wait5ms
+	
+	; Load 32-bit 'x' with 12-bit adc result
+	mov x+3, #0
+	mov x+2, #0
+	mov x+1, ADC_H
+	mov x+0, ADC_L
+	
+	; Convert to voltage by multiplying by 5.000 and dividing by 4096
+	Load_y(5000)
+	lcall mul32
+	Load_y(4096)
+	lcall div32
+	
+    Load_y(1000) ; convert to microvolts
+    lcall mul32
+    Load_y(12300) ; 41 * 300
     lcall div32
 
-    Load_y(22)
+    Load_y(22) ; add cold junction temperature
     lcall add32
 
+    Load_y(1000)
+    lcall mul32
+
     lcall hex2bcd
-    lcall Display_Voltage_Serial
+    lcall Display_Temp_Serial
+    lcall Display_Voltage_7seg
+    ret
+
+
+Display_Temp_Serial:
+	mov a, #'T'
+	lcall putchar
+	mov a, #'='
+	lcall putchar
+	
+	mov a, bcd+3
+	swap a
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+	
+	mov a, bcd+3
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+
+	mov a, bcd+2
+	swap a
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+	
+	mov a, bcd+2
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+
+	mov a, bcd+1
+	swap a
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+	
+	mov a, #'.'
+	lcall putchar
+	
+	mov a, bcd+1
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+
+	mov a, bcd+0
+	swap a
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+	
+	mov a, bcd+0
+	anl a, #0FH
+	orl a, #'0'
+	lcall putchar
+
+	mov a, #'\r'
+	lcall putchar
+	mov a, #'\n'
+	lcall putchar
+	
+	ret
+
+Wait5ms:
+    push acc
+    mov R2, #25
+Wait5ms_L1:
+    lcall Wait200us
+    djnz R2, Wait5ms_L1
+    pop acc
+    ret
+
+Wait200us:
+    push acc
+    mov R3, #250
+Wait200us_L1:
+    nop
+    nop
+    djnz R3, Wait200us_L1
+    pop acc
     ret
 
 end
