@@ -1,0 +1,1056 @@
+                 -1   $MODMAX10
+0000              1   ;--------------------------------------------------------
+0000              2   ; Special Function Registers
+0000              3   ;--------------------------------------------------------
+0000              4   P0             DATA 0x80
+0000              5   SP             DATA 0x81
+0000              6   DPL            DATA 0x82
+0000              7   DPH            DATA 0x83
+0000              8   PCON           DATA 0x87
+0000              9   TCON           DATA 0x88
+0000             10   TMOD           DATA 0x89
+0000             11   TL0            DATA 0x8a
+0000             12   TL1            DATA 0x8b
+0000             13   TH0            DATA 0x8c
+0000             14   TH1            DATA 0x8d
+0000             15   P1             DATA 0x90
+0000             16   SCON           DATA 0x98
+0000             17   SBUF           DATA 0x99
+0000             18   P2             DATA 0xa0
+0000             19   IE             DATA 0xa8
+0000             20   P3             DATA 0xb0
+0000             21   IP             DATA 0xb8
+0000             22   PSW            DATA 0xd0
+0000             23   ACC            DATA 0xe0
+0000             24   B              DATA 0xf0
+0000             25   T2CON          DATA 0xc8
+0000             26   RCAP2L         DATA 0xca
+0000             27   RCAP2H         DATA 0xcb
+0000             28   TL2            DATA 0xcc
+0000             29   TH2            DATA 0xcd
+0000             30   DPS            DATA 0x86
+0000             31   DPH1           DATA 0x85
+0000             32   DPL1           DATA 0x84
+0000             33   HEX0           DATA 0x91
+0000             34   HEX1           DATA 0x92
+0000             35   HEX2           DATA 0x93
+0000             36   HEX3           DATA 0x94
+0000             37   HEX4           DATA 0x8e
+0000             38   HEX5           DATA 0x8f
+0000             39   LEDRA          DATA 0xe8
+0000             40   LEDRB          DATA 0x95
+0000             41   SWA            DATA 0xe8
+0000             42   SWB            DATA 0x95
+0000             43   KEY            DATA 0xf8
+0000             44   P0MOD          DATA 0x9a
+0000             45   P1MOD          DATA 0x9b
+0000             46   P2MOD          DATA 0x9c
+0000             47   P3MOD          DATA 0x9d
+0000             48   REP_ADD_L      DATA 0xf1
+0000             49   REP_ADD_H      DATA 0xf2
+0000             50   REP_VALUE      DATA 0xf3
+0000             51   DEBUG_CALL_L   DATA 0xfa
+0000             52   DEBUG_CALL_H   DATA 0xfb
+0000             53   BPC            DATA 0xfc
+0000             54   BPS            DATA 0xfd
+0000             55   BPAL           DATA 0xfe
+0000             56   BPAH           DATA 0xff
+0000             57   LBPAL          DATA 0xfa
+0000             58   LBPAH          DATA 0xfb
+0000             59   P4             DATA 0xc0
+0000             60   P4MOD          DATA 0xc1
+0000             61   XRAMUSEDAS     DATA 0xc3
+0000             62   UFM_ADD0       DATA 0xe1
+0000             63   UFM_ADD1       DATA 0xe2
+0000             64   UFM_ADD2       DATA 0xe3
+0000             65   UFM_DATA0      DATA 0xe4
+0000             66   UFM_DATA1      DATA 0xe5
+0000             67   UFM_DATA2      DATA 0xe6
+0000             68   UFM_DATA3      DATA 0xe7
+0000             69   UFM_CONTROL0   DATA 0xe9
+0000             70   UFM_CONTROL1   DATA 0xea
+0000             71   UFM_CONTROL2   DATA 0xeb
+0000             72   UFM_CONTROL3   DATA 0xec
+0000             73   UFM_DATA_CMD   DATA 0xed
+0000             74   UFM_DATA_STATUS DATA 0xee
+0000             75   UFM_CONTROL_CMD DATA 0xef
+0000             76   ADC_C          DATA 0xa1
+0000             77   ADC_L          DATA 0xa2
+0000             78   ADC_H          DATA 0xa3
+0000             79   
+0000             80   ;--------------------------------------------------------
+0000             81   ; special function bits
+0000             82   ;--------------------------------------------------------
+0000             83   P0_0           BIT 0x80
+0000             84   P0_1           BIT 0x81
+0000             85   P0_2           BIT 0x82
+0000             86   P0_3           BIT 0x83
+0000             87   P0_4           BIT 0x84
+0000             88   P0_5           BIT 0x85
+0000             89   P0_6           BIT 0x86
+0000             90   P0_7           BIT 0x87
+0000             91   IT0            BIT 0x88
+0000             92   IE0            BIT 0x89
+0000             93   IT1            BIT 0x8a
+0000             94   IE1            BIT 0x8b
+0000             95   TR0            BIT 0x8c
+0000             96   TF0            BIT 0x8d
+0000             97   TR1            BIT 0x8e
+0000             98   TF1            BIT 0x8f
+0000             99   P1_0           BIT 0x90
+0000            100   P1_1           BIT 0x91
+0000            101   P1_2           BIT 0x92
+0000            102   P1_3           BIT 0x93
+0000            103   P1_4           BIT 0x94
+0000            104   P1_5           BIT 0x95
+0000            105   P1_6           BIT 0x96
+0000            106   P1_7           BIT 0x97
+0000            107   RI             BIT 0x98
+0000            108   TI             BIT 0x99
+0000            109   RB8            BIT 0x9a
+0000            110   TB8            BIT 0x9b
+0000            111   REN            BIT 0x9c
+0000            112   SM2            BIT 0x9d
+0000            113   SM1            BIT 0x9e
+0000            114   SM0            BIT 0x9f
+0000            115   P2_0           BIT 0xa0
+0000            116   P2_1           BIT 0xa1
+0000            117   P2_2           BIT 0xa2
+0000            118   P2_3           BIT 0xa3
+0000            119   P2_4           BIT 0xa4
+0000            120   P2_5           BIT 0xa5
+0000            121   P2_6           BIT 0xa6
+0000            122   P2_7           BIT 0xa7
+0000            123   EX0            BIT 0xa8
+0000            124   ET0            BIT 0xa9
+0000            125   EX1            BIT 0xaa
+0000            126   ET1            BIT 0xab
+0000            127   ES             BIT 0xac
+0000            128   ET2            BIT 0xad
+0000            129   EA             BIT 0xaf
+0000            130   P3_0           BIT 0xb0
+0000            131   P3_1           BIT 0xb1
+0000            132   P3_2           BIT 0xb2
+0000            133   P3_3           BIT 0xb3
+0000            134   P3_4           BIT 0xb4
+0000            135   P3_5           BIT 0xb5
+0000            136   P3_6           BIT 0xb6
+0000            137   P3_7           BIT 0xb7
+0000            138   RXD            BIT 0xb0
+0000            139   TXD            BIT 0xb1
+0000            140   INT0           BIT 0xb2
+0000            141   INT1           BIT 0xb3
+0000            142   T0             BIT 0xb4
+0000            143   T1             BIT 0xb5
+0000            144   WR             BIT 0xb6
+0000            145   RD             BIT 0xb7
+0000            146   PX0            BIT 0xb8
+0000            147   PT0            BIT 0xb9
+0000            148   PX1            BIT 0xba
+0000            149   PT1            BIT 0xbb
+0000            150   PS             BIT 0xbc
+0000            151   PT2            BIT 0xbd
+0000            152   P              BIT 0xd0
+0000            153   F1             BIT 0xd1
+0000            154   OV             BIT 0xd2
+0000            155   RS0            BIT 0xd3
+0000            156   RS1            BIT 0xd4
+0000            157   F0             BIT 0xd5
+0000            158   AC             BIT 0xd6
+0000            159   CY             BIT 0xd7
+0000            160   T2CON_0        BIT 0xc8
+0000            161   T2CON_1        BIT 0xc9
+0000            162   T2CON_2        BIT 0xca
+0000            163   T2CON_3        BIT 0xcb
+0000            164   T2CON_4        BIT 0xcc
+0000            165   T2CON_5        BIT 0xcd
+0000            166   T2CON_6        BIT 0xce
+0000            167   T2CON_7        BIT 0xcf
+0000            168   CP_RL2         BIT 0xc8
+0000            169   C_T2           BIT 0xc9
+0000            170   TR2            BIT 0xca
+0000            171   EXEN2          BIT 0xcb
+0000            172   TCLK           BIT 0xcc
+0000            173   RCLK           BIT 0xcd
+0000            174   EXF2           BIT 0xce
+0000            175   TF2            BIT 0xcf
+0000            176   LEDRA_0        BIT 0xe8
+0000            177   LEDRA_1        BIT 0xe9
+0000            178   LEDRA_2        BIT 0xea
+0000            179   LEDRA_3        BIT 0xeb
+0000            180   LEDRA_4        BIT 0xec
+0000            181   LEDRA_5        BIT 0xed
+0000            182   LEDRA_6        BIT 0xee
+0000            183   LEDRA_7        BIT 0xef
+0000            184   SWA_0          BIT 0xe8
+0000            185   SWA_1          BIT 0xe9
+0000            186   SWA_2          BIT 0xea
+0000            187   SWA_3          BIT 0xeb
+0000            188   SWA_4          BIT 0xec
+0000            189   SWA_5          BIT 0xed
+0000            190   SWA_6          BIT 0xee
+0000            191   SWA_7          BIT 0xef
+0000            192   KEY_0          BIT 0xf8
+0000            193   KEY_1          BIT 0xf9
+0000            194   KEY_2          BIT 0xfa
+0000            195   KEY_3          BIT 0xfb
+0000            196   P4_0           BIT 0xc0
+0000            197   P4_1           BIT 0xc1
+0000            198   P4_2           BIT 0xc2
+0000            199   P4_3           BIT 0xc3
+0000            200   P4_4           BIT 0xc4
+0000            201   P4_5           BIT 0xc5
+0000            202   P4_6           BIT 0xc6
+0000            203   P4_7           BIT 0xc7
+0000              2   
+0000              3   ; ====================================================================
+0000              4   ; CV-8052 SFR DEFINITIONS (for DE1-SoC)
+0000              5   ; ====================================================================
+0000              6   ; Standard 8052 SFRs are already defined by $MODDE1SOC
+0000              7   ; No additional SFRs needed for basic operation
+0000              8   
+0000              9   ; ====================================================================
+0000             10   ; PIN DEFINITIONS
+0000             11   ; ====================================================================
+0000             12   
+0000             13   ABORT_BUTTON    EQU P1.6
+0000             14   START_BUTTON    EQU P1.7
+0000             15   SSR_CONTROL     EQU P2.0
+0000             16   STATUS_LED      EQU P2.1
+0000             17   BUZZER          EQU P2.2
+0000             18   LCD_RS_PIN      EQU P1.3
+0000             19   LCD_E           EQU P1.4
+0000             20   LCD_D4          EQU P0.0
+0000             21   LCD_D5          EQU P0.1
+0000             22   LCD_D6          EQU P0.2
+0000             23   LCD_D7          EQU P0.3
+0000             24   
+0000             25   TEMP_ADC_CH     EQU 0
+0000             26   
+0000             27   ; ====================================================================
+0000             28   ; CONSTANTS
+0000             29   ; ====================================================================
+0000             30   
+0000             31   TEMP_SOAK       EQU 150
+0000             32   TIME_SOAK       EQU 60
+0000             33   TEMP_REFLOW     EQU 220
+0000             34   TIME_REFLOW     EQU 45
+0000             35   TEMP_COOL       EQU 60
+0000             36   TEMP_MAX        EQU 240
+0000             37   TEMP_DROP_THRESHOLD EQU 10
+0000             38   
+0000             39   ERR_NONE        EQU 0
+0000             40   ERR_ABORT       EQU 1
+0000             41   ERR_TEMP_DROP   EQU 2
+0000             42   ERR_OVERTEMP    EQU 3
+0000             43   ERR_SENSOR      EQU 4
+0000             44   ERR_TIMEOUT     EQU 5
+0000             45   ERR_UNDERTEMP   EQU 6
+0000             46   ERR_DOOR_OPEN   EQU 7
+0000             47   ERR_POWER       EQU 8
+0000             48   
+0000             49   ; ====================================================================
+0000             50   ; BIT VARIABLES
+0000             51   ; ====================================================================
+0000             52   
+0000             53   BSEG
+0000             54   mf:                 dbit 1
+0001             55   
+0001             56   ; ====================================================================
+0001             57   ; BYTE VARIABLES
+0001             58   ; ====================================================================
+0001             59   
+0030             60   DSEG at 30h
+0030             61   
+0030             62   x:                  ds 4
+0034             63   y:                  ds 4
+0038             64   bcd:                ds 5
+003D             65   FSM_state:          ds 1
+003E             66   temp:               ds 1
+003F             67   temp_state_start:   ds 1
+0040             68   temp_max_state:     ds 1
+0041             69   temp_previous:      ds 1
+0042             70   sec:                ds 1
+0043             71   minutes:            ds 1
+0044             72   state_timer:        ds 1
+0045             73   ms_counter:         ds 1
+0046             74   pwm:                ds 1
+0047             75   error_code:         ds 1
+0048             76   tempsoak:           ds 1
+0049             77   timesoak:           ds 1
+004A             78   tempreflow:         ds 1
+004B             79   timereflow:         ds 1
+004C             80   undertemp_checked:  ds 1
+004D             81   
+004D             82   ; ====================================================================
+004D             83   ; CODE
+004D             84   ; ====================================================================
+004D             85   
+0000             86   CSEG
+0000             87   
+0000             88   org 0000H
+0000 020294      89       ljmp main
+0003             90   
+0003             91   org 0003H
+0003 32          92       reti
+0004             93       
+000B             94   org 000BH
+000B 0206A4      95       ljmp Timer0_ISR
+000E             96       
+0013             97   org 0013H
+0013 32          98       reti
+0014             99       
+001B            100   org 001BH
+001B 32         101       reti
+001C            102       
+0023            103   org 0023H
+0023 32         104       reti
+0024            105   
+                 -1   $INCLUDE(math32.inc)
+                546   $LIST
+0294            107   
+0294            108   ; ====================================================================
+0294            109   ; MAIN
+0294            110   ; ====================================================================
+0294            111   
+0294            112   main:
+0294 75817F     113       mov SP, #7FH
+0297            114       
+0297            115       ; Initialize port directions (optional for CV-8052)
+0297 7590C0     116       mov P1, #0xC0
+029A 75B0FF     117       mov P3, #0xFF
+029D            118       
+029D 1202FD     119       lcall Timer0_Init
+02A0 12059E     120       lcall LCD_Init
+02A3 120642     121       lcall Wait50ms
+02A6 9006CB     122       mov dptr, #Startup_Msg
+02A9 12058F     123       lcall LCD_Print_String
+02AC 120691     124       lcall Wait1s
+02AF 1202CC     125       lcall Init_Variables
+02B2            126   
+02B2            127   Forever:
+02B2 120310     128       lcall Check_Abort
+02B5 120492     129       lcall Read_Temperature
+02B8 120323     130       lcall Check_Sensor
+02BB 120331     131       lcall FSM_Reflow
+02BE 1204CE     132       lcall Update_PWM
+02C1 1204DC     133       lcall Update_Display
+02C4 120521     134       lcall Send_Serial_Data
+02C7 120633     135       lcall Wait100ms
+02CA 80E6       136       sjmp Forever
+02CC            137   
+02CC            138   ; ====================================================================
+02CC            139   ; INIT
+02CC            140   ; ====================================================================
+02CC            141   
+02CC            142   Init_Variables:
+02CC 753D00     143       mov FSM_state, #0
+02CF 753E19     144       mov temp, #25
+02D2 753F19     145       mov temp_state_start, #25
+02D5 754019     146       mov temp_max_state, #25
+02D8 754119     147       mov temp_previous, #25
+02DB 754200     148       mov sec, #0
+02DE 754300     149       mov minutes, #0
+02E1 754400     150       mov state_timer, #0
+02E4 754500     151       mov ms_counter, #0
+02E7 754600     152       mov pwm, #0
+02EA 754700     153       mov error_code, #ERR_NONE
+02ED 754896     154       mov tempsoak, #TEMP_SOAK
+02F0 75493C     155       mov timesoak, #TIME_SOAK
+02F3 754ADC     156       mov tempreflow, #TEMP_REFLOW
+02F6 754B2D     157       mov timereflow, #TIME_REFLOW
+02F9 754C00     158       mov undertemp_checked, #0
+02FC 22         159       ret
+02FD            160   
+02FD            161   Timer0_Init:
+02FD 5389F0     162       anl TMOD, #0xF0
+0300 438901     163       orl TMOD, #0x01
+0303 758CD5     164       mov TH0, #0xD5
+0306 758A90     165       mov TL0, #0x90
+0309 D2A9       166       setb ET0
+030B D28C       167       setb TR0
+030D D2AF       168       setb EA
+030F 22         169       ret
+0310            170   
+0310            171   Check_Abort:
+0310 20960F     172       jb ABORT_BUTTON, No_Abort
+0313 120642     173       lcall Wait50ms
+0316 209609     174       jb ABORT_BUTTON, No_Abort
+0319 3096FD     175       jnb ABORT_BUTTON, $
+031C 754701     176       mov error_code, #ERR_ABORT
+031F 020453     177       ljmp Handle_Error
+0322            178   No_Abort:
+0322 22         179       ret
+0323            180   
+0323            181   Check_Sensor:
+0323 E53E       182       mov a, temp
+0325 6003       183       jz Sensor_Error
+0327 B4FF06     184       cjne a, #255, Sensor_OK
+032A            185   Sensor_Error:
+032A 754704     186       mov error_code, #ERR_SENSOR
+032D 020453     187       ljmp Handle_Error
+0330            188   Sensor_OK:
+0330 22         189       ret
+0331            190   
+0331            191   ; ====================================================================
+0331            192   ; FSM
+0331            193   ; ====================================================================
+0331            194   
+0331            195   FSM_Reflow:
+0331 E53D       196       mov a, FSM_state
+0333            197   
+0333            198   FSM_State0:
+0333 B40029     199       cjne a, #0, FSM_State1
+0336 754600     200       mov pwm, #0
+0339 209720     201       jb START_BUTTON, FSM_State0_Done
+033C 120642     202       lcall Wait50ms
+033F 20971A     203       jb START_BUTTON, FSM_State0_Done
+0342 3097FD     204       jnb START_BUTTON, $
+0345 753D01     205       mov FSM_state, #1
+0348 754200     206       mov sec, #0
+034B 754300     207       mov minutes, #0
+034E 754400     208       mov state_timer, #0
+0351 E53E       209       mov a, temp
+0353 F53F       210       mov temp_state_start, a
+0355 F540       211       mov temp_max_state, a
+0357 F541       212       mov temp_previous, a
+0359 754C00     213       mov undertemp_checked, #0
+035C            214   FSM_State0_Done:
+035C 02044E     215       ljmp FSM_Done
+035F            216   
+035F            217   FSM_State1:
+035F B40168     218       cjne a, #1, FSM_State2
+0362 754664     219       mov pwm, #100
+0365            220       
+0365 E53E       221       mov a, temp
+0367 C3         222       clr c
+0368 9540       223       subb a, temp_max_state
+036A 4004       224       jc Check_Temp_Drop
+036C E53E       225       mov a, temp
+036E F540       226       mov temp_max_state, a
+0370            227       
+0370            228   Check_Temp_Drop:
+0370 E540       229       mov a, temp_max_state
+0372 C3         230       clr c
+0373 953E       231       subb a, temp
+0375 C3         232       clr c
+0376 940A       233       subb a, #TEMP_DROP_THRESHOLD
+0378 4006       234       jc Check_Door_Open
+037A 754702     235       mov error_code, #ERR_TEMP_DROP
+037D 020453     236       ljmp Handle_Error
+0380            237       
+0380            238   Check_Door_Open:
+0380 E541       239       mov a, temp_previous
+0382 C3         240       clr c
+0383 953E       241       subb a, temp
+0385 C3         242       clr c
+0386 9414       243       subb a, #20
+0388 4006       244       jc Check_UnderTemp
+038A 754707     245       mov error_code, #ERR_DOOR_OPEN
+038D 020453     246       ljmp Handle_Error
+0390            247       
+0390            248   Check_UnderTemp:
+0390 E54C       249       mov a, undertemp_checked
+0392 7015       250       jnz Check_Soak_Temp
+0394 E544       251       mov a, state_timer
+0396 B40110     252       cjne a, #1, Check_Soak_Temp
+0399 754C01     253       mov undertemp_checked, #1
+039C E53E       254       mov a, temp
+039E C3         255       clr c
+039F 9432       256       subb a, #50
+03A1 5006       257       jnc Check_Soak_Temp
+03A3 754706     258       mov error_code, #ERR_UNDERTEMP
+03A6 020453     259       ljmp Handle_Error
+03A9            260       
+03A9            261   Check_Soak_Temp:
+03A9 E548       262       mov a, tempsoak
+03AB C3         263       clr c
+03AC 953E       264       subb a, temp
+03AE 500C       265       jnc FSM_State1_Check_Timeout
+03B0 753D02     266       mov FSM_state, #2
+03B3 754200     267       mov sec, #0
+03B6 754400     268       mov state_timer, #0
+03B9 0203C7     269       ljmp FSM_State1_Done
+03BC            270       
+03BC            271   FSM_State1_Check_Timeout:
+03BC E544       272       mov a, state_timer
+03BE B47806     273       cjne a, #120, FSM_State1_Done
+03C1 754705     274       mov error_code, #ERR_TIMEOUT
+03C4 020453     275       ljmp Handle_Error
+03C7            276   FSM_State1_Done:
+03C7 02044E     277       ljmp FSM_Done
+03CA            278   
+03CA            279   FSM_State2:
+03CA B4021A     280       cjne a, #2, FSM_State3
+03CD 754614     281       mov pwm, #20
+03D0 E549       282       mov a, timesoak
+03D2 C3         283       clr c
+03D3 9542       284       subb a, sec
+03D5 500D       285       jnc FSM_State2_Done
+03D7 753D03     286       mov FSM_state, #3
+03DA 754200     287       mov sec, #0
+03DD 754400     288       mov state_timer, #0
+03E0 E53E       289       mov a, temp
+03E2 F540       290       mov temp_max_state, a
+03E4            291   FSM_State2_Done:
+03E4 02044E     292       ljmp FSM_Done
+03E7            293   
+03E7            294   FSM_State3:
+03E7 B4032F     295       cjne a, #3, FSM_State4
+03EA 754664     296       mov pwm, #100
+03ED            297       
+03ED E53E       298       mov a, temp
+03EF C3         299       clr c
+03F0 9540       300       subb a, temp_max_state
+03F2 4004       301       jc FSM_State3_Check_Reflow
+03F4 E53E       302       mov a, temp
+03F6 F540       303       mov temp_max_state, a
+03F8            304       
+03F8            305   FSM_State3_Check_Reflow:
+03F8 E54A       306       mov a, tempreflow
+03FA C3         307       clr c
+03FB 953E       308       subb a, temp
+03FD 500C       309       jnc FSM_State3_Check_Timeout
+03FF 753D04     310       mov FSM_state, #4
+0402 754200     311       mov sec, #0
+0405 754400     312       mov state_timer, #0
+0408 020416     313       ljmp FSM_State3_Done
+040B            314       
+040B            315   FSM_State3_Check_Timeout:
+040B E544       316       mov a, state_timer
+040D B45A06     317       cjne a, #90, FSM_State3_Done
+0410 754705     318       mov error_code, #ERR_TIMEOUT
+0413 020453     319       ljmp Handle_Error
+0416            320   FSM_State3_Done:
+0416 02044E     321       ljmp FSM_Done
+0419            322   
+0419            323   FSM_State4:
+0419 B40422     324       cjne a, #4, FSM_State5
+041C 754614     325       mov pwm, #20                  ; state 4 at 20%
+041F            326       
+041F E53E       327       mov a, temp
+0421 C3         328       clr c
+0422 94F0       329       subb a, #TEMP_MAX
+0424 5002       330       jnc Temp_Too_High
+0426 8006       331       sjmp Check_Reflow_Time
+0428            332       
+0428            333   Temp_Too_High:
+0428 754703     334       mov error_code, #ERR_OVERTEMP
+042B 020453     335       ljmp Handle_Error
+042E            336       
+042E            337   Check_Reflow_Time:
+042E E54B       338       mov a, timereflow
+0430 C3         339       clr c
+0431 9542       340       subb a, sec
+0433 5006       341       jnc FSM_State4_Done
+0435 753D05     342       mov FSM_state, #5
+0438 754200     343       mov sec, #0
+043B            344   FSM_State4_Done:
+043B 02044E     345       ljmp FSM_Done
+043E            346   
+043E            347   FSM_State5:
+043E B4050D     348       cjne a, #5, FSM_Done
+0441 754600     349       mov pwm, #0
+0444 E53E       350       mov a, temp
+0446 C3         351       clr c
+0447 943C       352       subb a, #TEMP_COOL
+0449 5003       353       jnc FSM_State5_Done
+044B 753D00     354       mov FSM_state, #0
+044E            355   FSM_State5_Done:
+044E            356   
+044E            357   FSM_Done:
+044E E53E       358       mov a, temp
+0450 F541       359       mov temp_previous, a
+0452 22         360       ret
+0453            361   
+0453            362   ; ====================================================================
+0453            363   ; ERROR HANDLER
+0453            364   ; ====================================================================
+0453            365   
+0453            366   Handle_Error:
+0453 754600     367       mov pwm, #0
+0456 C2A0       368       clr SSR_CONTROL
+0458 D2A2       369       setb BUZZER
+045A            370       
+045A 1205D2     371       lcall LCD_Clear
+045D 9006DC     372       mov dptr, #Error_Prefix
+0460 12058F     373       lcall LCD_Print_String
+0463 E547       374       mov a, error_code
+0465 2430       375       add a, #'0'
+0467 1205E7     376       lcall LCD_Write_Data
+046A            377       
+046A 74C0       378       mov a, #0xC0
+046C 1205DB     379       lcall LCD_Write_Command
+046F            380       
+046F E547       381       mov a, error_code
+0471 14         382       dec a
+0472 75F010     383       mov b, #16
+0475 A4         384       mul ab
+0476 9006E5     385       mov dptr, #Error_Messages
+0479 2582       386       add a, dpl
+047B F582       387       mov dpl, a
+047D E5F0       388       mov a, b
+047F 3583       389       addc a, dph
+0481 F583       390       mov dph, a
+0483 12058F     391       lcall LCD_Print_String
+0486            392       
+0486 12069D     393       lcall Wait2s
+0489 C2A2       394       clr BUZZER
+048B            395       
+048B 753D00     396       mov FSM_state, #0
+048E 754700     397       mov error_code, #ERR_NONE
+0491 22         398       ret
+0492            399   
+0492            400   ; ====================================================================
+0492            401   ; SIMULATED ADC (Replace with SPI code later)
+0492            402   ; ====================================================================
+0492            403   
+0492            404   Read_Temperature:
+0492 C0E0       405       push acc
+0494            406       
+0494            407       ; Simulate temperature based on FSM state
+0494 E53D       408       mov a, FSM_state
+0496            409       
+0496 B40005     410       cjne a, #0, Sim_State1
+0499 753E19     411       mov temp, #25          ; State 0: Room temp
+049C 802D       412       sjmp Sim_Done
+049E            413       
+049E            414   Sim_State1:
+049E B40108     415       cjne a, #1, Sim_State2
+04A1 E542       416       mov a, sec
+04A3 2419       417       add a, #25             ; State 1: Ramp up
+04A5 F53E       418       mov temp, a
+04A7 8022       419       sjmp Sim_Done
+04A9            420       
+04A9            421   Sim_State2:
+04A9 B40205     422       cjne a, #2, Sim_State3
+04AC 753E96     423       mov temp, #150         ; State 2: Soak
+04AF 801A       424       sjmp Sim_Done
+04B1            425       
+04B1            426   Sim_State3:
+04B1 B40308     427       cjne a, #3, Sim_State4
+04B4 E542       428       mov a, sec
+04B6 2496       429       add a, #150            ; State 3: Ramp to reflow
+04B8 F53E       430       mov temp, a
+04BA 800F       431       sjmp Sim_Done
+04BC            432       
+04BC            433   Sim_State4:
+04BC B40405     434       cjne a, #4, Sim_State5
+04BF 753EDC     435       mov temp, #220         ; State 4: Reflow
+04C2 8007       436       sjmp Sim_Done
+04C4            437       
+04C4            438   Sim_State5:
+04C4 74DC       439       mov a, #220            ; State 5: Cool down
+04C6 C3         440       clr c
+04C7 9542       441       subb a, sec
+04C9 F53E       442       mov temp, a
+04CB            443       
+04CB            444   Sim_Done:
+04CB D0E0       445       pop acc
+04CD 22         446       ret
+04CE            447   
+04CE            448   ; ====================================================================
+04CE            449   ; PWM & DISPLAY
+04CE            450   ; ====================================================================
+04CE            451   
+04CE            452   Update_PWM:
+04CE E546       453       mov a, pwm
+04D0 6005       454       jz PWM_Off
+04D2 D2A0       455       setb SSR_CONTROL
+04D4 D2A1       456       setb STATUS_LED
+04D6 22         457       ret
+04D7            458   PWM_Off:
+04D7 C2A0       459       clr SSR_CONTROL
+04D9 C2A1       460       clr STATUS_LED
+04DB 22         461       ret
+04DC            462   
+04DC            463   Update_Display:
+04DC 7480       464       mov a, #0x80
+04DE 1205DB     465       lcall LCD_Write_Command
+04E1            466       
+04E1 E53D       467       mov a, FSM_state
+04E3 75F008     468       mov b, #8
+04E6 A4         469       mul ab
+04E7 900765     470       mov dptr, #State_Names
+04EA 2582       471       add a, dpl
+04EC F582       472       mov dpl, a
+04EE E5F0       473       mov a, b
+04F0 3583       474       addc a, dph
+04F2 F583       475       mov dph, a
+04F4 12058F     476       lcall LCD_Print_String
+04F7            477       
+04F7 7420       478       mov a, #' '
+04F9 1205E7     479       lcall LCD_Write_Data
+04FC E53E       480       mov a, temp
+04FE 120547     481       lcall SendToLCD
+0501 7443       482       mov a, #'C'
+0503 1205E7     483       lcall LCD_Write_Data
+0506            484       
+0506 74C0       485       mov a, #0xC0
+0508 1205DB     486       lcall LCD_Write_Command
+050B 90079B     487       mov dptr, #Time_Label
+050E 12058F     488       lcall LCD_Print_String
+0511 E543       489       mov a, minutes
+0513 120547     490       lcall SendToLCD
+0516 743A       491       mov a, #':'
+0518 1205E7     492       lcall LCD_Write_Data
+051B E542       493       mov a, sec
+051D 120547     494       lcall SendToLCD
+0520 22         495       ret
+0521            496   
+0521            497   Send_Serial_Data:
+0521 E53E       498       mov a, temp
+0523 12056B     499       lcall SendToSerialPort
+0526 742C       500       mov a, #','
+0528 12062B     501       lcall putchar
+052B E53D       502       mov a, FSM_state
+052D 2430       503       add a, #'0'
+052F 12062B     504       lcall putchar
+0532 742C       505       mov a, #','
+0534 12062B     506       lcall putchar
+0537 E546       507       mov a, pwm
+0539 12056B     508       lcall SendToSerialPort
+053C 740D       509       mov a, #13
+053E 12062B     510       lcall putchar
+0541 740A       511       mov a, #10
+0543 12062B     512       lcall putchar
+0546 22         513       ret
+0547            514   
+0547            515   ; ====================================================================
+0547            516   ; BINARY TO DECIMAL (from slides)
+0547            517   ; ====================================================================
+0547            518   
+0547            519   SendToLCD:
+0547 C0E0       520       push acc
+0549 C0F0       521       push b
+054B 75F064     522       mov b, #100
+054E 84         523       div ab
+054F 4430       524       orl a, #0x30
+0551 1205E7     525       lcall LCD_Write_Data
+0554 E5F0       526       mov a, b
+0556 75F00A     527       mov b, #10
+0559 84         528       div ab
+055A 4430       529       orl a, #0x30
+055C 1205E7     530       lcall LCD_Write_Data
+055F E5F0       531       mov a, b
+0561 4430       532       orl a, #0x30
+0563 1205E7     533       lcall LCD_Write_Data
+0566 D0F0       534       pop b
+0568 D0E0       535       pop acc
+056A 22         536       ret
+056B            537   
+056B            538   SendToSerialPort:
+056B C0E0       539       push acc
+056D C0F0       540       push b
+056F 75F064     541       mov b, #100
+0572 84         542       div ab
+0573 4430       543       orl a, #0x30
+0575 12062B     544       lcall putchar
+0578 E5F0       545       mov a, b
+057A 75F00A     546       mov b, #10
+057D 84         547       div ab
+057E 4430       548       orl a, #0x30
+0580 12062B     549       lcall putchar
+0583 E5F0       550       mov a, b
+0585 4430       551       orl a, #0x30
+0587 12062B     552       lcall putchar
+058A D0F0       553       pop b
+058C D0E0       554       pop acc
+058E 22         555       ret
+058F            556   
+058F            557   ; ====================================================================
+058F            558   ; LCD
+058F            559   ; ====================================================================
+058F            560   
+058F            561   LCD_Print_String:
+058F C0E0       562       push acc
+0591            563   LCD_Print_Loop:
+0591 E4         564       clr a
+0592 93         565       movc a, @a+dptr
+0593 6006       566       jz LCD_Print_Done
+0595 1205E7     567       lcall LCD_Write_Data
+0598 A3         568       inc dptr
+0599 80F6       569       sjmp LCD_Print_Loop
+059B            570   LCD_Print_Done:
+059B D0E0       571       pop acc
+059D 22         572       ret
+059E            573   
+059E            574   LCD_Init:
+059E 120642     575       lcall Wait50ms
+05A1 7433       576       mov a, #0x33
+05A3 1205DB     577       lcall LCD_Write_Command
+05A6 12065A     578       lcall Wait5ms
+05A9 7432       579       mov a, #0x32
+05AB 1205DB     580       lcall LCD_Write_Command
+05AE 12065A     581       lcall Wait5ms
+05B1 7428       582       mov a, #0x28
+05B3 1205DB     583       lcall LCD_Write_Command
+05B6 120666     584       lcall Wait2ms
+05B9 740C       585       mov a, #0x0C
+05BB 1205DB     586       lcall LCD_Write_Command
+05BE 120666     587       lcall Wait2ms
+05C1 7401       588       mov a, #0x01
+05C3 1205DB     589       lcall LCD_Write_Command
+05C6 120666     590       lcall Wait2ms
+05C9 7406       591       mov a, #0x06
+05CB 1205DB     592       lcall LCD_Write_Command
+05CE 120666     593       lcall Wait2ms
+05D1 22         594       ret
+05D2            595   
+05D2            596   LCD_Clear:
+05D2 7401       597       mov a, #0x01
+05D4 1205DB     598       lcall LCD_Write_Command
+05D7 120666     599       lcall Wait2ms
+05DA 22         600       ret
+05DB            601   
+05DB            602   LCD_Write_Command:
+05DB C293       603       clr LCD_RS_PIN
+05DD 1205F3     604       lcall LCD_Write_Nibble_High
+05E0 12060F     605       lcall LCD_Write_Nibble_Low
+05E3 12067D     606       lcall Wait50us
+05E6 22         607       ret
+05E7            608   
+05E7            609   LCD_Write_Data:
+05E7 D293       610       setb LCD_RS_PIN
+05E9 1205F3     611       lcall LCD_Write_Nibble_High
+05EC 12060F     612       lcall LCD_Write_Nibble_Low
+05EF 12067D     613       lcall Wait50us
+05F2 22         614       ret
+05F3            615   
+05F3            616   LCD_Write_Nibble_High:
+05F3 C0E0       617       push acc
+05F5 A2E7       618       mov c, acc.7
+05F7 9283       619       mov LCD_D7, c
+05F9 A2E6       620       mov c, acc.6
+05FB 9282       621       mov LCD_D6, c
+05FD A2E5       622       mov c, acc.5
+05FF 9281       623       mov LCD_D5, c
+0601 A2E4       624       mov c, acc.4
+0603 9280       625       mov LCD_D4, c
+0605 D294       626       setb LCD_E
+0607 120687     627       lcall Wait5us
+060A C294       628       clr LCD_E
+060C D0E0       629       pop acc
+060E 22         630       ret
+060F            631   
+060F            632   LCD_Write_Nibble_Low:
+060F C0E0       633       push acc
+0611 A2E3       634       mov c, acc.3
+0613 9283       635       mov LCD_D7, c
+0615 A2E2       636       mov c, acc.2
+0617 9282       637       mov LCD_D6, c
+0619 A2E1       638       mov c, acc.1
+061B 9281       639       mov LCD_D5, c
+061D A2E0       640       mov c, acc.0
+061F 9280       641       mov LCD_D4, c
+0621 D294       642       setb LCD_E
+0623 120687     643       lcall Wait5us
+0626 C294       644       clr LCD_E
+0628 D0E0       645       pop acc
+062A 22         646       ret
+062B            647   
+062B            648   ; ====================================================================
+062B            649   ; UART
+062B            650   ; ====================================================================
+062B            651   
+062B            652   putchar:
+062B 3099FD     653       jnb TI, putchar
+062E C299       654       clr TI
+0630 F599       655       mov SBUF, a
+0632 22         656       ret
+0633            657   
+0633            658   ; ====================================================================
+0633            659   ; DELAYS
+0633            660   ; ====================================================================
+0633            661   
+0633            662   Wait100ms:
+0633 C0E0       663       push acc
+0635 7A05       664       mov R2, #5
+0637            665   Wait100ms_L1:
+0637 12064E     666       lcall Wait10ms
+063A 12064E     667       lcall Wait10ms
+063D DAF8       668       djnz R2, Wait100ms_L1
+063F D0E0       669       pop acc
+0641 22         670       ret
+0642            671   
+0642            672   Wait50ms:
+0642 C0E0       673       push acc
+0644 7A05       674       mov R2, #5
+0646            675   Wait50ms_L1:
+0646 12064E     676       lcall Wait10ms
+0649 DAFB       677       djnz R2, Wait50ms_L1
+064B D0E0       678       pop acc
+064D 22         679       ret
+064E            680   
+064E            681   Wait10ms:
+064E C0E0       682       push acc
+0650 7A32       683       mov R2, #50
+0652            684   Wait10ms_L1:
+0652 120672     685       lcall Wait200us
+0655 DAFB       686       djnz R2, Wait10ms_L1
+0657 D0E0       687       pop acc
+0659 22         688       ret
+065A            689   
+065A            690   Wait5ms:
+065A C0E0       691       push acc
+065C 7A19       692       mov R2, #25
+065E            693   Wait5ms_L1:
+065E 120672     694       lcall Wait200us
+0661 DAFB       695       djnz R2, Wait5ms_L1
+0663 D0E0       696       pop acc
+0665 22         697       ret
+0666            698   
+0666            699   Wait2ms:
+0666 C0E0       700       push acc
+0668 7A0A       701       mov R2, #10
+066A            702   Wait2ms_L1:
+066A 120672     703       lcall Wait200us
+066D DAFB       704       djnz R2, Wait2ms_L1
+066F D0E0       705       pop acc
+0671 22         706       ret
+0672            707   
+0672            708   Wait200us:
+0672 C0E0       709       push acc
+0674 7BFA       710       mov R3, #250
+0676            711   Wait200us_L1:
+0676 00         712       nop
+0677 00         713       nop
+0678 DBFC       714       djnz R3, Wait200us_L1
+067A D0E0       715       pop acc
+067C 22         716       ret
+067D            717   
+067D            718   Wait50us:
+067D C0E0       719       push acc
+067F 7B3E       720       mov R3, #62
+0681            721   Wait50us_L1:
+0681 00         722       nop
+0682 DBFD       723       djnz R3, Wait50us_L1
+0684 D0E0       724       pop acc
+0686 22         725       ret
+0687            726   
+0687            727   Wait5us:
+0687 C0E0       728       push acc
+0689 7B06       729       mov R3, #6
+068B            730   Wait5us_L1:
+068B 00         731       nop
+068C DBFD       732       djnz R3, Wait5us_L1
+068E D0E0       733       pop acc
+0690 22         734       ret
+0691            735   
+0691            736   Wait1s:
+0691 C0E0       737       push acc
+0693 7C0A       738       mov R4, #10
+0695            739   Wait1s_L1:
+0695 120633     740       lcall Wait100ms
+0698 DCFB       741       djnz R4, Wait1s_L1
+069A D0E0       742       pop acc
+069C 22         743       ret
+069D            744   
+069D            745   Wait2s:
+069D 120691     746       lcall Wait1s
+06A0 120691     747       lcall Wait1s
+06A3 22         748       ret
+06A4            749   
+06A4            750   ; ====================================================================
+06A4            751   ; TIMER ISR
+06A4            752   ; ====================================================================
+06A4            753   
+06A4            754   Timer0_ISR:
+06A4 C0E0       755       push acc
+06A6 C0D0       756       push psw
+06A8            757       
+06A8 758CD5     758       mov TH0, #0xD5
+06AB 758A90     759       mov TL0, #0x90
+06AE            760       
+06AE 0545       761       inc ms_counter
+06B0 E545       762       mov a, ms_counter
+06B2 B46411     763       cjne a, #100, Timer0_Done
+06B5            764       
+06B5 754500     765       mov ms_counter, #0
+06B8 0542       766       inc sec
+06BA E542       767       mov a, sec
+06BC B43C07     768       cjne a, #60, Timer0_Done
+06BF 754200     769       mov sec, #0
+06C2 0543       770       inc minutes
+06C4 0544       771       inc state_timer
+06C6            772       
+06C6            773   Timer0_Done:
+06C6 D0D0       774       pop psw
+06C8 D0E0       775       pop acc
+06CA 32         776       reti
+06CB            777   
+06CB            778   ; ====================================================================
+06CB            779   ; STRINGS
+06CB            780   ; ====================================================================
+06CB            781   
+06CB            782   Startup_Msg:
+06CB 5265666C   783       DB 'Reflow Oven V1.0', 0
+     6F77204F
+     76656E20
+     56312E30
+     00
+06DC            784   
+06DC            785   Error_Prefix:
+06DC 4552524F   786       DB 'ERROR E0', 0
+     52204530
+     00
+06E5            787   
+06E5            788   Error_Messages:
+06E5 55736572   789       DB 'User Abort     ', 0
+     2041626F
+     72742020
+     20202000
+06F5 54656D70   790       DB 'Temp Drop >=10C', 0
+     2044726F
+     70203E3D
+     31304300
+0705 4F766572   791       DB 'Over Temp >240C', 0
+     2054656D
+     70203E32
+     34304300
+0715 53656E73   792       DB 'Sensor Failure ', 0
+     6F722046
+     61696C75
+     72652000
+0725 53746174   793       DB 'State Timeout  ', 0
+     65205469
+     6D656F75
+     74202000
+0735 48656174   794       DB 'Heater Fault   ', 0
+     65722046
+     61756C74
+     20202000
+0745 446F6F72   795       DB 'Door Opened    ', 0
+     204F7065
+     6E656420
+     20202000
+0755 506F7765   796       DB 'Power Issue    ', 0
+     72204973
+     73756520
+     20202000
+0765            797   
+0765            798   State_Names:
+0765 52656164   799       DB 'Ready   ', 0
+     79202020
+     00
+076E 52616D70   800       DB 'Ramp->S ', 0
+     2D3E5320
+     00
+0777 536F616B   801       DB 'Soak    ', 0
+     20202020
+     00
+0780 52616D70   802       DB 'Ramp->R ', 0
+     2D3E5220
+     00
+0789 5265666C   803       DB 'Reflow  ', 0
+     6F772020
+     00
+0792 436F6F6C   804       DB 'Cooling ', 0
+     696E6720
+     00
+079B            805   
+079B            806   Time_Label:
+079B 54696D65   807       DB 'Time: ', 0
+     3A2000
+07A2            808   
+07A2            809   EN

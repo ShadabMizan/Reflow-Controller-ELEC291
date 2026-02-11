@@ -1,5 +1,5 @@
 @echo off
 C:
-cd "\Courses\2026-Spring\ELEC-291\Reflow-Controller-ELEC291\"
-"C:\CrossIDE\Call51\Bin\a51.exe" -l "C:\Courses\2026-Spring\ELEC-291\Reflow-Controller-ELEC291\pwm_testing.asm"
-echo Crosside_Action Set_Hex_File C:\Courses\2026-Spring\ELEC-291\Reflow-Controller-ELEC291\pwm_testing.HEX
+cd "\Users\estou\elec291\Reflow-Controller-ELEC291\"
+"C:\Users\estou\Downloads\CrossIDE\CrossIDE\Call51\Bin\a51.exe" -l "C:\Users\estou\elec291\Reflow-Controller-ELEC291\reflowFSM.asm"
+echo Crosside_Action Set_Hex_File C:\Users\estou\elec291\Reflow-Controller-ELEC291\reflowFSM.HEX
