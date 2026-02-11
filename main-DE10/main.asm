@@ -29,6 +29,18 @@ pwm:              ds 1    ; 0–100 (% duty cycle)
 ref4040: ds 4
 coldj_tmp: ds 4
 
+; FSM Variables
+fsm_state: ds 1
+
+current_tmp: ds 1
+current_time: ds 1
+
+soaktmp: ds 1
+soaktime: ds 1
+
+reflowtmp: ds 1
+reflowtime: ds 1
+
 
 bseg
 ; math32 bit
@@ -44,10 +56,10 @@ TIMER2_RELOAD    EQU ((65536-(CLK/(12*TIMER2_RATE))))
 PWM_PERIOD_TICKS EQU 20          ; 20 ticks = 9.77ms period = 102 Hz PWM
 
 SSR_PIN         EQU P3.7
+START_BUTTON    EQU P1.5
 
 VREF_VALUE      EQU 4116
 
-THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT equ 12628 ; 300 * 41
 
 CSEG
 
@@ -116,6 +128,17 @@ Wait50ms_L1:
 Display_Voltage_7seg:
 	
 	mov dptr, #myLUT
+
+    mov a, bcd+2
+	swap a
+	anl a, #0FH
+	movc a, @a+dptr
+	mov HEX5, a
+	
+	mov a, bcd+2
+	anl a, #0FH
+	movc a, @a+dptr
+	mov HEX4, a
 
 	mov a, bcd+1
 	swap a
@@ -238,7 +261,6 @@ mycode:
     clr a
     mov pwm_tick_counter, a
     mov pwm_on_ticks, a
-    mov pwm, #0
 
     setb EA              ; Enable global interrupts
     
@@ -258,9 +280,6 @@ mycode:
 	mov a, #'\n'
 	lcall putchar
 
-    mov pwm, #50
-    lcall Update_PWM
-
     ; Test UART
     mov a, #'T'
     lcall putchar
@@ -275,13 +294,25 @@ mycode:
     mov a, #'\n'
     lcall putchar
     
+    mov pwm, #0
+    lcall Update_PWM
+    
+    mov current_time, #0
+    mov fsm_state, #0
+
+    mov soaktime, #60
+    mov soaktmp, #150
+
+    mov reflowtime, #45
+    mov reflowtmp, #220
+
     lcall Wait50ms
 
 forever:
-    mov pwm, #75
-    lcall Update_PWM
-
     lcall Read_Temperature_Simple
+    
+    lcall FSM_Reflow
+
     lcall Wait50ms
 	ljmp forever
 
@@ -398,20 +429,22 @@ Read_Temperature_Simple:
     Load_y(22) ; add cold junction temperature
     lcall add32
 
+    mov current_tmp, x+0
+
     Load_y(1000)
     lcall mul32
 
     lcall hex2bcd
-    lcall Display_Temp_Serial
+    ; lcall Display_Temp_Serial
     lcall Display_Voltage_7seg
     ret
 
 
 Display_Temp_Serial:
-	mov a, #'T'
-	lcall putchar
-	mov a, #'='
-	lcall putchar
+	; mov a, #'T'
+	; lcall putchar
+	; mov a, #'='
+	; lcall putchar
 	
 	mov a, bcd+3
 	swap a
@@ -484,6 +517,265 @@ Wait200us_L1:
     nop
     djnz R3, Wait200us_L1
     pop acc
+    ret
+
+; ====================================================================
+; FSM
+; ====================================================================
+FSM_STATE_MSG:
+    DB 'FSM State: ', 0
+
+
+FSM_Reflow:
+    push ACC
+    push PSW
+
+    mov a, fsm_state
+FSM_State0:
+    cjne a, #0, FSM_State1
+    mov pwm, #0
+    lcall Update_PWM
+
+    jb START_BUTTON, FSM_State0_Done
+    lcall Wait50ms
+    jb START_BUTTON, FSM_State0_Done
+    jnb START_BUTTON, $
+    
+    mov dptr, #FSM_STATE_MSG
+    lcall SendString
+    mov a, #'1'
+    lcall putchar
+    mov a, #'\r'
+    lcall putchar
+    mov a, #'\n'
+    lcall putchar
+
+    mov fsm_state, #1
+
+    ; mov a, temp
+    ; mov temp_state_start, a
+    ; mov temp_max_state, a
+    ; mov temp_previous, a
+    ; mov undertemp_checked, #0
+FSM_State0_Done:
+    ljmp FSM_Done
+
+FSM_State1:
+    cjne a, #1, FSM_State2
+    mov pwm, #100
+    lcall Update_PWM
+
+    mov current_time, #0
+    
+    mov a, #soaktmp
+    clr c
+    subb a, current_tmp
+
+    jnc FSM_State1_Done
+
+    mov dptr, #FSM_STATE_MSG
+    lcall SendString
+    mov a, #'2'
+    lcall putchar
+    mov a, #'\r'
+    lcall putchar
+    mov a, #'\n'
+    lcall putchar
+
+    mov fsm_state, #2
+
+    ; jc Check_Temp_Drop
+    ; mov a, temp
+    ; mov temp_max_state, a
+; Check_Temp_Drop:
+;     mov a, temp_max_state
+;     clr c
+;     subb a, temp
+;     clr c
+;     subb a, #TEMP_DROP_THRESHOLD
+;     jc Check_Door_Open
+;     mov error_code, #ERR_TEMP_DROP
+;     ljmp Handle_Error
+    
+; Check_Door_Open:
+;     mov a, temp_previous
+;     clr c
+;     subb a, temp
+;     clr c
+;     subb a, #20
+;     jc Check_UnderTemp
+;     mov error_code, #ERR_DOOR_OPEN
+;     ljmp Handle_Error
+    
+; Check_UnderTemp:
+;     mov a, undertemp_checked
+;     jnz Check_Soak_Temp
+;     mov a, state_timer
+;     cjne a, #1, Check_Soak_Temp
+;     mov undertemp_checked, #1
+;     mov a, temp
+;     clr c
+;     subb a, #50
+;     jnc Check_Soak_Temp
+;     mov error_code, #ERR_UNDERTEMP
+;     ljmp Handle_Error
+    
+; Check_Soak_Temp:
+;     mov a, tempsoak
+;     clr c
+;     subb a, temp
+;     jnc FSM_State1_Check_Timeout
+;     mov FSM_state, #2
+;     mov sec, #0
+;     mov state_timer, #0
+;     ljmp FSM_State1_Done
+    
+; FSM_State1_Check_Timeout:
+;     mov a, state_timer
+;     cjne a, #120, FSM_State1_Done
+;     mov error_code, #ERR_TIMEOUT
+;     ljmp Handle_Error
+FSM_State1_Done:
+    ljmp FSM_Done
+
+FSM_State2:
+    cjne a, #2, FSM_State3
+    mov pwm, #20
+    lcall Update_PWM
+
+    mov a, soaktime
+    clr c
+
+    subb a, current_time
+    jnc FSM_State2_Done
+
+    mov dptr, #FSM_STATE_MSG
+    lcall SendString
+    mov a, #'3'
+    lcall putchar
+    mov a, #'\r'
+    lcall putchar
+    mov a, #'\n'
+    lcall putchar
+
+    mov FSM_state, #3
+
+    ; mov sec, #0
+    ; mov state_timer, #0
+    ; mov a, temp
+    ; mov temp_max_state, a
+FSM_State2_Done:
+    ljmp FSM_Done
+
+FSM_State3:
+    cjne a, #3, FSM_State4
+    mov pwm, #100
+    lcall Update_PWM
+
+    mov current_time, #0
+    
+    mov a, reflowtmp
+    clr c
+    subb a, current_tmp
+
+    jnc FSM_State3_Done
+
+    mov dptr, #FSM_STATE_MSG
+    lcall SendString
+    mov a, #'4'
+    lcall putchar
+    mov a, #'\r'
+    lcall putchar
+    mov a, #'\n'
+    lcall putchar
+
+    mov fsm_state, #4
+
+;     jc FSM_State3_Check_Reflow
+;     mov a, temp
+;     mov temp_max_state, a
+    
+; FSM_State3_Check_Reflow:
+;     mov a, tempreflow
+;     clr c
+;     subb a, temp
+;     jnc FSM_State3_Check_Timeout
+;     mov FSM_state, #4
+;     mov sec, #0
+;     mov state_timer, #0
+;     ljmp FSM_State3_Done
+    
+; FSM_State3_Check_Timeout:
+;     mov a, state_timer
+;     cjne a, #90, FSM_State3_Done
+;     mov error_code, #ERR_TIMEOUT
+;     ljmp Handle_Error
+FSM_State3_Done:
+    ljmp FSM_Done
+
+FSM_State4:
+    cjne a, #4, FSM_State5
+    mov pwm, #20             ; ? Now actually 20% with real PWM!
+    lcall Update_PWM
+    
+    mov a, reflowtime
+    clr c
+    subb a, current_time
+
+    jnc FSM_State4_Done
+
+    mov dptr, #FSM_STATE_MSG
+    lcall SendString
+    mov a, #'5'
+    lcall putchar
+    mov a, #'\r'
+    lcall putchar
+    mov a, #'\n'
+    lcall putchar
+
+    mov fsm_state, #5
+
+; Temp_Too_High:
+;     mov error_code, #ERR_OVERTEMP
+;     ljmp Handle_Error
+    
+; Check_Reflow_Time:
+;     mov a, timereflow
+;     clr c
+;     subb a, sec
+;     jnc FSM_State4_Done
+;     mov FSM_state, #5
+;     mov sec, #0
+FSM_State4_Done:
+    ljmp FSM_Done
+
+FSM_State5:
+    cjne a, #5, FSM_Done
+    mov pwm, #0
+    lcall Update_PWM
+
+    mov a, current_tmp
+    clr c
+    subb a, #60
+    jnc FSM_State5_Done
+
+    mov dptr, #FSM_STATE_MSG
+    lcall SendString
+    mov a, #'0'
+    lcall putchar
+    mov a, #'\r'
+    lcall putchar
+    mov a, #'\n'
+    lcall putchar
+
+    mov FSM_state, #0
+FSM_State5_Done:
+FSM_Done:
+    ; mov a, temp
+    ; mov temp_previous, a
+
+    pop PSW
+    pop ACC
     ret
 
 end

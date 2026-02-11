@@ -47,6 +47,7 @@ T2_ISR_check_second:
     mov ticks_per_sec+1, a
     setb seconds_flag
     cpl LEDRA.0                   ; Heartbeat
+    inc current_time
 
 T2_ISR_pwm:
     ; Call PWM function every tick
