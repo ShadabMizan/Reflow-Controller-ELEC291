@@ -1,10 +1,8 @@
 $MODMAX10
 
 ; ====================================================================
-; CV-8052 SFR DEFINITIONS (for DE1-SoC)
+; CV-8052 SFR DEFINITIONS (for DE10-Lite)
 ; ====================================================================
-; Standard 8052 SFRs are already defined by $MODDE1SOC
-; No additional SFRs needed for basic operation
 
 ; ====================================================================
 ; PIN DEFINITIONS
@@ -12,7 +10,7 @@ $MODMAX10
 
 ABORT_BUTTON    EQU P1.6
 START_BUTTON    EQU P1.7
-SSR_CONTROL     EQU P2.0
+SSR_CONTROL     EQU P3.7        ; ? CHANGED to P3.7 for PWM
 STATUS_LED      EQU P2.1
 BUZZER          EQU P2.2
 LCD_RS_PIN      EQU P1.3
@@ -52,6 +50,8 @@ ERR_POWER       EQU 8
 
 BSEG
 mf:                 dbit 1
+seconds_flag:       dbit 1      ; For PWM timing
+oven_enabled:       dbit 1      ; For PWM control
 
 ; ====================================================================
 ; BYTE VARIABLES
@@ -79,6 +79,11 @@ tempreflow:         ds 1
 timereflow:         ds 1
 undertemp_checked:  ds 1
 
+; PWM variables (required by pwm.inc)
+ticks_per_sec:      ds 2
+pwm_tick_counter:   ds 1
+pwm_on_ticks:       ds 1
+
 ; ====================================================================
 ; CODE
 ; ====================================================================
@@ -103,7 +108,11 @@ org 001BH
 org 0023H
     reti
 
+org 002BH
+    ljmp Timer2_ISR         ; ? ADDED for PWM
+
 $INCLUDE(math32.inc)
+$INCLUDE(pwm.inc)           ; ? ADDED for PWM support
 
 ; ====================================================================
 ; MAIN
@@ -112,24 +121,29 @@ $INCLUDE(math32.inc)
 main:
     mov SP, #7FH
     
-    ; Initialize port directions (optional for CV-8052)
+    ; Initialize port directions
     mov P1, #0xC0
     mov P3, #0xFF
+    mov P3MOD, #10000000b    ; ? ADDED: P3.7 = output for PWM
     
+    lcall Init_Variables
     lcall Timer0_Init
+    lcall Timer2_Init        ; ? ADDED: Initialize PWM timer
     lcall LCD_Init
     lcall Wait50ms
+    
+    setb EA                  ; Enable interrupts
+    
     mov dptr, #Startup_Msg
     lcall LCD_Print_String
     lcall Wait1s
-    lcall Init_Variables
 
 Forever:
     lcall Check_Abort
     lcall Read_Temperature
     lcall Check_Sensor
     lcall FSM_Reflow
-    lcall Update_PWM
+    lcall Update_PWM         ; Now uses real PWM from pwm.inc
     lcall Update_Display
     lcall Send_Serial_Data
     lcall Wait100ms
@@ -156,6 +170,13 @@ Init_Variables:
     mov tempreflow, #TEMP_REFLOW
     mov timereflow, #TIME_REFLOW
     mov undertemp_checked, #0
+    
+    ; Initialize PWM variables
+    clr a
+    mov pwm_tick_counter, a
+    mov pwm_on_ticks, a
+    clr seconds_flag
+    setb oven_enabled        ; Enable PWM output
     ret
 
 Timer0_Init:
@@ -165,7 +186,6 @@ Timer0_Init:
     mov TL0, #0x90
     setb ET0
     setb TR0
-    setb EA
     ret
 
 Check_Abort:
@@ -278,7 +298,7 @@ FSM_State1_Done:
 
 FSM_State2:
     cjne a, #2, FSM_State3
-    mov pwm, #20
+    mov pwm, #20             ; ? Now actually 20% with real PWM!
     mov a, timesoak
     clr c
     subb a, sec
@@ -322,7 +342,7 @@ FSM_State3_Done:
 
 FSM_State4:
     cjne a, #4, FSM_State5
-    mov pwm, #20                  ; state 4 at 20%
+    mov pwm, #20             ; ? Now actually 20% with real PWM!
     
     mov a, temp
     clr c
@@ -365,6 +385,7 @@ FSM_Done:
 
 Handle_Error:
     mov pwm, #0
+    lcall Update_PWM         ; Turn off heater
     clr SSR_CONTROL
     setb BUZZER
     
@@ -398,7 +419,7 @@ Handle_Error:
     ret
 
 ; ====================================================================
-; SIMULATED ADC (Replace with SPI code later)
+; SIMULATED ADC (Replace with real ADC code later)
 ; ====================================================================
 
 Read_Temperature:
@@ -448,17 +469,7 @@ Sim_Done:
 ; ====================================================================
 ; PWM & DISPLAY
 ; ====================================================================
-
-Update_PWM:
-    mov a, pwm
-    jz PWM_Off
-    setb SSR_CONTROL
-    setb STATUS_LED
-    ret
-PWM_Off:
-    clr SSR_CONTROL
-    clr STATUS_LED
-    ret
+; Update_PWM is now handled by pwm.inc - just call it after setting pwm variable
 
 Update_Display:
     mov a, #0x80
