@@ -552,11 +552,6 @@ FSM_State0:
 
     mov fsm_state, #1
 
-    ; mov a, temp
-    ; mov temp_state_start, a
-    ; mov temp_max_state, a
-    ; mov temp_previous, a
-    ; mov undertemp_checked, #0
 FSM_State0_Done:
     ljmp FSM_Done
 
@@ -567,7 +562,7 @@ FSM_State1:
 
     mov current_time, #0
     
-    mov a, #soaktmp
+    mov a, soaktmp
     clr c
     subb a, current_tmp
 
@@ -584,57 +579,6 @@ FSM_State1:
 
     mov fsm_state, #2
 
-    ; jc Check_Temp_Drop
-    ; mov a, temp
-    ; mov temp_max_state, a
-; Check_Temp_Drop:
-;     mov a, temp_max_state
-;     clr c
-;     subb a, temp
-;     clr c
-;     subb a, #TEMP_DROP_THRESHOLD
-;     jc Check_Door_Open
-;     mov error_code, #ERR_TEMP_DROP
-;     ljmp Handle_Error
-    
-; Check_Door_Open:
-;     mov a, temp_previous
-;     clr c
-;     subb a, temp
-;     clr c
-;     subb a, #20
-;     jc Check_UnderTemp
-;     mov error_code, #ERR_DOOR_OPEN
-;     ljmp Handle_Error
-    
-; Check_UnderTemp:
-;     mov a, undertemp_checked
-;     jnz Check_Soak_Temp
-;     mov a, state_timer
-;     cjne a, #1, Check_Soak_Temp
-;     mov undertemp_checked, #1
-;     mov a, temp
-;     clr c
-;     subb a, #50
-;     jnc Check_Soak_Temp
-;     mov error_code, #ERR_UNDERTEMP
-;     ljmp Handle_Error
-    
-; Check_Soak_Temp:
-;     mov a, tempsoak
-;     clr c
-;     subb a, temp
-;     jnc FSM_State1_Check_Timeout
-;     mov FSM_state, #2
-;     mov sec, #0
-;     mov state_timer, #0
-;     ljmp FSM_State1_Done
-    
-; FSM_State1_Check_Timeout:
-;     mov a, state_timer
-;     cjne a, #120, FSM_State1_Done
-;     mov error_code, #ERR_TIMEOUT
-;     ljmp Handle_Error
 FSM_State1_Done:
     ljmp FSM_Done
 
@@ -660,10 +604,6 @@ FSM_State2:
 
     mov FSM_state, #3
 
-    ; mov sec, #0
-    ; mov state_timer, #0
-    ; mov a, temp
-    ; mov temp_max_state, a
 FSM_State2_Done:
     ljmp FSM_Done
 
@@ -691,25 +631,6 @@ FSM_State3:
 
     mov fsm_state, #4
 
-;     jc FSM_State3_Check_Reflow
-;     mov a, temp
-;     mov temp_max_state, a
-    
-; FSM_State3_Check_Reflow:
-;     mov a, tempreflow
-;     clr c
-;     subb a, temp
-;     jnc FSM_State3_Check_Timeout
-;     mov FSM_state, #4
-;     mov sec, #0
-;     mov state_timer, #0
-;     ljmp FSM_State3_Done
-    
-; FSM_State3_Check_Timeout:
-;     mov a, state_timer
-;     cjne a, #90, FSM_State3_Done
-;     mov error_code, #ERR_TIMEOUT
-;     ljmp Handle_Error
 FSM_State3_Done:
     ljmp FSM_Done
 
@@ -735,17 +656,6 @@ FSM_State4:
 
     mov fsm_state, #5
 
-; Temp_Too_High:
-;     mov error_code, #ERR_OVERTEMP
-;     ljmp Handle_Error
-    
-; Check_Reflow_Time:
-;     mov a, timereflow
-;     clr c
-;     subb a, sec
-;     jnc FSM_State4_Done
-;     mov FSM_state, #5
-;     mov sec, #0
 FSM_State4_Done:
     ljmp FSM_Done
 
@@ -771,8 +681,6 @@ FSM_State5:
     mov FSM_state, #0
 FSM_State5_Done:
 FSM_Done:
-    ; mov a, temp
-    ; mov temp_previous, a
 
     pop PSW
     pop ACC
