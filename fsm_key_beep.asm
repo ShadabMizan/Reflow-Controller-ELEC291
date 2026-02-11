@@ -50,16 +50,17 @@ PS2_DAT         EQU P3.3
 ; BIT VARIABLES
 ; ====================================================================
 BSEG
-mf:             dbit 1
-RELEASE_FLAG:   dbit 1
-SET_FLAG:       dbit 1
-MODE:           dbit 1
-PARAM:          dbit 1
-INVALID:        dbit 1
-AWAIT:          dbit 1
-INPUTTING:      dbit 1
-PROMPT_PENDING: dbit 1
-GET_PARAM:      dbit 1
+mf:                 dbit 1
+RELEASE_FLAG:       dbit 1
+SET_FLAG:           dbit 1
+MODE:               dbit 1
+PARAM:              dbit 1
+INVALID:            dbit 1
+AWAIT:              dbit 1
+INPUTTING:          dbit 1
+PROMPT_PENDING:     dbit 1
+GET_PARAM:          dbit 1
+SEND_SERIAL_FLAG:   dbit 1    ; *** NEW: Flag for serial transmission ***
 
 ; ====================================================================
 ; BYTE VARIABLES
@@ -122,10 +123,7 @@ org 001BH
 
 org 0023H
     reti
-
-$INCLUDE(math32.inc)
-$INCLUDE(beep.inc)
-
+    
 ; ====================================================================
 ; PS/2 KEYBOARD - SCANCODE TO ASCII TABLE
 ; ====================================================================
@@ -147,6 +145,9 @@ ASCII_TABLE:
     DB 0, 0, 0, 0, 0, 0, 0, 0
     DB 0, 0, 0, 0, 0, 0, 0, 0
     DB 0, 0, 0, 0, 0, 0, 0, 0
+
+$INCLUDE(math32.inc)
+$INCLUDE(beep.inc)
 
 ; ====================================================================
 ; STRING CONSTANTS
@@ -217,6 +218,12 @@ main:
     lcall putchar
     
 Forever:
+    ; *** HANDLE SERIAL FLAG FIRST (before other operations) ***
+    jnb SEND_SERIAL_FLAG, Skip_Serial_Send
+    clr SEND_SERIAL_FLAG
+    lcall Send_Serial_Data
+Skip_Serial_Send:
+    
     lcall Check_Abort
     lcall Read_Temperature
     lcall Check_Sensor
@@ -247,6 +254,7 @@ Init_Variables:
     mov tempreflow, #TEMP_REFLOW
     mov timereflow, #TIME_REFLOW
     mov undertemp_checked, #0
+    clr SEND_SERIAL_FLAG        ; *** Initialize flag ***
     ret
 
 Timer0_Init:
@@ -254,6 +262,7 @@ Timer0_Init:
     orl TMOD, #0x01
     mov TH0, #0xD5
     mov TL0, #0x90
+    setb PT0                    ; *** FIX: Set Timer0 to HIGH priority ***
     setb ET0
     setb TR0
     setb EA
@@ -264,8 +273,8 @@ Timer1_Init:
     orl TMOD, #0x10
     mov TH1, #0xD5
     mov TL1, #0x90
-    clr ET1            ; Interrupt disabled
-    clr TR1            ; Timer1 stopped initially
+    clr ET1                     ; Interrupt disabled initially
+    clr TR1                     ; Timer1 stopped initially
     ret
 
 InitSerialPort:
@@ -278,7 +287,7 @@ InitSerialPort:
 Initialize_PS2:
     setb PS2_DAT
     setb IT0
-    setb EX0           ; Start with keyboard enabled
+    setb EX0                    ; Start with keyboard enabled
     setb EA
     mov R0, #0
     mov R1, #0
@@ -806,10 +815,12 @@ FSM_State0:
     
     ; *** HANDOFF: Disable keyboard, enable monitoring ***
     clr EX0                     ; Disable PS/2 keyboard interrupt
+    clr IT0                     ; *** FIX: Clear pending PS/2 interrupt ***
     clr TF1                     ; Clear any pending Timer1 flag
     mov TH1, #0xD5              ; Reset Timer1
     mov TL1, #0x90
     mov serial_counter, #0
+    clr SEND_SERIAL_FLAG        ; Clear serial flag
     setb TR1                    ; Start Timer1 running
     setb ET1                    ; Enable Timer1 interrupt
     mov dptr, #StartingMsg
@@ -879,7 +890,7 @@ Check_Soak_Temp:
     ljmp FSM_State1_Done
 FSM_State1_Check_Timeout:
     mov a, state_timer
-    cjne a, #120, FSM_State1_Done
+    cjne a, #2, FSM_State1_Done     ; *** FIX: Changed from 120 to 2 (2 minutes) ***
     mov error_code, #ERR_TIMEOUT
     ljmp Handle_Error
 FSM_State1_Done:
@@ -922,7 +933,7 @@ FSM_State3_Check_Reflow:
     ljmp FSM_State3_Done
 FSM_State3_Check_Timeout:
     mov a, state_timer
-    cjne a, #90, FSM_State3_Done
+    cjne a, #2, FSM_State3_Done     ; *** FIX: Changed from 90 to 2 (2 minutes) ***
     mov error_code, #ERR_TIMEOUT
     ljmp Handle_Error
 FSM_State3_Done:
@@ -961,7 +972,8 @@ FSM_State5:
     ; *** HANDOFF: Disable monitoring, re-enable keyboard ***
     clr TR1                     ; Stop Timer1
     clr ET1                     ; Disable serial monitoring
-    clr TF1                     ; Clear any pending flag
+    clr TF1                     ; Clear any pending Timer1 flag
+    clr IT0                     ; *** FIX: Clear pending PS/2 interrupt ***
     setb EX0                    ; Re-enable PS/2 keyboard interrupt
     mov dptr, #FinishedMsg
     lcall SendString
@@ -982,7 +994,8 @@ Handle_Error:
     ; *** HANDOFF: On error, re-enable keyboard ***
     clr TR1                     ; Stop Timer1
     clr ET1                     ; Disable monitoring
-    clr TF1                     ; Clear any pending flag
+    clr TF1                     ; Clear any pending Timer1 flag
+    clr IT0                     ; *** FIX: Clear pending PS/2 interrupt ***
     setb EX0                    ; Re-enable keyboard
     
     lcall Beep_Error
@@ -1372,6 +1385,7 @@ Timer0_Done:
     reti
 
 Timer1_ISR:
+    ; *** FIXED: Flag-based approach - NO function calls! ***
     push acc
     push psw
     mov TH1, #0xD5
@@ -1382,7 +1396,7 @@ Timer1_ISR:
     cjne a, #10, Timer1_Done
     mov serial_counter, #0
     
-    lcall Send_Serial_Data
+    setb SEND_SERIAL_FLAG       ; *** Just set flag, don't call function ***
     
 Timer1_Done:
     pop psw
