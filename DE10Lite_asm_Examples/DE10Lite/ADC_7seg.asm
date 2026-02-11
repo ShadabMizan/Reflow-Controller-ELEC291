@@ -17,7 +17,12 @@
 ;----------------------------------------;
 $NOLIST
 $MODDE1SOC
+$INCLUDE(uart.inc)
 $LIST
+dseg
+uartbuf ds 30h
+BAUD           equ 115200
+TIMER_2_RELOAD equ (0x10000-(CLK/(32*BAUD)))
 CLK EQU 33333333
 TIMER_10ms EQU (65536-(CLK/(12*100)))
 PS2_DAT EQU P3.3
@@ -164,6 +169,8 @@ CheckX:
 	lcall Update_HEX_Display
 	sjmp PS2_Done
 
+CheckEnter:
+	cjne A, #0Ah, PS2_Done
 ClearRel:
 	clr RELEASE_FLAG 
 	sjmp PS2_Done
@@ -193,6 +200,13 @@ MainProgram:
 	mov HEX0, #0xC6  ; Initialize to "C" (temperature)
     mov sp, #0x7f
     lcall Initialize_PS2
+    lcall InitSerialPort
+    mov DPTR, #string
+    lcall SendString
 forever:
 	sjmp forever
+	
+	
+string:
+db '\rHi!\n', 0
 end
