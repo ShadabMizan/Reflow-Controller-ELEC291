@@ -27,8 +27,6 @@ Timer2_ISR:
     clr TF2
     push acc
     push psw
-
-    cpl LEDRA.0
     
     ; Increment tick counter
     inc ticks_per_sec+0

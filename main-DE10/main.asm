@@ -34,9 +34,6 @@ mf:		dbit 1
 seconds_flag: dbit 1
 oven_enabled:     dbit 1      ; PWM state
 
-FREQ   EQU 33333333
-BAUD   EQU 115200
-
 CLK              EQU 33333333    ; DE10-Lite CV-8052 = 33.333 MHz
 TIMER2_RATE      EQU 2048        ; 2048 Hz for a 488 u-sec period/per tick
 TIMER2_RELOAD    EQU ((65536-(CLK/(12*TIMER2_RATE))))
@@ -47,14 +44,13 @@ SSR_PIN         EQU P3.7
 CSEG
 
 InitSerialPort:
-	; Configure serial port and baud rate
-    mov TMOD, #20H        ; Timer1 mode 2 (8-bit auto reload)
-    mov TH1, #-(FREQ/(32*BAUD))
-    mov TL1, TH1
-    setb TR1
-    mov SCON, #50H
-    setb TI
-	ret
+    mov TMOD, #20H        ; Timer1 mode 2
+    mov TH1, #0F7H       ; 9600 baud @ 33.333MHz
+    mov TL1, #0F7H
+    setb TR1              ; Start Timer1
+    mov SCON, #50H        ; Mode 1, REN enabled
+    setb TI               ; Set TI so first transmit works
+    ret
 
 putchar:
     JNB TI, putchar
@@ -219,6 +215,7 @@ mycode:
 	mov LEDRB, a
 	
 	lcall InitSerialPort
+    lcall Timer2_Init
 	
 	; COnfigure the pins connected to the LCD as outputs
 	mov P0MOD, #10101010b ; P0.1, P0.3, P0.5, P0.7 are outputs.  ('1' makes the pin output)
@@ -235,65 +232,80 @@ mycode:
     mov pwm_on_ticks, a
     mov pwm, #0
 
-    lcall Timer2_Init
     setb EA              ; Enable global interrupts
     
     ; Set initial 0% and apply
     mov pwm, #0
     lcall Update_PWM        
 
-    lcall ELCD_4BIT ; Configure LCD in four bit mode
-    ; ; For convenience a few handy macros are included in 'LCD_4bit_DE1Lite.inc':
-	Set_Cursor(1, 1)
-    Send_Constant_String(#Initial_Message)
+    ; lcall ELCD_4BIT ; Configure LCD in four bit mode
+    ; ; ; For convenience a few handy macros are included in 'LCD_4bit_DE1Lite.inc':
+	; Set_Cursor(1, 1)
+    ; Send_Constant_String(#Initial_Message)
 	
-	; mov dptr, #Initial_Message
-	; lcall SendString
-	; mov a, #'\r'
-	; lcall putchar
-	; mov a, #'\n'
-	; lcall putchar
+	mov dptr, #Initial_Message
+	lcall SendString
+	mov a, #'\r'
+	lcall putchar
+	mov a, #'\n'
+	lcall putchar
 
     mov pwm, #50
     lcall Update_PWM
+
+    ; Test UART
+    mov a, #'T'
+    lcall putchar
+    mov a, #'E'
+    lcall putchar
+    mov a, #'S'
+    lcall putchar
+    mov a, #'T'
+    lcall putchar
+    mov a, #'\r'
+    lcall putchar
+    mov a, #'\n'
+    lcall putchar
+    
+    lcall Wait50ms
 
 forever:
     mov pwm, #30
     lcall Update_PWM
 
     lcall Read_Temperature
-   	; lcall Wait50ms
-	; lcall Wait50ms
-	; lcall Wait50ms
-	; lcall Wait50ms
+   	lcall Wait50ms
+	lcall Wait50ms
+	lcall Wait50ms
+	lcall Wait50ms
 	ljmp forever
 
 ; ----------------------------------------
 ; TEMPERATURE ROUTINES
 ; ----------------------------------------
-
 Read_Temperature:
-    mov ADC_C, a
+    mov ADC_C, #0x80          ; ← FIXED: Use immediate value
+    lcall Wait50ms            ; ← ADDED: Wait for conversion
 
     ; Load 32-bit 'x' with 12-bit adc result
-	mov x+3, #0
-	mov x+2, #0
-	mov x+1, ADC_H
-	mov x+0, ADC_L
+    mov x+3, #0
+    mov x+2, #0
+    mov x+1, ADC_H
+    mov x+0, ADC_L
 
-	; Convert to voltage by multiplying by 5.000 and dividing by 4096
-	Load_y(5000)
-	lcall mul32
-	Load_y(4096)
-	lcall div32
-
-    ; Convert the Voltage at the ADC to a temperature:
-    Load_y(1000) ; convert to microvolts
+    ; Convert to voltage by multiplying by 5.000 and dividing by 4096
+    Load_y(5000)
     lcall mul32
-    Load_y(12300) ; 41 * 300
+    Load_y(4096)
     lcall div32
 
-    Load_y(22) ; add cold junction temperature
+    ; Convert the Voltage at the ADC to a temperature:
+    Load_y(1000)
+    lcall mul32
+    Load_y(12300)
+    lcall div32
+
+    Load_y(22)
     lcall add32
 
     lcall hex2bcd
