@@ -7,33 +7,53 @@ $MODMAX10
 ; ADC_L DATA 0xa2
 ; ADC_H DATA 0xa3
 
-	CSEG at 0
-	ljmp mycode
+org 0000h
+    ljmp mycode
+
+org 002Bh
+    ljmp Timer2_ISR
 
 dseg at 30h
-
+; Math32 variables
 x:		ds	4
 y:		ds	4
 bcd:	ds	5
 
-bseg
+; PWM variables
+ticks_per_sec:    ds 2        ; Tick counter for seconds
+pwm_tick_counter: ds 1
+pwm_on_ticks:     ds 1
+pwm:              ds 1    ; 0–100 (% duty cycle)
 
+
+bseg
+; math32 bit
 mf:		dbit 1
+
+; PWM bit
+seconds_flag: dbit 1
+oven_enabled:     dbit 1      ; PWM state
 
 FREQ   EQU 33333333
 BAUD   EQU 115200
-T2LOAD EQU 65536-(FREQ/(32*BAUD))
+
+CLK              EQU 33333333    ; DE10-Lite CV-8052 = 33.333 MHz
+TIMER2_RATE      EQU 2048        ; 2048 Hz for a 488 u-sec period/per tick
+TIMER2_RELOAD    EQU ((65536-(CLK/(12*TIMER2_RATE))))
+PWM_PERIOD_TICKS EQU 20          ; 20 ticks = 9.77ms period = 102 Hz PWM
+
+SSR_PIN          equ P3.7        ; PWM output pin
 
 CSEG
 
 InitSerialPort:
 	; Configure serial port and baud rate
-	clr TR2 ; Disable timer 2
-	mov T2CON, #30H ; RCLK=1, TCLK=1 
-	mov RCAP2H, #high(T2LOAD)  
-	mov RCAP2L, #low(T2LOAD)
-	setb TR2 ; Enable timer 2
-	mov SCON, #52H
+    mov TMOD, #20H        ; Timer1 mode 2 (8-bit auto reload)
+    mov TH1, #-(FREQ/(32*BAUD))
+    mov TL1, TH1
+    setb TR1
+    mov SCON, #50H
+    setb TI
 	ret
 
 putchar:
@@ -67,6 +87,7 @@ ELCD_D6 equ P0.3
 ELCD_D7 equ P0.1
 $NOLIST
 $include(LCD_4bit_DE10Lite_no_RW.inc) ; A library of LCD related functions and utility macros
+$include(pwm.inc)
 $LIST
 
 ; Look-up table for 7-seg displays
@@ -192,7 +213,7 @@ Display_Voltage_Serial:
 Initial_Message:  db 'Voltmeter test', 0
 
 mycode:
-	mov SP, #7FH
+	mov SP, #0x7F
 	clr a
 	mov LEDRA, a
 	mov LEDRB, a
@@ -203,32 +224,63 @@ mycode:
 	mov P0MOD, #10101010b ; P0.1, P0.3, P0.5, P0.7 are outputs.  ('1' makes the pin output)
     mov P1MOD, #10000010b ; P1.7 and P1.1 are outputs
 
+    ; Initial PWM output
+    mov P3MOD, #10000000b   ; P3.7
+
+    mov ADC_C, #0x80 ; Reset ADC
+	lcall Wait50ms
+
+    clr a
+    mov pwm_tick_counter, a
+    mov pwm_on_ticks, a
+    mov pwm, #0
+
+    lcall Timer2_Init
+    setb EA              ; Enable global interrupts
+    
+    ; Set initial 0% and apply
+    mov pwm, #0
+    lcall Update_PWM        
+
     lcall ELCD_4BIT ; Configure LCD in four bit mode
-    ; For convenience a few handy macros are included in 'LCD_4bit_DE1Lite.inc':
+    ; ; For convenience a few handy macros are included in 'LCD_4bit_DE1Lite.inc':
 	Set_Cursor(1, 1)
     Send_Constant_String(#Initial_Message)
 	
-	mov dptr, #Initial_Message
-	lcall SendString
-	mov a, #'\r'
-	lcall putchar
-	mov a, #'\n'
-	lcall putchar
-	
-	mov ADC_C, #0x80 ; Reset ADC
-	lcall Wait50ms
+	; mov dptr, #Initial_Message
+	; lcall SendString
+	; mov a, #'\r'
+	; lcall putchar
+	; mov a, #'\n'
+	; lcall putchar
+
+    mov pwm, #50
+    lcall Update_PWM
 
 forever:
-	mov a, SWA ; The first three switches select the channel to read
-	anl a, #0x07
-	mov ADC_C, a
-	
-	; Load 32-bit 'x' with 12-bit adc result
+    mov pwm, #30
+    lcall Update_PWM
+
+    lcall Read_Temperature
+   	; lcall Wait50ms
+	; lcall Wait50ms
+	; lcall Wait50ms
+	; lcall Wait50ms
+	ljmp forever
+
+; ----------------------------------------
+; TEMPERATURE ROUTINES
+; ----------------------------------------
+
+Read_Temperature:
+    mov ADC_C, a
+
+    ; Load 32-bit 'x' with 12-bit adc result
 	mov x+3, #0
 	mov x+2, #0
 	mov x+1, ADC_H
 	mov x+0, ADC_L
-	
+
 	; Convert to voltage by multiplying by 5.000 and dividing by 4096
 	Load_y(5000)
 	lcall mul32
@@ -243,17 +295,9 @@ forever:
 
     Load_y(22) ; add cold junction temperature
     lcall add32
-    ; Now, the displayed value will be the temperature
-	
-	lcall hex2bcd
-	lcall Display_Voltage_7seg
-	lcall Display_Voltage_LCD
-	lcall Display_Voltage_Serial
 
-	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
-	ljmp forever
+    lcall hex2bcd
+    lcall Display_Voltage_Serial
 
 end
+

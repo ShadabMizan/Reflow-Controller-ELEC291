@@ -7,7 +7,7 @@ $MODMAX10
 ; ADC_L DATA 0xa2
 ; ADC_H DATA 0xa3
 
-	CSEG at 0
+CSEG at 0
 	ljmp mycode
 
 dseg at 30h
@@ -219,16 +219,29 @@ mycode:
 	lcall Wait50ms
 
 forever:
-	mov a, SWA ; The first three switches select the channel to read
-	anl a, #0x07
-	mov ADC_C, a
-	
-	; Load 32-bit 'x' with 12-bit adc result
+    lcall Read_Temperature
+
+	lcall Wait50ms
+	lcall Wait50ms
+	lcall Wait50ms
+	lcall Wait50ms
+	ljmp forever
+
+end
+
+; ----------------------------------------
+; TEMPERATURE ROUTINES
+; ----------------------------------------
+
+Read_Temperature:
+    mov ADC_C, a
+
+    ; Load 32-bit 'x' with 12-bit adc result
 	mov x+3, #0
 	mov x+2, #0
 	mov x+1, ADC_H
 	mov x+0, ADC_L
-	
+
 	; Convert to voltage by multiplying by 5.000 and dividing by 4096
 	Load_y(5000)
 	lcall mul32
@@ -243,17 +256,7 @@ forever:
 
     Load_y(22) ; add cold junction temperature
     lcall add32
-    ; Now, the displayed value will be the temperature
-	
-	lcall hex2bcd
-	lcall Display_Voltage_7seg
-	lcall Display_Voltage_LCD
-	lcall Display_Voltage_Serial
 
-	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
-	lcall Wait50ms
-	ljmp forever
+    lcall hex2bcd
+    lcall Display_Voltage_Serial
 
-end
