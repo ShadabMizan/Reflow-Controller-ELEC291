@@ -10,25 +10,6 @@ $MODDE1SOC
 $LIST
 
 ;===================================================================
-; Bits used to access the LTC2308
-;===================================================================
-LTC2308_MISO bit 0xF8 ; Read only bit
-LTC2308_MOSI bit 0xF9 ; Write only bit
-LTC2308_SCLK bit 0xFA ; Write only bit
-LTC2308_ENN  bit 0xFB ; Write only bit
-
-;===================================================================
-; SYSTEM PARAMETERS
-;===================================================================
-CLK   EQU 33333333
-BAUD  EQU 57600
-TIMER_2_RELOAD EQU (65536-(CLK/(32*BAUD)))
-
-; Temperature measurement constants
-THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT equ 12300 ; 300 * 41
-VREF_VALUE equ 4106  ; Reference voltage in mV (adjust as needed)
-
-;===================================================================
 ; RESET AND INTERRUPT VECTORS
 ;===================================================================
 org 0x0000
@@ -57,6 +38,29 @@ org 0x0023
 ; Timer/Counter 2 overflow interrupt vector (not used in this code)
 org 0x002B
 	reti
+
+$NOLIST
+$include(math32.inc)
+$LIST
+
+;===================================================================
+; Bits used to access the LTC2308
+;===================================================================
+LTC2308_MISO bit 0xF8 ; Read only bit
+LTC2308_MOSI bit 0xF9 ; Write only bit
+LTC2308_SCLK bit 0xFA ; Write only bit
+LTC2308_ENN  bit 0xFB ; Write only bit
+
+;===================================================================
+; SYSTEM PARAMETERS
+;===================================================================
+CLK   EQU 33333333
+BAUD  EQU 57600
+TIMER_2_RELOAD EQU (65536-(CLK/(32*BAUD)))
+
+; Temperature measurement constants
+THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT equ 12300 ; 300 * 41
+VREF_VALUE equ 4106  ; Reference voltage in mV (adjust as needed)
 
 ;===================================================================
 ; MEMORY ALLOCATION
@@ -187,7 +191,7 @@ Convert_Loop:
 	mov x+3, uart_value+3
 	
 	; Multiply by 10
-	load_y(10)
+	Load_y(10)
 	lcall mul32
 	
 	; Add current digit (already in 0-9 format)
@@ -315,11 +319,6 @@ LTC2308_RW:
 	setb LTC2308_ENN ; Disable ADC
 
 	ret
-
-;-------------------------------------------------------------------
-; Include Math Library (from your original code)
-;-------------------------------------------------------------------
-$include(math32.inc)
 
 ;-------------------------------------------------------------------
 ; 50ms Delay (from your original code)
@@ -450,16 +449,16 @@ LM335_ADC:
 	mov x+0, R0
 	
 	; Calculate: Vlm335 = (ADClm335/ADCref)*Vref
-	load_y(VREF_VALUE)       ; Vref in millivolts
+	Load_y(VREF_VALUE)       ; Vref in millivolts
 	lcall mul32
 	
-	load_y(ref4040)          ; Divide by reference ADC
+	Load_y(ref4040)          ; Divide by reference ADC
 	lcall div32
 	
-	load_y(2730)             ; Subtract 2730mV (0°C offset)
+	Load_y(2730)             ; Subtract 2730mV (0°C offset)
 	lcall sub32
 	
-	load_y(10)               ; Divide by 10mV/°C sensitivity
+	Load_y(10)               ; Divide by 10mV/°C sensitivity
 	lcall div32
 	
 	; Store result
@@ -489,22 +488,22 @@ adc_to_temp_to_serial:
 	mov x+0, R0
 	
 	; Calculate Vadc in microvolts
-	load_y(VREF_VALUE)       ; Vref in millivolts
+	Load_y(VREF_VALUE)       ; Vref in millivolts
 	lcall mul32
 	
-	load_y(ref4040)          ; Calculate Vadc
+	Load_y(ref4040)          ; Calculate Vadc
 	lcall div32
 	
-	load_y(1000000)          ; Convert to microvolts (x1000 twice for decimal places)
+	Load_y(1000000)          ; Convert to microvolts (x1000 twice for decimal places)
 	lcall mul32
 	
 	; Divide by thermocouple sensitivity * gain
-	load_y(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT) ; 41 * 300
+	Load_y(THERMOCOUPLE_GAIN_TIMES_CONVERSION_CONSTANT) ; 41 * 300
 	lcall div32
 	; Note: might need to tune the gain value to 308 or so
 	
 	; Add cold junction temperature
-	load_y(COLD_JUNCTION_TEMP)
+	Load_y(COLD_JUNCTION_TEMP)
 	lcall add32
 	
 	; Convert to BCD for display
