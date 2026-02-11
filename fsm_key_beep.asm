@@ -9,6 +9,11 @@ BAUD           EQU 115200
 TIMER_2_RELOAD EQU (0x10000-(CLK/(32*BAUD)))
 CLK            EQU 33333333
 
+; PWM CONSTANTS (from pwm_testing.asm)
+TIMER2_RATE      EQU 2048        ; 2048 Hz for 488 µsec per tick
+TIMER2_RELOAD_PWM EQU ((65536-(CLK/(12*TIMER2_RATE))))
+PWM_PERIOD_TICKS EQU 20          ; 20 ticks = 9.77ms period = 102 Hz PWM
+
 ; Reflow oven temperature/time constants (defaults)
 TEMP_SOAK           EQU 150
 TIME_SOAK           EQU 60
@@ -34,7 +39,7 @@ ERR_POWER       EQU 8
 ; ====================================================================
 ABORT_BUTTON    EQU P1.6
 START_BUTTON    EQU P1.7
-SSR_CONTROL     EQU P2.0
+SSR_CONTROL     EQU P2.0        ; PWM output for SSR
 STATUS_LED      EQU P2.1
 BUZZER          EQU P2.2
 LCD_RS_PIN      EQU P1.3
@@ -60,7 +65,7 @@ AWAIT:              dbit 1
 INPUTTING:          dbit 1
 PROMPT_PENDING:     dbit 1
 GET_PARAM:          dbit 1
-SEND_SERIAL_FLAG:   dbit 1    ; *** NEW: Flag for serial transmission ***
+SEND_SERIAL_FLAG:   dbit 1
 
 ; ====================================================================
 ; BYTE VARIABLES
@@ -82,8 +87,12 @@ minutes:            ds 1
 state_timer:        ds 1
 ms_counter:         ds 1
 serial_counter:     ds 1
-pwm:                ds 1
+pwm:                ds 1        ; PWM percentage (0-100)
 error_code:         ds 1
+
+; PWM variables (from pwm_testing.asm)
+pwm_tick_counter:   ds 1        ; PWM counter (0-19)
+pwm_on_ticks:       ds 1        ; ON time in ticks (calculated)
 
 ; Reflow parameters (keyboard can modify these)
 tempsoak:           ds 1
@@ -123,7 +132,13 @@ org 001BH
 
 org 0023H
     reti
-    
+
+org 002BH
+    ljmp Timer2_ISR    ; *** Timer2 for PWM ***
+
+$INCLUDE(math32.inc)
+$INCLUDE(beep.inc)
+
 ; ====================================================================
 ; PS/2 KEYBOARD - SCANCODE TO ASCII TABLE
 ; ====================================================================
@@ -145,9 +160,6 @@ ASCII_TABLE:
     DB 0, 0, 0, 0, 0, 0, 0, 0
     DB 0, 0, 0, 0, 0, 0, 0, 0
     DB 0, 0, 0, 0, 0, 0, 0, 0
-
-$INCLUDE(math32.inc)
-$INCLUDE(beep.inc)
 
 ; ====================================================================
 ; STRING CONSTANTS
@@ -196,6 +208,7 @@ main:
     ; Initialize all subsystems
     lcall Timer0_Init
     lcall Timer1_Init
+    lcall Timer2_Init_PWM       ; *** Initialize PWM Timer ***
     lcall InitSerialPort
     lcall Initialize_PS2
     lcall LCD_Init
@@ -218,7 +231,7 @@ main:
     lcall putchar
     
 Forever:
-    ; *** HANDLE SERIAL FLAG FIRST (before other operations) ***
+    ; Handle serial flag first
     jnb SEND_SERIAL_FLAG, Skip_Serial_Send
     clr SEND_SERIAL_FLAG
     lcall Send_Serial_Data
@@ -228,7 +241,6 @@ Skip_Serial_Send:
     lcall Read_Temperature
     lcall Check_Sensor
     lcall FSM_Reflow
-    lcall Update_PWM
     lcall Update_Display
     lcall Wait100ms
     sjmp Forever
@@ -254,7 +266,11 @@ Init_Variables:
     mov tempreflow, #TEMP_REFLOW
     mov timereflow, #TIME_REFLOW
     mov undertemp_checked, #0
-    clr SEND_SERIAL_FLAG        ; *** Initialize flag ***
+    clr SEND_SERIAL_FLAG
+    
+    ; Initialize PWM variables
+    mov pwm_tick_counter, #0
+    mov pwm_on_ticks, #0
     ret
 
 Timer0_Init:
@@ -262,7 +278,7 @@ Timer0_Init:
     orl TMOD, #0x01
     mov TH0, #0xD5
     mov TL0, #0x90
-    setb PT0                    ; *** FIX: Set Timer0 to HIGH priority ***
+    setb PT0                    ; High priority
     setb ET0
     setb TR0
     setb EA
@@ -273,8 +289,22 @@ Timer1_Init:
     orl TMOD, #0x10
     mov TH1, #0xD5
     mov TL1, #0x90
-    clr ET1                     ; Interrupt disabled initially
-    clr TR1                     ; Timer1 stopped initially
+    clr ET1
+    clr TR1
+    ret
+
+; ====================================================================
+; PWM TIMER2 INITIALIZATION
+; ====================================================================
+Timer2_Init_PWM:
+    ; Configure Timer 2 for PWM
+    mov T2CON, #0x00            ; Timer 2 as timer, auto-reload
+    mov RCAP2H, #HIGH(TIMER2_RELOAD_PWM)
+    mov RCAP2L, #LOW(TIMER2_RELOAD_PWM)
+    mov TH2, #HIGH(TIMER2_RELOAD_PWM)
+    mov TL2, #LOW(TIMER2_RELOAD_PWM)
+    setb ET2                    ; Enable Timer 2 interrupt
+    setb TR2                    ; Start Timer 2
     ret
 
 InitSerialPort:
@@ -287,7 +317,7 @@ InitSerialPort:
 Initialize_PS2:
     setb PS2_DAT
     setb IT0
-    setb EX0                    ; Start with keyboard enabled
+    setb EX0
     setb EA
     mov R0, #0
     mov R1, #0
@@ -318,6 +348,49 @@ SendString:
     INC DPTR
     SJMP SendString
 SSDone:
+    ret
+
+; ====================================================================
+; PWM CONTROL FUNCTIONS (from pwm_testing.asm)
+; ====================================================================
+
+; ================================================================
+; UPDATE_PWM - Convert percentage (0-100) to ticks
+; Input: pwm variable contains percentage (0-100)
+; Output: pwm_on_ticks updated
+; ================================================================
+Update_PWM:
+    push acc
+    push b
+    push psw
+    
+    ; Handle 0% case (OFF)
+    mov a, pwm
+    jz PWM_Set_Zero
+    
+    ; Handle 100% case (FULL ON)
+    cjne a, #100, PWM_Calculate
+    mov pwm_on_ticks, #PWM_PERIOD_TICKS
+    sjmp PWM_Done
+    
+PWM_Set_Zero:
+    mov pwm_on_ticks, #0
+    sjmp PWM_Done
+    
+PWM_Calculate:
+    ; Calculate: pwm_on_ticks = (pwm * PWM_PERIOD_TICKS) / 100
+    ; pwm * 20 / 100 = pwm / 5
+    mov a, pwm
+    mov b, #PWM_PERIOD_TICKS
+    mul ab                      ; Result in A (low byte), B (high byte)
+    mov b, #100
+    div ab                      ; A = quotient
+    mov pwm_on_ticks, a
+    
+PWM_Done:
+    pop psw
+    pop b
+    pop acc
     ret
 
 ; ====================================================================
@@ -808,21 +881,22 @@ FSM_Reflow:
 FSM_State0:
     cjne a, #0, FSM_State1
     mov pwm, #0
+    lcall Update_PWM            ; *** Apply PWM change ***
     jb START_BUTTON, FSM_State0_Done
     lcall Wait50ms
     jb START_BUTTON, FSM_State0_Done
     jnb START_BUTTON, $
     
-    ; *** HANDOFF: Disable keyboard, enable monitoring ***
-    clr EX0                     ; Disable PS/2 keyboard interrupt
-    clr IT0                     ; *** FIX: Clear pending PS/2 interrupt ***
-    clr TF1                     ; Clear any pending Timer1 flag
-    mov TH1, #0xD5              ; Reset Timer1
+    ; Handoff: Disable keyboard, enable monitoring
+    clr EX0
+    clr IT0
+    clr TF1
+    mov TH1, #0xD5
     mov TL1, #0x90
     mov serial_counter, #0
-    clr SEND_SERIAL_FLAG        ; Clear serial flag
-    setb TR1                    ; Start Timer1 running
-    setb ET1                    ; Enable Timer1 interrupt
+    clr SEND_SERIAL_FLAG
+    setb TR1
+    setb ET1
     mov dptr, #StartingMsg
     lcall SendString
     
@@ -842,6 +916,7 @@ FSM_State0_Done:
 FSM_State1:
     cjne a, #1, FSM_State2
     mov pwm, #100
+    lcall Update_PWM            ; *** Apply PWM change ***
     mov a, temp
     clr c
     subb a, temp_max_state
@@ -890,7 +965,7 @@ Check_Soak_Temp:
     ljmp FSM_State1_Done
 FSM_State1_Check_Timeout:
     mov a, state_timer
-    cjne a, #2, FSM_State1_Done     ; *** FIX: Changed from 120 to 2 (2 minutes) ***
+    cjne a, #2, FSM_State1_Done
     mov error_code, #ERR_TIMEOUT
     ljmp Handle_Error
 FSM_State1_Done:
@@ -899,6 +974,7 @@ FSM_State1_Done:
 FSM_State2:
     cjne a, #2, FSM_State3
     mov pwm, #20
+    lcall Update_PWM            ; *** Apply PWM change ***
     mov a, timesoak
     clr c
     subb a, sec
@@ -915,6 +991,7 @@ FSM_State2_Done:
 FSM_State3:
     cjne a, #3, FSM_State4
     mov pwm, #100
+    lcall Update_PWM            ; *** Apply PWM change ***
     mov a, temp
     clr c
     subb a, temp_max_state
@@ -933,7 +1010,7 @@ FSM_State3_Check_Reflow:
     ljmp FSM_State3_Done
 FSM_State3_Check_Timeout:
     mov a, state_timer
-    cjne a, #2, FSM_State3_Done     ; *** FIX: Changed from 90 to 2 (2 minutes) ***
+    cjne a, #2, FSM_State3_Done
     mov error_code, #ERR_TIMEOUT
     ljmp Handle_Error
 FSM_State3_Done:
@@ -942,6 +1019,7 @@ FSM_State3_Done:
 FSM_State4:
     cjne a, #4, FSM_State5
     mov pwm, #20
+    lcall Update_PWM            ; *** Apply PWM change ***
     mov a, temp
     clr c
     subb a, #TEMP_MAX
@@ -964,17 +1042,18 @@ FSM_State4_Done:
 FSM_State5:
     cjne a, #5, FSM_Done
     mov pwm, #0
+    lcall Update_PWM            ; *** Apply PWM change ***
     mov a, temp
     clr c
     subb a, #TEMP_COOL
     jnc FSM_State5_Done
     
-    ; *** HANDOFF: Disable monitoring, re-enable keyboard ***
-    clr TR1                     ; Stop Timer1
-    clr ET1                     ; Disable serial monitoring
-    clr TF1                     ; Clear any pending Timer1 flag
-    clr IT0                     ; *** FIX: Clear pending PS/2 interrupt ***
-    setb EX0                    ; Re-enable PS/2 keyboard interrupt
+    ; Handoff: Disable monitoring, re-enable keyboard
+    clr TR1
+    clr ET1
+    clr TF1
+    clr IT0
+    setb EX0
     mov dptr, #FinishedMsg
     lcall SendString
     
@@ -989,14 +1068,15 @@ FSM_Done:
 
 Handle_Error:
     mov pwm, #0
+    lcall Update_PWM            ; *** Turn off PWM ***
     clr SSR_CONTROL
     
-    ; *** HANDOFF: On error, re-enable keyboard ***
-    clr TR1                     ; Stop Timer1
-    clr ET1                     ; Disable monitoring
-    clr TF1                     ; Clear any pending Timer1 flag
-    clr IT0                     ; *** FIX: Clear pending PS/2 interrupt ***
-    setb EX0                    ; Re-enable keyboard
+    ; Handoff: On error, re-enable keyboard
+    clr TR1
+    clr ET1
+    clr TF1
+    clr IT0
+    setb EX0
     
     lcall Beep_Error
     
@@ -1076,17 +1156,6 @@ Sim_State5:
     mov temp, a
 Sim_Done:
     pop acc
-    ret
-
-Update_PWM:
-    mov a, pwm
-    jz PWM_Off
-    setb SSR_CONTROL
-    setb STATUS_LED
-    ret
-PWM_Off:
-    clr SSR_CONTROL
-    clr STATUS_LED
     ret
 
 Update_Display:
@@ -1385,7 +1454,6 @@ Timer0_Done:
     reti
 
 Timer1_ISR:
-    ; *** FIXED: Flag-based approach - NO function calls! ***
     push acc
     push psw
     mov TH1, #0xD5
@@ -1396,9 +1464,48 @@ Timer1_ISR:
     cjne a, #10, Timer1_Done
     mov serial_counter, #0
     
-    setb SEND_SERIAL_FLAG       ; *** Just set flag, don't call function ***
+    setb SEND_SERIAL_FLAG
     
 Timer1_Done:
+    pop psw
+    pop acc
+    reti
+
+; ====================================================================
+; TIMER2 ISR - PWM GENERATION
+; ====================================================================
+Timer2_ISR:
+    push acc
+    push psw
+    
+    clr TF2                     ; Clear Timer 2 overflow flag
+    
+    ; Increment PWM tick counter
+    inc pwm_tick_counter
+    mov a, pwm_tick_counter
+    
+    ; Check if we've reached the period (20 ticks)
+    cjne a, #PWM_PERIOD_TICKS, PWM_Check_On_Time
+    mov pwm_tick_counter, #0    ; Reset counter at period end
+    mov a, #0                   ; Start fresh cycle
+    
+PWM_Check_On_Time:
+    ; Compare tick_counter with pwm_on_ticks
+    mov a, pwm_tick_counter
+    clr c
+    subb a, pwm_on_ticks
+    jnc PWM_Turn_Off            ; If tick_counter >= pwm_on_ticks, turn OFF
+    
+PWM_Turn_On:
+    setb SSR_CONTROL
+    setb STATUS_LED
+    sjmp PWM_ISR_Done
+    
+PWM_Turn_Off:
+    clr SSR_CONTROL
+    clr STATUS_LED
+    
+PWM_ISR_Done:
     pop psw
     pop acc
     reti
